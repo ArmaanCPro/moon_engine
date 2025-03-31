@@ -1,0 +1,27 @@
+Language: Cpp
+
+BasedOnStyle: Microsoft
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeElse: true
+  IndentBraces: true
+
+IndentWidth: 4
+NamespaceIndentation: All
+IndentCaseBlocks: true
+IndentCaseLabels: true
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+SpaceBeforeCpp11BracedList: true
+
+AllowShortFunctionsOnASingleLine: All

@@ -1,0 +1,138 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default-common",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays"
+      }
+    },
+    {
+      "name": "debug-default",
+      "displayName": "Debug (Default)",
+      "inherits": "default-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-default",
+      "displayName": "Release (Default)",
+      "inherits": "default-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+
+    {
+      "name": "msvc-common",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "VCPKG_CMAKE_SYSTEM": "MSVC"
+      }
+    },
+    {
+      "name": "debug-msvc",
+      "displayName": "Debug (MSVC)",
+      "inherits": "msvc-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-msvc",
+      "displayName": "Release (MSVC)",
+      "inherits": "msvc-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+
+    {
+      "name": "mingw-common",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays",
+        "VCPKG_CMAKE_SYSTEM": "MINGW"
+      }
+    },
+    {
+      "name": "debug-mingw",
+      "displayName": "Debug (MinGW)",
+      "inherits": "mingw-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-mingw",
+      "displayName": "Release (MinGW)",
+      "inherits": "mingw-common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "editor-debug",
+      "displayName": "Debug Editor Build",
+      "configurePreset": "debug-default",
+      "configuration": "Debug",
+      "targets": [ "editor" ]
+    },
+    {
+      "name": "editor-release",
+      "displayName": "Release Editor Build",
+      "configurePreset": "release-default",
+      "configuration": "Release",
+      "targets": [ "editor" ]
+    },
+
+    {
+      "name": "editor-debug-msvc",
+      "displayName": "Debug Editor Build (MSVC)",
+      "configurePreset": "debug-msvc",
+      "configuration": "Debug",
+      "targets": [ "editor" ]
+    },
+    {
+      "name": "editor-release-msvc",
+      "displayName": "Release Editor Build (MSVC)",
+      "configurePreset": "release-msvc",
+      "configuration": "Release",
+      "targets": [ "editor" ]
+    },
+
+    {
+      "name": "editor-debug-mingw",
+      "displayName": "Debug Editor Build (MinGW)",
+      "configurePreset": "debug-mingw",
+      "configuration": "Debug",
+      "targets": [ "editor" ]
+    },
+    {
+      "name": "editor-release-mingw",
+      "displayName": "Release Editor Build (MinGW)",
+      "configurePreset": "release-mingw",
+      "configuration": "Release",
+      "targets": [ "editor" ]
+    }
+  ]
+}

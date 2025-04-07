@@ -4,19 +4,19 @@ cmake_minimum_required(VERSION 3.28)
 if (MINGW OR VCPKG_CMAKE_SYSTEM STREQUAL MINGW)
     set(VCPKG_TARGET_TRIPLET "x64-mingw-dynamic" CACHE STRING "")
     set(VCPKG_HOST_TRIPLET "x64-mingw-dynamic" CACHE STRING "")
-endif ()
+endif()
 
 # enforce static linking in msvc. not sure if this is needed
 if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-dynamic" CACHE STRING "")
-    set(VCPKG_HOST_TRIPLET "x64-windows-dynamic" CACHE STRING "")
+    set(VCPKG_TARGET_TRIPLET "x64-windows" CACHE STRING "")
+    set(VCPKG_HOST_TRIPLET "x64-windows" CACHE STRING "")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     add_compile_options(
-            $<$<CONFIG:>:/MT>
-            $<$<CONFIG:Debug>:/MTd>
-            $<$<CONFIG:Release>:/MT>
+            $<$<CONFIG:>:/MD>
+            $<$<CONFIG:Debug>:/MDd>
+            $<$<CONFIG:Release>:/MD>
     )
-endif ()
+endif()
 
 # vcpkg
 if (DEFINED ENV{VCPKG_ROOT})
@@ -29,9 +29,10 @@ else ()
     )
     FetchContent_MakeAvailable(vcpkg)
     set(VCPKG_ROOT ${vcpkg_SOURCE_DIR})
-endif ()
+endif()
 message(STATUS "Using VCPKG_ROOT: ${VCPKG_ROOT}")
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
+set(VCPKG_INSTALLED_DIR "${CMAKE_SOURCE_DIR}/vcpkg_installed" CACHE STRING "vcpkg installed directory")
 
 #--------
 # project

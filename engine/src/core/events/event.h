@@ -5,7 +5,7 @@
 
 namespace moon
 {
-    enum class event_type : uint64_t
+    enum class event_type
     {
         NONE,
         WINDOW_CLOSE,

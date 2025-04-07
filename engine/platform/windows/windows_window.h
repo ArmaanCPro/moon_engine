@@ -34,6 +34,8 @@ namespace moon
             uint32_t width;
             uint32_t height;
             bool vsync;
+
+            event_callback_fn event_callback;
         };
         window_data data_;
     };

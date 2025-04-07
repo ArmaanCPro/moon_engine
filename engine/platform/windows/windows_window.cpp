@@ -20,7 +20,8 @@ namespace moon
 
     void windows_window::on_update()
     {
-
+        glfwSwapBuffers(window_);
+        glfwPollEvents();
     }
 
     window* window::create(const window_props& props)
@@ -28,9 +29,9 @@ namespace moon
         return new windows_window(props);
     }
 
-    void windows_window::set_event_callback(const event_callback_fn&)
+    void windows_window::set_event_callback(const event_callback_fn& fn)
     {
-
+        data_.event_callback = fn;
     }
 
     void windows_window::set_vsync(bool enabled)

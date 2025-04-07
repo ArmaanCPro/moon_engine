@@ -58,5 +58,16 @@ elseif (UNIX AND NOT APPLE)
 endif ()
 add_compile_definitions(${PLATFORM_DEFINITIONS})
 
+# multiprocessor compiling
+if(MSVC)
+    add_compile_options(/MP)
+else()
+    include(ProcessorCount)
+    ProcessorCount(N)
+    if(NOT N EQUAL 0)
+        set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
+    endif()
+endif()
+
 add_subdirectory(engine)
 add_subdirectory(editor)

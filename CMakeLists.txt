@@ -36,7 +36,7 @@ set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE 
 #--------
 # project
 # -------
-project(gbemu CXX)
+project(moon CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(engine CXX)
+project(moon_engine CXX)
 
 if (MSVC)
     add_compile_options(/MP)    #Use multiple processors when building
@@ -13,13 +13,13 @@ file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "include/*.h" "src/*.h")
 
 # Create a shared library instead of a static one
-add_library(engine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+add_library(moon_engine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
-# Define the MOON_ENGINE_EXPORTS macro when building the engine
-target_compile_definitions(engine PRIVATE MOON_ENGINE_EXPORTS)
+# Define the MOON_ENGINE_EXPORTS macro when building the moon_engine
+target_compile_definitions(moon_engine PRIVATE MOON_ENGINE_EXPORTS)
 
 # Set include directories
-target_include_directories(engine
+target_include_directories(moon_engine
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -28,4 +28,4 @@ target_include_directories(engine
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(engine PUBLIC glfw glad::glad spdlog::spdlog_header_only)
+target_link_libraries(moon_engine PUBLIC glfw glad::glad spdlog::spdlog_header_only)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(editor CXX)
+project(moon_editor CXX)
 
 if (MSVC)
     add_compile_options(/MP)    #Use multiple processors when building
@@ -15,13 +15,13 @@ set(SOURCES
 
 source_group("src" FILES ${SOURCES})
 
-add_executable(editor ${SOURCES})
+add_executable(moon_editor ${SOURCES})
 
-target_include_directories(editor PRIVATE "${PROJECT_SOURCE_DIR}/src")
-target_link_libraries(editor PRIVATE engine)
+target_include_directories(moon_editor PRIVATE "${PROJECT_SOURCE_DIR}/src")
+target_link_libraries(moon_editor PRIVATE moon_engine)
 
-add_custom_command(TARGET editor POST_BUILD
+add_custom_command(TARGET moon_editor POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:engine>
-        $<TARGET_FILE_DIR:editor>
+        $<TARGET_FILE:moon_engine>
+        $<TARGET_FILE_DIR:moon_editor>
 )

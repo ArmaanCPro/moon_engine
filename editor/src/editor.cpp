@@ -5,7 +5,7 @@ class editor_app : public moon::application
 public:
     editor_app()
     {
-        MOON_TRACE("editor app created");
+        MOON_INFO("editor app created");
     }
     ~editor_app() override
     {}

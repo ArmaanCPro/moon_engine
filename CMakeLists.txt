@@ -10,11 +10,12 @@ endif()
 if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
     set(VCPKG_TARGET_TRIPLET "x64-windows" CACHE STRING "")
     set(VCPKG_HOST_TRIPLET "x64-windows" CACHE STRING "")
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     add_compile_options(
             $<$<CONFIG:>:/MD>
             $<$<CONFIG:Debug>:/MDd>
             $<$<CONFIG:Release>:/MD>
+            /utf-8
     )
 endif()
 

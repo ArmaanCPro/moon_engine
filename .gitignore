@@ -8,4 +8,5 @@ build/
 CMakeUserPresets.json
 **.log
 **.env
+compile_commands.json
 vcpkg_installed

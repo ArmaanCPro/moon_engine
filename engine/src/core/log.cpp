@@ -1,3 +1,5 @@
+#include "moonpch.h"
+
 #include "core/log.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>

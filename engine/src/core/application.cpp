@@ -1,3 +1,5 @@
+#include "moonpch.h"
+
 #include "application.h"
 
 #include "log.h"

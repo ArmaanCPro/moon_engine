@@ -2,9 +2,6 @@
 
 #include "core/core.h"
 
-#include <cstdint>
-#include <string>
-#include <functional>
 
 namespace moon
 {

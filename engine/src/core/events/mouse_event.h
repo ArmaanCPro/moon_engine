@@ -2,8 +2,6 @@
 
 #include "event.h"
 
-#include <sstream>
-
 namespace moon
 {
     class MOON_API mouse_moved_event : public event

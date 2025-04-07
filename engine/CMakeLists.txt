@@ -25,6 +25,9 @@ target_include_directories(moon_engine
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+target_precompile_headers(moon_engine PRIVATE src/moonpch.h)
+
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)

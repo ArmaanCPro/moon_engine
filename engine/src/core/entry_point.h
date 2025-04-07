@@ -7,6 +7,7 @@ extern moon::application* moon::create_application();
 
 int main()
 {
+    moon::log::init();
     auto app = moon::create_application();
     app->run();
     delete app;

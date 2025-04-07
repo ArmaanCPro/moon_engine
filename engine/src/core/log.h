@@ -8,10 +8,10 @@
 
 namespace moon
 {
-    class MOON_API log
+    class log
     {
     public:
-        MOON_API static void init();
+        static MOON_API void init();
 
         inline static std::shared_ptr<spdlog::logger>& get_core_logger()
         {
@@ -24,8 +24,8 @@ namespace moon
         }
 
     private:
-        static std::shared_ptr<spdlog::logger> s_core_logger;
-        static std::shared_ptr<spdlog::logger> s_client_logger;
+        static MOON_API std::shared_ptr<spdlog::logger> s_core_logger;
+        static MOON_API std::shared_ptr<spdlog::logger> s_client_logger;
     };
 }
 

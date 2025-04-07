@@ -6,11 +6,14 @@
 #include "events/application_event.h"
 #include "events/event.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 namespace moon
 {
     application::application()
     {
-
+        window_ = std::unique_ptr<window>(window::create());
     }
 
     application::~application()
@@ -20,10 +23,12 @@ namespace moon
 
     void application::run()
     {
-        window_resize_event e(1280, 720);
-        MOON_TRACE("{0}", e.to_string());
+        while (running_)
+        {
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        while (true)
-        {}
+            window_->on_update();
+        }
     }
 }

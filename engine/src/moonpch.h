@@ -15,7 +15,10 @@
 #include <unordered_set>
 #include <array>
 
-#ifdef PL_WINDOWS
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#ifdef _WIN32
     #include <windows.h>
 #endif
 

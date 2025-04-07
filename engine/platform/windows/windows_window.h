@@ -2,6 +2,7 @@
 
 #include "core/window.h"
 
+#include <glad/glad.h>
 #include <glfw/glfw3.h>
 
 namespace moon

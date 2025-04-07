@@ -8,6 +8,11 @@ namespace moon
 {
     static bool s_glfw_initialized = false;
 
+    window* window::create(const window_props& props)
+    {
+        return new windows_window(props);
+    }
+
     windows_window::windows_window(const window_props& props)
     {
         init(props);
@@ -22,11 +27,6 @@ namespace moon
     {
         glfwSwapBuffers(window_);
         glfwPollEvents();
-    }
-
-    window* window::create(const window_props& props)
-    {
-        return new windows_window(props);
     }
 
     void windows_window::set_event_callback(const event_callback_fn& fn)
@@ -58,13 +58,18 @@ namespace moon
             s_glfw_initialized = true;
         }
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window_ = glfwCreateWindow((int)data_.width, (int)data_.height, data_.title.c_str(), nullptr, nullptr);
+        window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
         glfwMakeContextCurrent(window_);
         glfwSetWindowUserPointer(window_, &data_);
         set_vsync(true);
+
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cerr << "Failed to initialize GLAD" << std::endl;
+            throw std::runtime_error("Failed to initialize GLAD");
+        }
+
+        glViewport(0, 0, (int)props.width, (int)props.height);
     }
 
     void windows_window::shutdown()

@@ -9,18 +9,21 @@ else ()
     add_compile_options(-W -Wall -Werror) #All Warnings, all warnings are errors
 endif ()
 
-set(SOURCES
-        "src/test.h"
-        "src/core/log.h"
-        "src/core/log.cpp"
+file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp")
+file(GLOB_RECURSE ENGINE_HEADERS "include/*.h" "src/*.h")
+
+# Create a shared library instead of a static one
+add_library(engine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+
+# Define the MOON_ENGINE_EXPORTS macro when building the engine
+target_compile_definitions(engine PRIVATE MOON_ENGINE_EXPORTS)
+
+# Set include directories
+target_include_directories(engine
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-
-source_group("src" FILES ${SOURCES})
-
-add_library(engine STATIC ${SOURCES})
-
-target_include_directories(engine PUBLIC "${PROJECT_SOURCE_DIR}/src")
-target_include_directories(engine PUBLIC "${PROJECT_SOURCE_DIR}/resources")
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)

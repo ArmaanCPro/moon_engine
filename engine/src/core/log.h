@@ -1,15 +1,17 @@
 #pragma once
 
+#include "core.h"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #include <memory>
 
 namespace moon
 {
-    class log
+    class MOON_API log
     {
     public:
-        static void init();
+        MOON_API static void init();
 
         inline static std::shared_ptr<spdlog::logger>& get_core_logger()
         {

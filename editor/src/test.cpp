@@ -1,6 +1,8 @@
+#include "test.h"
+
 #include <iostream>
-#include <core/log.h>
-#include <test.h>
+
+#include <moon.h>
 
 int main()
 {

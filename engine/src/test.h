@@ -1,5 +1,6 @@
 #pragma once
-#include "core/log.h"
+
+#include "moon.h"
 
 template <typename T>
 T test(T x)

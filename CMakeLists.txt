@@ -32,7 +32,6 @@ else ()
 endif()
 message(STATUS "Using VCPKG_ROOT: ${VCPKG_ROOT}")
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
-set(VCPKG_INSTALLED_DIR "${CMAKE_SOURCE_DIR}/vcpkg_installed" CACHE STRING "vcpkg installed directory")
 
 #--------
 # project

@@ -8,7 +8,7 @@ namespace moon
 {
     static bool s_glfw_initialized = false;
 
-    moon::windows_window::windows_window(const window_props& props)
+    windows_window::windows_window(const window_props& props)
     {
         init(props);
     }
@@ -18,9 +18,19 @@ namespace moon
         shutdown();
     }
 
+    void windows_window::on_update()
+    {
+
+    }
+
     window* window::create(const window_props& props)
     {
         return new windows_window(props);
+    }
+
+    void windows_window::set_event_callback(const event_callback_fn&)
+    {
+
     }
 
     void windows_window::set_vsync(bool enabled)
@@ -43,8 +53,7 @@ namespace moon
         if (!s_glfw_initialized)
         {
             int success = glfwInit();
-            MOON_CORE_WARN("glfw status: {0}", success);
-            //MOON_CORE_ASSERT(success, "Could not initialize GLFW!");
+            MOON_CORE_ASSERT(success, "Could not initialize GLFW!");
             s_glfw_initialized = true;
         }
 
@@ -60,5 +69,6 @@ namespace moon
     void windows_window::shutdown()
     {
         glfwDestroyWindow(window_);
+        window_ = nullptr;
     }
 }

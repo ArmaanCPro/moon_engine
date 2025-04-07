@@ -45,7 +45,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions(-DDEBUG)
+    add_compile_definitions(DEBUG MOON_ENABLE_ASSERTS)
 endif () # compiler automatically adds NDEBUG if not debug mode
 
 # platform specific stuff

@@ -24,7 +24,7 @@ namespace moon
     public:
         using event_callback_fn = std::function<void(event&)>;
 
-        virtual ~window() = 0;
+        virtual ~window() = default;
 
         virtual void on_update() = 0;
 

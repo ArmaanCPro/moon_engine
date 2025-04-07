@@ -34,11 +34,10 @@
 
     {
       "name": "msvc-common",
+      "inherits": "default-common",
       "hidden": true,
       "generator": "Visual Studio 17 2022",
-      "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays",
         "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_C_COMPILER": "cl.exe",
         "VCPKG_CMAKE_SYSTEM": "MSVC"
@@ -63,11 +62,9 @@
 
     {
       "name": "mingw-common",
+      "inherits": "default-common",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays",
         "VCPKG_CMAKE_SYSTEM": "MINGW"
       }
     },

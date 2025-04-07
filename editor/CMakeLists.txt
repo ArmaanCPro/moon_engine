@@ -10,7 +10,7 @@ else ()
 endif ()
 
 set(SOURCES
-        "src/test.cpp"
+        "src/editor.cpp"
 )
 
 source_group("src" FILES ${SOURCES})

@@ -49,7 +49,7 @@ endif ()
 add_library(moon_engine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
 # compile definitions
-target_compile_definitions(moon_engine PRIVATE MOON_ENGINE_EXPORTS)
+target_compile_definitions(moon_engine PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
 if (WIN32 OR MINGW)
     target_compile_definitions(moon_engine PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
 endif ()

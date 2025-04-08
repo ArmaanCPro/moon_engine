@@ -69,14 +69,13 @@ namespace moon
 
         window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
         glfwMakeContextCurrent(window_);
+        // setup glad
+        {
+            int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+            MOON_CORE_ASSERT(status, "Failed to initialize GLAD");
+        }
         glfwSetWindowUserPointer(window_, &data_);
         set_vsync(true);
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            MOON_CORE_FATAL("Failed to initialize GLAD");
-            throw std::runtime_error("Failed to initialize GLAD");
-        }
 
         glViewport(0, 0, (int)props.width, (int)props.height);
 

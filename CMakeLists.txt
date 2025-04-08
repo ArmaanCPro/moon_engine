@@ -8,13 +8,13 @@ endif()
 
 # enforce static linking in msvc. not sure if this is needed
 if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
-    set(VCPKG_HOST_TRIPLET "x64-windows-static" CACHE STRING "")
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
+    set(VCPKG_HOST_TRIPLET "x64-windows-static-md" CACHE STRING "")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     add_compile_options(
-            $<$<CONFIG:>:/MT>
-            $<$<CONFIG:Debug>:/MTd>
-            $<$<CONFIG:Release>:/MT>
+            $<$<CONFIG:>:/MD>
+            $<$<CONFIG:Debug>:/MDd>
+            $<$<CONFIG:Release>:/MD>
             /utf-8
             /wd4251
     )

@@ -14,6 +14,8 @@ namespace moon
     application::application()
     {
         window_ = std::unique_ptr<window>(window::create());
+
+        window_->set_event_callback(std::bind(&application::on_event, this, std::placeholders::_1));
     }
 
     application::~application()
@@ -30,5 +32,19 @@ namespace moon
 
             window_->on_update();
         }
+    }
+
+    void application::on_event(event& e)
+    {
+        event_dispatcher dispatcher(e);
+        dispatcher.dispatch<window_close_event>(std::bind(&application::on_window_close, this, std::placeholders::_1));
+
+        MOON_CORE_TRACE("event: {0}", e.to_string());
+    }
+
+    bool application::on_window_close(window_close_event&)
+    {
+        running_ = false;
+        return true;
     }
 }

@@ -3,10 +3,18 @@
 #include "windows_window.h"
 
 #include "core/log.h"
+#include "core/events/application_event.h"
+#include "core/events/mouse_event.h"
+#include "core/events/key_event.h"
 
 namespace moon
 {
     static bool s_glfw_initialized = false;
+
+    static void glfw_error_callback(int error, const char* description)
+    {
+        MOON_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+    }
 
     window* window::create(const window_props& props)
     {
@@ -55,6 +63,7 @@ namespace moon
         {
             int success = glfwInit();
             MOON_CORE_ASSERT(success, "Could not initialize GLFW!");
+            glfwSetErrorCallback(glfw_error_callback);
             s_glfw_initialized = true;
         }
 
@@ -70,6 +79,84 @@ namespace moon
         }
 
         glViewport(0, 0, (int)props.width, (int)props.height);
+
+        // glfw callbacks
+        glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+            data->width = width;
+            data->height = height;
+            window_resize_event event(width, height);
+            data->event_callback(event);
+        });
+
+        glfwSetWindowCloseCallback(window_, [](GLFWwindow* window)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+            window_close_event event;
+            data->event_callback(event);
+        });
+
+        glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int, int action, int)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+
+            switch (action)
+            {
+            case GLFW_PRESS:
+            {
+                key_pressed_event event(key, 0);
+                data->event_callback(event);
+            } break;
+            case GLFW_RELEASE:
+            {
+                key_released_event event(key);
+                data->event_callback(event);
+            } break;
+            case GLFW_REPEAT:
+            {
+                key_pressed_event event(key, 1);
+                data->event_callback(event);
+            } break;
+            default:
+                MOON_CORE_ERROR("Unknown key action");
+            }
+        });
+
+        glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+
+            switch (action)
+            {
+            case GLFW_PRESS:
+            {
+                mouse_pressed_event event(button);
+                data->event_callback(event);
+            } break;
+            case GLFW_RELEASE:
+            {
+                mouse_released_event event(button);
+                data->event_callback(event);
+            } break;
+            default:
+                MOON_CORE_ERROR("Unknown mouse action");
+            }
+        });
+
+        glfwSetScrollCallback(window_, [](GLFWwindow* window, double xoffset, double yoffset)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+            mouse_scrolled_event event((float)xoffset, (float)yoffset);
+            data->event_callback(event);
+        });
+
+        glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double xpos, double ypos)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+            mouse_moved_event event((float)xpos, (float)ypos);
+            data->event_callback(event);
+        });
     }
 
     void windows_window::shutdown()

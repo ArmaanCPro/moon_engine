@@ -17,7 +17,7 @@ BraceWrapping:
 IndentWidth: 4
 NamespaceIndentation: All
 IndentCaseBlocks: true
-IndentCaseLabels: true
+IndentCaseLabels: false
 
 PointerAlignment: Left
 ReferenceAlignment: Left

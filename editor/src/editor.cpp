@@ -9,7 +9,7 @@ public:
 
     void on_update() override
     {
-        MOON_INFO("editor layer update");
+        //MOON_INFO("editor layer update");
     }
 
     void on_event(moon::event& e) override
@@ -25,6 +25,7 @@ public:
     {
         MOON_INFO("editor app created");
         push_layer(new editor_layer());
+        push_overlay(new moon::imgui_layer());
     }
 
 private:

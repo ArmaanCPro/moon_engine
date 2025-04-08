@@ -14,6 +14,7 @@ set(ENGINE_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/log.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.cpp
+        src/core/imgui/imgui_layer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -30,6 +31,7 @@ set(ENGINE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.h
+        src/core/imgui/imgui_layer.h
 )
 
 # platform files
@@ -69,4 +71,5 @@ target_precompile_headers(moon_engine PRIVATE src/moonpch.h)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(moon_engine PUBLIC glfw glad::glad spdlog::spdlog_header_only)
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(moon_engine PUBLIC glfw glad::glad spdlog::spdlog_header_only imgui::imgui)

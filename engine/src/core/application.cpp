@@ -11,8 +11,13 @@
 
 namespace moon
 {
+    application* application::s_instance = nullptr;
+
     application::application()
     {
+        MOON_CORE_ASSERT(!s_instance, "Application already exists!");
+        s_instance = this;
+
         window_ = std::unique_ptr<window>(window::create());
 
         window_->set_event_callback(std::bind(&application::on_event, this, std::placeholders::_1));

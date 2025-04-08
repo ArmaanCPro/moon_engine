@@ -9,7 +9,15 @@
         "gl-api-latest"
       ]
     },
-    "spdlog"
+    "spdlog",
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        "glfw-binding",
+        "opengl3-binding"
+      ]
+    }
   ],
   "builtin-baseline": "300239058e33420acd153135b3f6e6b187828992"
 }

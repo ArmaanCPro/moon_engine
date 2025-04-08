@@ -22,6 +22,9 @@ namespace moon
 
         void on_event(event& e);
 
+        inline static application& get() { return *s_instance; }
+        inline window& get_window() { return *window_; }
+
     private:
         bool on_window_close(window_close_event& e);
 
@@ -29,6 +32,8 @@ namespace moon
         bool running_ = true;
 
         layer_stack layer_stack_;
+
+        static application* s_instance;
     };
 
     // to be defined in the client

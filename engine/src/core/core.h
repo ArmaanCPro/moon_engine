@@ -19,8 +19,7 @@
     #if defined(_MSC_VER)
         #define MOON_DEBUGBREAK() __debugbreak()
     #elif defined(__MINGW32__) || defined(__MINGW64__)
-        // For MinGW, use SIGBREAK which is always defined
-        #define MOON_DEBUGBREAK() raise(SIGBREAK)
+        #define MOON_DEBUGBREAK() __asm__("int $3") // could also use __debugbreak() but that seems to break within _mingw.h
     #elif defined(__clang__)
         #if defined(__has_builtin) && __has_builtin(__builtin_debugtrap)
             #define MOON_DEBUGBREAK() __builtin_debugtrap()

@@ -74,7 +74,7 @@ namespace moon
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
+            MOON_CORE_FATAL("Failed to initialize GLAD");
             throw std::runtime_error("Failed to initialize GLAD");
         }
 

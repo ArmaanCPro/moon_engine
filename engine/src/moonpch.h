@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>

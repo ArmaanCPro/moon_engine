@@ -16,6 +16,7 @@ if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
             $<$<CONFIG:Debug>:/MTd>
             $<$<CONFIG:Release>:/MT>
             /utf-8
+            /wd4251
     )
 endif()
 

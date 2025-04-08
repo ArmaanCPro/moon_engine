@@ -3,19 +3,21 @@ cmake_minimum_required(VERSION 3.28)
 project(moon_engine CXX)
 
 if (MSVC)
-    add_compile_options(/MP)    #Use multiple processors when building
     add_compile_options(/W4 /wd4201 /WX) #Warning level 4, all warnings are errors
 else ()
     add_compile_options(-W -Wall -Werror) #All Warnings, all warnings are errors
 endif ()
 
 set(ENGINE_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/log.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.cpp
 )
 
 set(ENGINE_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/moon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/core.h
@@ -26,7 +28,8 @@ set(ENGINE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/events/mouse_event.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/log.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.h
 )
 
 # platform files

@@ -64,8 +64,6 @@ namespace moon
             if (e.handled)
                 break;
         }
-
-        MOON_CORE_TRACE("event: {0}", e.to_string());
     }
 
     bool application::on_window_close(window_close_event&)

@@ -48,6 +48,8 @@ namespace moon
     public:
         virtual ~event() = default;
 
+        bool handled = false;
+
         [[nodiscard]] virtual event_type get_type() const = 0;
         [[nodiscard]] virtual const char* get_name() const = 0;
         [[nodiscard]] virtual int get_category() const = 0;
@@ -58,7 +60,6 @@ namespace moon
             return get_category() & category;
         }
     private:
-        bool handled_ = false;
     };
 
     class event_dispatcher
@@ -77,7 +78,7 @@ namespace moon
         {
             if (event_.get_type() == T::get_static_type())
             {
-                event_.handled_ = func(*(T*)&event_);
+                event_.handled = func(*(T*)&event_);
                 return true;
             }
             return false;

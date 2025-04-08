@@ -3,6 +3,7 @@
 #include "imgui_layer.h"
 
 #include "core/application.h"
+#include "core/events/application_event.h"
 #include "core/events/key_event.h"
 #include "core/events/mouse_event.h"
 
@@ -71,43 +72,82 @@ namespace moon
         key_map.insert( { GLFW_KEY_TAB, ImGuiKey_Tab } );
         key_map.insert( { GLFW_KEY_ESCAPE, ImGuiKey_Escape } );
         key_map.insert( { GLFW_KEY_SPACE, ImGuiKey_Space } );
+        key_map.insert( { GLFW_KEY_ENTER, ImGuiKey_Enter } );
+        key_map.insert( { GLFW_KEY_LEFT_SHIFT, ImGuiKey_LeftShift } );
+        key_map.insert( { GLFW_KEY_LEFT_CONTROL, ImGuiKey_LeftCtrl } );
+        key_map.insert( { GLFW_KEY_LEFT_ALT, ImGuiKey_LeftAlt } );
+        key_map.insert( { GLFW_KEY_LEFT_SUPER, ImGuiKey_LeftSuper } );
+        key_map.insert( { GLFW_KEY_BACKSPACE, ImGuiKey_Backspace } );
+        key_map.insert( { GLFW_KEY_A, ImGuiKey_A } );
 
-        event_dispatcher dispatcher(e);
-        dispatcher.dispatch<key_pressed_event>([this](key_pressed_event& e)
+        if (!e.handled)
         {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddKeyEvent(key_map.at(e.get_keycode()), true);
-            return true;
-        });
-        dispatcher.dispatch<key_released_event>([this](key_released_event& e)
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddKeyEvent(key_map.at(e.get_keycode()), false);
-            return true;
-        });
-        dispatcher.dispatch<mouse_pressed_event>([this](mouse_pressed_event& e)
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddMouseButtonEvent(mouse_map.at(e.get_mouse_button()), true);
-            return true;
-        });
-        dispatcher.dispatch<mouse_released_event>([this](mouse_released_event& e)
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddMouseButtonEvent(mouse_map.at(e.get_mouse_button()), false);
-            return true;
-        });
-        dispatcher.dispatch<mouse_moved_event>([this](mouse_moved_event& e)
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddMousePosEvent(e.get_x(), e.get_y());
-            return true;
-        });
-        dispatcher.dispatch<mouse_scrolled_event>([this](mouse_scrolled_event& e)
-        {
-            ImGuiIO& io = ImGui::GetIO();
-            io.AddMouseWheelEvent(e.get_x_offset(), e.get_y_offset());
-            return true;
-        });
+            event_dispatcher dispatcher(e);
+            dispatcher.dispatch<key_pressed_event>([this](key_pressed_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                if (key_map.contains(e.get_keycode()))
+                    io.AddKeyEvent(key_map.at(e.get_keycode()), true);
+                return false;
+            });
+            dispatcher.dispatch<key_released_event>([this](key_released_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddKeyEvent(key_map.at(e.get_keycode()), false);
+                return false;
+            });
+            dispatcher.dispatch<key_typed_event>([this](key_typed_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                int keycode = e.get_keycode();
+                if (keycode > 0 && keycode < 0x10000)
+                    io.AddInputCharacter((unsigned short)keycode);
+                return false;
+            });
+            dispatcher.dispatch<mouse_pressed_event>([this](mouse_pressed_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddMouseButtonEvent(mouse_map.at(e.get_mouse_button()), true);
+                return false;
+            });
+            dispatcher.dispatch<mouse_released_event>([this](mouse_released_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddMouseButtonEvent(mouse_map.at(e.get_mouse_button()), false);
+                return false;
+            });
+            dispatcher.dispatch<mouse_moved_event>([this](mouse_moved_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddMousePosEvent(e.get_x(), e.get_y());
+                return false;
+            });
+            dispatcher.dispatch<mouse_scrolled_event>([this](mouse_scrolled_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddMouseWheelEvent(e.get_x_offset(), e.get_y_offset());
+                return false;
+            });
+            dispatcher.dispatch<window_resize_event>([this](window_resize_event& e)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.DisplaySize = ImVec2((float)e.get_width(), (float)e.get_height());
+                io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+                glViewport(0, 0, e.get_width(), e.get_height());
+                return false;
+            });
+            dispatcher.dispatch<window_focus_event>([this](window_focus_event&)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddFocusEvent(true);
+                return false;
+            });
+            dispatcher.dispatch<window_lost_focus_event>([this](window_lost_focus_event&)
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                io.AddFocusEvent(false);
+                return false;
+            });
+        }
     }
 }

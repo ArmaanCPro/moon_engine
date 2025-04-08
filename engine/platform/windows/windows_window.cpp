@@ -96,6 +96,13 @@ namespace moon
             data->event_callback(event);
         });
 
+        glfwSetCharCallback(window_, [](GLFWwindow* window, unsigned int keycode)
+        {
+            window_data* data = (window_data*)glfwGetWindowUserPointer(window);
+            key_typed_event event(keycode);
+            data->event_callback(event);
+        });
+
         glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int, int action, int)
         {
             window_data* data = (window_data*)glfwGetWindowUserPointer(window);

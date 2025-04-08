@@ -15,6 +15,7 @@ namespace moon
         APP_TICK,
         APP_UPDATE,
         APP_RENDER,
+        KEY_TYPED,
         KEY_PRESSED,
         KEY_RELEASED,
         MOUSE_BUTTON_PRESSED,

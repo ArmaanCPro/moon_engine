@@ -19,6 +19,24 @@ namespace moon
         int keycode_ = 0;
     };
 
+    class MOON_API key_typed_event : public key_event
+    {
+    public:
+        explicit key_typed_event(int keycode)
+            :
+            key_event(keycode)
+        {}
+
+        EVENT_CLASS_TYPE(KEY_TYPED)
+
+        [[nodiscard]] std::string to_string() const override
+        {
+            std::stringstream ss;
+            ss << "KeyTypedEvent: " << keycode_;
+            return ss.str();
+        }
+    };
+
     class MOON_API key_pressed_event : public key_event
     {
     public:

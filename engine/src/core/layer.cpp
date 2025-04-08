@@ -1,9 +1,11 @@
 #include "layer.h"
 
+#include <utility>
+
 namespace moon
 {
-    layer::layer(const std::string& debug_name)
+    layer::layer(std::string debug_name)
         :
-        debug_name_(debug_name)
+        debug_name_(std::move(debug_name))
     {}
 }

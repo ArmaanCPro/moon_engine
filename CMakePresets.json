@@ -33,6 +33,15 @@
     },
 
     {
+      "name": "asan",
+      "displayName": "AddressSanitizer",
+      "inherits": "debug-default",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address -fno-omit-frame-pointer"
+      }
+    },
+
+    {
       "name": "msvc-common",
       "inherits": "default-common",
       "hidden": true,

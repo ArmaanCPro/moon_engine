@@ -9,12 +9,12 @@ public:
 
     void on_update() override
     {
-        //MOON_INFO("editor layer update");
+
     }
 
-    void on_event(moon::event& e) override
+    void on_event(moon::event&) override
     {
-        MOON_TRACE("{0}", e.to_string());
+
     }
 };
 

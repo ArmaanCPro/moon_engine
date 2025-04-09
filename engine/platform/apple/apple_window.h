@@ -7,11 +7,11 @@
 
 namespace moon
 {
-    class windows_window : public window
+    class apple_window : public window
     {
     public:
-        explicit windows_window(const window_props& props);
-        ~windows_window() override;
+        explicit apple_window(const window_props& props);
+        ~apple_window() override;
 
         void on_update() override;
 

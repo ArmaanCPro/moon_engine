@@ -1,6 +1,6 @@
 #include "moonpch.h"
 
-#include "windows_window.h"
+#include "linux_window.h"
 
 #include "core/log.h"
 #include "core/events/application_event.h"
@@ -18,31 +18,31 @@ namespace moon
 
     window* window::create(const window_props& props)
     {
-        return new windows_window(props);
+        return new linux_window(props);
     }
 
-    windows_window::windows_window(const window_props& props)
+    linux_window::linux_window(const window_props& props)
     {
         init(props);
     }
 
-    windows_window::~windows_window()
+    linux_window::~linux_window()
     {
         shutdown();
     }
 
-    void windows_window::on_update()
+    void linux_window::on_update()
     {
         glfwSwapBuffers(window_);
         glfwPollEvents();
     }
 
-    void windows_window::set_event_callback(const event_callback_fn& fn)
+    void linux_window::set_event_callback(const event_callback_fn& fn)
     {
         data_.event_callback = fn;
     }
 
-    void windows_window::set_vsync(bool enabled)
+    void linux_window::set_vsync(bool enabled)
     {
         if (enabled)
             glfwSwapInterval(1);
@@ -51,7 +51,7 @@ namespace moon
         data_.vsync = enabled;
     }
 
-    void windows_window::init(const window_props& props)
+    void linux_window::init(const window_props& props)
     {
         data_.height = props.height;
         data_.width = props.width;
@@ -66,7 +66,7 @@ namespace moon
             glfwSetErrorCallback(glfw_error_callback);
             s_glfw_initialized = true;
         }
-        
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -168,7 +168,7 @@ namespace moon
         });
     }
 
-    void windows_window::shutdown()
+    void linux_window::shutdown()
     {
         glfwDestroyWindow(window_);
         window_ = nullptr;

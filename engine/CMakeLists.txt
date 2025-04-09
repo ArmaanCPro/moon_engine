@@ -36,12 +36,31 @@ set(ENGINE_HEADERS
 
 # platform files
 if (WIN32 OR MINGW)
-    # Add all Windows platform files
     set(PLATFORM_SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.cpp"
     )
     set(PLATFORM_HEADERS
             "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.h"
+    )
+    list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
+    list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
+
+elseif (APPLE)
+    set(PLATFORM_SOURCES
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/apple/apple_window.cpp"
+    )
+    set(PLATFORM_HEADERS
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/apple/apple_window.h"
+    )
+    list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
+    list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
+
+elseif (UNIX)
+    set(PLATFORM_SOURCES
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/linux/linux_window.cpp"
+    )
+    set(PLATFORM_HEADERS
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/linux/linux_window.h"
     )
     list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
     list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})

@@ -11,7 +11,7 @@
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "build/${presetName}",
-      "cacheVariables": {
+      "environment": {
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays"
       }
     },

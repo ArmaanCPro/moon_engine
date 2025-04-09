@@ -67,16 +67,16 @@ elseif (UNIX)
 endif ()
 
 # Create a shared library instead of a static one
-add_library(moon_engine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
 # compile definitions
-target_compile_definitions(moon_engine PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
 if (WIN32 OR MINGW)
-    target_compile_definitions(moon_engine PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
 endif ()
 
 # Set include directories
-target_include_directories(moon_engine
+target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -84,11 +84,11 @@ target_include_directories(moon_engine
 )
 
 # pch
-target_precompile_headers(moon_engine PRIVATE src/moonpch.h)
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/moonpch.h)
 
 # libraries
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-target_link_libraries(moon_engine PUBLIC glfw glad::glad spdlog::spdlog_header_only imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad spdlog::spdlog_header_only imgui::imgui)

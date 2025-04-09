@@ -14,13 +14,13 @@ set(SOURCES
 
 source_group("src" FILES ${SOURCES})
 
-add_executable(moon_editor ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(moon_editor PRIVATE "${PROJECT_SOURCE_DIR}/src")
-target_link_libraries(moon_editor PRIVATE moon_engine)
+target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/src")
+target_link_libraries(${PROJECT_NAME} PRIVATE moon_engine)
 
-add_custom_command(TARGET moon_editor POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:moon_engine>
-        $<TARGET_FILE_DIR:moon_editor>
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )

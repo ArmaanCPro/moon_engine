@@ -1,7 +1,8 @@
 #pragma once
 #include "application.h"
 
-#ifdef ME_WINDOWS
+// in the future, platform specific stuff may exist here. for now, it should be cross-platform compileable
+//#ifdef ME_WINDOWS
 
 extern moon::application* moon::create_application();
 
@@ -14,4 +15,4 @@ int main()
     return 0;
 }
 
-#endif
+//#endif

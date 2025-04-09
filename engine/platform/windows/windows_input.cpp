@@ -4,6 +4,7 @@
 
 #include "windows_window.h"
 #include "core/application.h"
+#include "glfw/glfw3.h"
 
 namespace moon
 {

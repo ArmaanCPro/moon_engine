@@ -1,0 +1,15 @@
+#pragma once
+
+// from glfw3.h
+#define MOON_MOUSE_BUTTON_1         0
+#define MOON_MOUSE_BUTTON_2         1
+#define MOON_MOUSE_BUTTON_3         2
+#define MOON_MOUSE_BUTTON_4         3
+#define MOON_MOUSE_BUTTON_5         4
+#define MOON_MOUSE_BUTTON_6         5
+#define MOON_MOUSE_BUTTON_7         6
+#define MOON_MOUSE_BUTTON_8         7
+#define MOON_MOUSE_BUTTON_LAST      MOON_MOUSE_BUTTON_8
+#define MOON_MOUSE_BUTTON_LEFT      MOON_MOUSE_BUTTON_1
+#define MOON_MOUSE_BUTTON_RIGHT     MOON_MOUSE_BUTTON_2
+#define MOON_MOUSE_BUTTON_MIDDLE    MOON_MOUSE_BUTTON_3

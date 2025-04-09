@@ -33,6 +33,8 @@ set(ENGINE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.h
         src/core/imgui/imgui_layer.h
         src/core/input.h
+        src/core/key_codes.h
+        src/core/mouse_codes.h
 )
 
 # platform

@@ -23,6 +23,8 @@
 
 // our stuff
 #include "core/log.h"
+#include "core/key_codes.h"
+#include "core/mouse_codes.h"
 
 #ifdef _WIN32
     #include <windows.h>

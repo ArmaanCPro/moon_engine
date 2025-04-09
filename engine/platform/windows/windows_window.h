@@ -23,6 +23,8 @@ namespace moon
         void set_vsync(bool enabled) override;
         [[nodiscard]] bool is_vsync() const override { return data_.vsync; }
 
+        inline void* get_native_window() const override { return window_; }
+
     private:
         void init(const window_props& props);
         void shutdown();

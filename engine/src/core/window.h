@@ -36,6 +36,8 @@ namespace moon
         virtual void set_vsync(bool enabled) = 0;
         [[nodiscard]] virtual bool is_vsync() const = 0;
 
+        virtual void* get_native_window() const = 0;
+
         static window* create(const window_props& props = window_props());
     };
 }

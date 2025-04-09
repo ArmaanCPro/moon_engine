@@ -32,15 +32,18 @@ set(ENGINE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.h
         src/core/imgui/imgui_layer.h
+        src/core/input.h
 )
 
 # platform files
 if (WIN32 OR MINGW)
     set(PLATFORM_SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_input.cpp"
     )
     set(PLATFORM_HEADERS
             "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_input.h"
     )
     list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
     list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})

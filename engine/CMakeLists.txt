@@ -35,39 +35,24 @@ set(ENGINE_HEADERS
         src/core/input.h
 )
 
-# platform files
+# platform
 if (WIN32 OR MINGW)
-    set(PLATFORM_SOURCES
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_input.cpp"
-    )
-    set(PLATFORM_HEADERS
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_window.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/windows_input.h"
-    )
-    list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
-    list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
-
+    SET(PLATFORM_PREFIX windows)
 elseif (APPLE)
-    set(PLATFORM_SOURCES
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/apple/apple_window.cpp"
-    )
-    set(PLATFORM_HEADERS
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/apple/apple_window.h"
-    )
-    list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
-    list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
-
+    SET(PLATFORM_PREFIX apple)
 elseif (UNIX)
-    set(PLATFORM_SOURCES
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/linux/linux_window.cpp"
-    )
-    set(PLATFORM_HEADERS
-            "${CMAKE_CURRENT_SOURCE_DIR}/platform/linux/linux_window.h"
-    )
-    list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
-    list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
+    SET(PLATFORM_PREFIX linux)
 endif ()
+set(PLATFORM_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.cpp"
+)
+set(PLATFORM_HEADERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.h"
+)
+list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
+list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
 
 # Create a shared library instead of a static one
 add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )

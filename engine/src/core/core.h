@@ -36,6 +36,10 @@
 #endif
 
 // assertions
+#ifdef DEBUG
+    #define MOON_ENABLE_ASSERTS
+#endif
+
 #ifdef MOON_ENABLE_ASSERTS
     #define MOON_ASSERT(x, ...) { if(!(x)) { MOON_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }
     #define MOON_CORE_ASSERT(x, ...) { if(!(x)) { MOON_CORE_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }

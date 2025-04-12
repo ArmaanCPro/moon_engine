@@ -7,7 +7,7 @@ namespace moon
     class MOON_API layer_stack
     {
     public:
-        layer_stack();
+        layer_stack() = default;
         ~layer_stack();
 
         void push_layer(layer* layer);
@@ -20,6 +20,6 @@ namespace moon
 
     private:
         std::vector<layer*> layers_;
-        std::vector<layer*>::iterator insert_iterator_;
+        uint32_t insert_index_ = 0;
     };
 }

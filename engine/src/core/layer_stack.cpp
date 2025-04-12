@@ -5,11 +5,6 @@
 namespace moon
 {
 
-    layer_stack::layer_stack()
-    {
-        insert_iterator_ = layers_.begin();
-    }
-
     layer_stack::~layer_stack()
     {
         for (const layer* layer : layers_)
@@ -20,7 +15,8 @@ namespace moon
 
     void layer_stack::push_layer(layer* layer)
     {
-        insert_iterator_ = layers_.emplace(insert_iterator_, layer);
+        layers_.emplace(layers_.begin() + insert_index_, layer);
+        insert_index_++;
     }
 
     void layer_stack::push_overlay(layer* layer)
@@ -34,7 +30,7 @@ namespace moon
         if (it != layers_.end())
         {
             layers_.erase(it);
-            --insert_iterator_;
+            --insert_index_;
         }
     }
 

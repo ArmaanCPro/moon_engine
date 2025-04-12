@@ -19,6 +19,10 @@ namespace moon
         // setup glad
         int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         MOON_CORE_ASSERT(status, "Failed to initialize Glad");
+        MOON_CORE_INFO("OpenGL Info: ");
+        MOON_CORE_INFO("    Vendor:     {0}", (const char*)glGetString(GL_VENDOR));
+        MOON_CORE_INFO("    Renderer:   {0}", (const char*)glGetString(GL_RENDERER));
+        MOON_CORE_INFO("    Version:    {0}", (const char*)glGetString(GL_VERSION));
     }
 
     void opengl_context::swap_buffers()

@@ -36,6 +36,8 @@ namespace moon
         layer_stack layer_stack_;
 
         static application* s_instance;
+
+        unsigned int VAO_{0}, VBO_{0}, IBO_{0}, shader_program_{0};
     };
 
     // to be defined in the client

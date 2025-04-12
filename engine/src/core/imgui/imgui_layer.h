@@ -17,7 +17,6 @@ namespace moon
         void on_attach() override;
         void on_detach() override;
         void on_update() override;
-        void on_event(event& e) override;
 
     private:
         float time_ = 0.0f;

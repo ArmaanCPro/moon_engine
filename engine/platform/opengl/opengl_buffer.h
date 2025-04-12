@@ -13,8 +13,12 @@ namespace moon
 
         void bind() const override;
         void unbind() const override;
+
+        const buffer_layout& get_layout() const override { return layout_; }
+        void set_layout(const buffer_layout& layout) override { layout_ = layout; }
     private:
         uint32_t renderer_id_{0};
+        buffer_layout layout_;
     };
 
     class opengl_index_buffer : public index_buffer

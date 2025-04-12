@@ -17,6 +17,25 @@ namespace moon
 {
     application* application::s_instance = nullptr;
 
+    static GLenum shader_data_type_to_gl_type(ShaderDataType type)
+    {
+        switch (type)
+        {
+            case ShaderDataType::Float:     return GL_FLOAT;
+            case ShaderDataType::Float2:    return GL_FLOAT;
+            case ShaderDataType::Float3:    return GL_FLOAT;
+            case ShaderDataType::Float4:    return GL_FLOAT;
+            case ShaderDataType::Mat3:      return GL_FLOAT;
+            case ShaderDataType::Mat4:      return GL_FLOAT;
+            case ShaderDataType::Int:       return GL_INT;
+            case ShaderDataType::Int2:      return GL_INT;
+            case ShaderDataType::Int3:      return GL_INT;
+            case ShaderDataType::Int4:      return GL_INT;
+            case ShaderDataType::Bool:      return GL_BOOL;
+            default: MOON_CORE_ASSERT(false, "Unknown ShaderDataType!"); return 0;
+        }
+    }
+
     application::application()
     {
         MOON_CORE_ASSERT(!s_instance, "Application already exists!");
@@ -31,13 +50,37 @@ namespace moon
         glGenVertexArrays(1, &VAO_);
         glBindVertexArray(VAO_);
 
-        constexpr float verts[3*3] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.0f,  0.5f, 0.0f
+        constexpr float verts[3 * 7] = {
+            -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.7f, 1.0f,
+             0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.85f, 1.0f,
+             0.0f,  0.5f, 0.0f, 0.7f, 0.8f, 0.2f, 1.0f,
         };
 
         vertex_buffer_ = std::unique_ptr<vertex_buffer>(vertex_buffer::create(verts, sizeof(verts)));
+
+        {
+            buffer_layout layout = {
+                { ShaderDataType::Float3, "a_Pos" },
+                { ShaderDataType::Float4, "a_Color" }
+            };
+            vertex_buffer_->set_layout(layout);
+        }
+
+        uint32_t buffer_index = 0;
+        const auto& layout = vertex_buffer_->get_layout();
+        for (const auto& element : layout)
+        {
+            glVertexAttribPointer(buffer_index,
+                element.get_component_count(),
+                shader_data_type_to_gl_type(element.type),
+                element.normalized ? GL_TRUE : GL_FALSE,
+                layout.get_stride(),
+                (const void*)element.offset
+            );
+
+            glEnableVertexAttribArray(buffer_index);
+            buffer_index++;
+        }
 
         constexpr uint32_t indices[3] = { 0, 1, 2 };
         index_buffer_ = std::unique_ptr<index_buffer>(index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
@@ -46,21 +89,22 @@ namespace moon
         std::string vertex_shader_src = R"(
             #version 460 core
             layout (location = 0) in vec3 a_Pos;
+            layout (location = 1) in vec4 a_Color;
 
-            out vec3 v_Pos;
+            out vec4 v_Color;
             void main()
             {
-                v_Pos = a_Pos + 0.5;
+                v_Color = a_Color;
                 gl_Position = vec4(a_Pos, 1.0);
             }
         )";
         std::string fragment_shader_src = R"(
             #version 460 core
             out vec4 FragColor;
-            in vec3 v_Pos;
+            in vec4 v_Color;
             void main()
             {
-                FragColor = vec4(v_Pos * 0.5 + 0.5, 1.0f);
+                FragColor = v_Color;
             }
         )";
 

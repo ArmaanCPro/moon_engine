@@ -7,6 +7,10 @@
 #include "core/events/mouse_event.h"
 #include "core/events/key_event.h"
 
+#include "opengl/opengl_context.h"
+
+#include <GLFW/glfw3.h>
+
 namespace moon
 {
     static bool s_glfw_initialized = false;
@@ -70,19 +74,14 @@ namespace moon
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
-
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
-        glfwMakeContextCurrent(window_);
-        // setup glad
-        {
-            int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-            MOON_CORE_ASSERT(status, "Failed to initialize GLAD");
-        }
+
+        context_ = new opengl_context(window_);
+        context_->init();
+
         glfwSetWindowUserPointer(window_, &data_);
         set_vsync(true);
-
-        glViewport(0, 0, (int)props.width, (int)props.height);
 
         // glfw callbacks
         glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height)

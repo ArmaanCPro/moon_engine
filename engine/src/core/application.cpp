@@ -2,7 +2,6 @@
 
 #include "application.h"
 
-#include "input.h"
 #include "log.h"
 #include "events/application_event.h"
 #include "events/event.h"

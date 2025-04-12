@@ -9,28 +9,28 @@ else ()
 endif ()
 
 set(ENGINE_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/log.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.cpp
+        src/moonpch.cpp
+        src/core/application.cpp
+        src/core/log.cpp
+        src/core/layer.cpp
+        src/core/layer_stack.cpp
         src/core/imgui/imgui_layer.cpp
 )
 
 set(ENGINE_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/moonpch.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/moon.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/core.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/entry_point.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/events/application_event.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/events/event.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/events/key_event.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/events/mouse_event.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/log.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/layer_stack.h
+        src/moonpch.h
+        include/moon.h
+        src/core/application.h
+        src/core/core.h
+        src/core/entry_point.h
+        src/core/events/application_event.h
+        src/core/events/event.h
+        src/core/events/key_event.h
+        src/core/events/mouse_event.h
+        src/core/log.h
+        src/core/window.h
+        src/core/layer.h
+        src/core/layer_stack.h
         src/core/imgui/imgui_layer.h
         src/core/input.h
         src/core/key_codes.h
@@ -56,11 +56,11 @@ set(PLATFORM_HEADERS
 list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
 list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
 
-# Create a shared library instead of a static one
-add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+# Create a static lib
+add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
 # compile definitions
-target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_IS_MONOLITHIC MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
 if (WIN32 OR MINGW)
     target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
 endif ()

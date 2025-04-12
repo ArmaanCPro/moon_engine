@@ -13,4 +13,6 @@
 
 #include "core/entry_point.h"
 
+#ifndef MOON_IS_MONOLITHIC
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context();
+#endif

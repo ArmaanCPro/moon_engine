@@ -18,17 +18,14 @@ namespace moon
     imgui_layer::imgui_layer()
         :
         layer("ImGuiLayer")
-    {
-
-    }
+    {}
 
     imgui_layer::~imgui_layer()
-    {
-
-    }
+    {}
 
     void imgui_layer::on_attach()
     {
+        IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
 
@@ -48,16 +45,34 @@ namespace moon
         ImGui::DestroyContext();
     }
 
-    void imgui_layer::on_update()
+    void imgui_layer::on_imgui_render()
+    {
+        static bool show = true;
+        ImGui::ShowDemoWindow(&show);
+    }
+
+    void imgui_layer::begin()
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+    }
 
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show);
+    void imgui_layer::end()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        auto& app = application::get();
+        io.DisplaySize = ImVec2((float)app.get_window().get_width(), (float)app.get_window().get_height());
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
     }
 }

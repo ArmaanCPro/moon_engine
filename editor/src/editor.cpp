@@ -16,11 +16,14 @@ public:
 
     void on_imgui_render() override
     {
-        ImGuiContext* ctx = ImGui::GetCurrentContext();
-        if (!ctx) {
-            MOON_ERROR("No ImGui context active!");
+        ImGuiContext* engine_context = moon_get_imgui_context();
+        if (!engine_context)
+        {
+            MOON_ERROR("No ImGui context available from engine");
             return;
         }
+
+        ImGui::SetCurrentContext(engine_context);
 
         ImGui::Begin("hello world");
         ImGui::Text("test");

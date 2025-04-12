@@ -12,3 +12,5 @@
 #include "core/mouse_codes.h"
 
 #include "core/entry_point.h"
+
+extern "C" MOON_API ImGuiContext* moon_get_imgui_context();

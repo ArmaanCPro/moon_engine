@@ -13,6 +13,12 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
+// declared in moon.h, this function is to allow editor to access our context, useful for dll linking.
+extern "C" MOON_API ImGuiContext* moon_get_imgui_context()
+{
+    return ImGui::GetCurrentContext();
+}
+
 namespace moon
 {
     imgui_layer::imgui_layer()

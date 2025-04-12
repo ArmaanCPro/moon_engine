@@ -17,11 +17,13 @@ namespace moon
     {
         layers_.emplace(layers_.begin() + insert_index_, layer);
         insert_index_++;
+        layer->on_attach();
     }
 
     void layer_stack::push_overlay(layer* layer)
     {
         layers_.emplace_back(layer);
+        layer->on_attach();
     }
 
     void layer_stack::pop_layer(layer* layer)
@@ -29,6 +31,7 @@ namespace moon
         auto it = std::ranges::find(layers_, layer);
         if (it != layers_.end())
         {
+            layer->on_detach();
             layers_.erase(it);
             --insert_index_;
         }
@@ -39,6 +42,7 @@ namespace moon
         auto it = std::ranges::find(layers_, layer);
         if (it != layers_.end())
         {
+            layer->on_detach();
             layers_.erase(it);
         }
     }

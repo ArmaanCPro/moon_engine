@@ -26,9 +26,10 @@ namespace moon
     void imgui_layer::on_attach()
     {
         IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui::StyleColorsDark();
-
+        ImGuiContext* context = ImGui::CreateContext();
+        if (!context) {
+            MOON_CORE_ERROR("Failed to create ImGui context!");
+        }
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -36,25 +37,47 @@ namespace moon
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
         io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)application::get().get_window().get_native_window(), true);
+        ImGui::StyleColorsDark();
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)(application::get().get_window().get_native_window()), true);
         ImGui_ImplOpenGL3_Init("#version 460");
+        MOON_CORE_TRACE("ImGui initialized");
     }
 
     void imgui_layer::on_detach()
     {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyPlatformWindows();
         ImGui::DestroyContext();
+        MOON_CORE_TRACE("ImGui shutdown");
     }
 
     void imgui_layer::on_imgui_render()
     {
-        static bool show = true;
+        if (!ImGui::GetCurrentContext())
+        {
+            MOON_CORE_ERROR("No ImGui context active, skipping rendering");
+            return;
+        }
+
+        static bool show = false;
         ImGui::ShowDemoWindow(&show);
     }
 
     void imgui_layer::begin()
     {
+        if (glfwGetWindowAttrib((GLFWwindow*)application::get().get_window().get_native_window(), GLFW_ICONIFIED) != 0)
+        {
+            ImGui_ImplGlfw_Sleep(10);
+        }
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();

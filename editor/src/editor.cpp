@@ -1,5 +1,7 @@
 #include <moon.h>
 
+#include <imgui.h>
+
 class editor_layer : public moon::layer
 {
 public:
@@ -9,6 +11,20 @@ public:
 
     void on_update() override
     {
+
+    }
+
+    void on_imgui_render() override
+    {
+        ImGuiContext* ctx = ImGui::GetCurrentContext();
+        if (!ctx) {
+            MOON_ERROR("No ImGui context active!");
+            return;
+        }
+
+        ImGui::Begin("hello world");
+        ImGui::Text("test");
+        ImGui::End();
 
     }
 

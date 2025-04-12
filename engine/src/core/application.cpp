@@ -7,6 +7,8 @@
 #include "events/application_event.h"
 #include "events/event.h"
 
+#include "imgui/imgui_layer.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -23,8 +25,8 @@ namespace moon
         window_ = std::unique_ptr<window>(window::create());
         window_->set_event_callback([&](event& e) { on_event(e); });
 
-        imgui_layer_ = new imgui_layer;
-        push_overlay(imgui_layer_);
+        imgui_layer_ = new imgui_layer();
+        push_layer(imgui_layer_);
     }
 
     application::~application()
@@ -34,13 +36,11 @@ namespace moon
     void application::push_layer(layer* layer)
     {
         layer_stack_.push_layer(layer);
-        layer->on_attach();
     }
 
     void application::push_overlay(layer* layer)
     {
         layer_stack_.push_overlay(layer);
-        layer->on_attach();
     }
 
     void application::run()
@@ -55,7 +55,9 @@ namespace moon
 
             imgui_layer_->begin();
             for (layer* l : layer_stack_)
+            {
                 l->on_imgui_render();
+            }
             imgui_layer_->end();
 
             window_->on_update();

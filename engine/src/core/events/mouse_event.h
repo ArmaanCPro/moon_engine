@@ -22,7 +22,7 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "MousePressedEvent: [" << x_ << ", " << y_ << "]";
+            ss << "MouseMovedEvent: [" << x_ << ", " << y_ << "]";
             return ss.str();
         }
 

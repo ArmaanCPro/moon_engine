@@ -11,6 +11,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace moon
 {
@@ -33,7 +34,7 @@ namespace moon
         glGenBuffers(1, &VBO_);
         glBindBuffer(GL_ARRAY_BUFFER, VBO_);
 
-        float verts[3*3] = {
+        constexpr float verts[3*3] = {
             -0.5f, -0.5f, 0.0f,
              0.5f, -0.5f, 0.0f,
              0.0f,  0.5f, 0.0f
@@ -50,36 +51,28 @@ namespace moon
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
         // shader
-        const char* vertexShaderSource = "#version 460 core\n"
-            "layout (location = 0) in vec3 aPos;\n"
-            "void main()\n"
-            "{\n"
-            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "}\0";
-        const char* fragmentShaderSource = "#version 460 core\n"
-            "out vec4 FragColor;\n"
-            "void main()\n"
-            "{\n"
-            "   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
-            "}\0";
+        std::string vertex_shader_src = R"(
+            #version 460 core
+            layout (location = 0) in vec3 a_Pos;
 
-        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-        glCompileShader(vertexShader);
+            out vec3 v_Pos;
+            void main()
+            {
+                v_Pos = a_Pos + 0.5;
+                gl_Position = vec4(a_Pos, 1.0);
+            }
+        )";
+        std::string fragment_shader_src = R"(
+            #version 460 core
+            out vec4 FragColor;
+            in vec3 v_Pos;
+            void main()
+            {
+                FragColor = vec4(v_Pos * 0.5 + 0.5, 1.0f);
+            }
+        )";
 
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-        glCompileShader(fragmentShader);
-
-        shader_program_ = glCreateProgram();
-        glAttachShader(shader_program_, vertexShader);
-        glAttachShader(shader_program_, fragmentShader);
-        glLinkProgram(shader_program_);
-
-        // Clean up
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
+        shader_ = std::make_unique<shader>(vertex_shader_src, fragment_shader_src);
     }
 
     application::~application()
@@ -87,7 +80,6 @@ namespace moon
         glDeleteBuffers(1, &VBO_);
         glDeleteBuffers(1, &IBO_);
         glDeleteVertexArrays(1, &VAO_);
-        glDeleteProgram(shader_program_);
     }
 
     void application::push_layer(layer* layer)
@@ -106,8 +98,8 @@ namespace moon
         {
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            glUseProgram(shader_program_);
 
+            shader_->bind();
             glBindVertexArray(VAO_);
             glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 

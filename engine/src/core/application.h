@@ -6,6 +6,8 @@
 #include "layer_stack.h"
 #include "imgui/imgui_layer.h"
 
+#include "renderer/shader.h"
+
 namespace moon
 {
     class window_close_event;
@@ -37,7 +39,8 @@ namespace moon
 
         static application* s_instance;
 
-        unsigned int VAO_{0}, VBO_{0}, IBO_{0}, shader_program_{0};
+        unsigned int VAO_{0}, VBO_{0}, IBO_{0};
+        std::unique_ptr<shader> shader_;
     };
 
     // to be defined in the client

@@ -66,14 +66,7 @@ namespace moon
 
     void imgui_layer::on_imgui_render()
     {
-        if (!ImGui::GetCurrentContext())
-        {
-            MOON_CORE_ERROR("No ImGui context active, skipping rendering");
-            return;
-        }
 
-        static bool show = false;
-        ImGui::ShowDemoWindow(&show);
     }
 
     void imgui_layer::begin()

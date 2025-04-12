@@ -25,7 +25,6 @@ public:
     {
         MOON_INFO("editor app created");
         push_layer(new editor_layer());
-        push_overlay(new moon::imgui_layer());
     }
 
 private:

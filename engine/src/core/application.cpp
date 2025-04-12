@@ -21,8 +21,10 @@ namespace moon
         s_instance = this;
 
         window_ = std::unique_ptr<window>(window::create());
+        window_->set_event_callback([&](event& e) { on_event(e); });
 
-        window_->set_event_callback(std::bind(&application::on_event, this, std::placeholders::_1));
+        imgui_layer_ = new imgui_layer;
+        push_overlay(imgui_layer_);
     }
 
     application::~application()
@@ -51,6 +53,11 @@ namespace moon
             for (layer* l : layer_stack_)
                 l->on_update();
 
+            imgui_layer_->begin();
+            for (layer* l : layer_stack_)
+                l->on_imgui_render();
+            imgui_layer_->end();
+
             window_->on_update();
         }
     }
@@ -58,7 +65,7 @@ namespace moon
     void application::on_event(event& e)
     {
         event_dispatcher dispatcher(e);
-        dispatcher.dispatch<window_close_event>(std::bind(&application::on_window_close, this, std::placeholders::_1));
+        dispatcher.dispatch<window_close_event>([&](window_close_event& wce) { return on_window_close(wce); });
 
         for (auto it = layer_stack_.end(); it != layer_stack_.begin(); )
         {

@@ -34,6 +34,7 @@ namespace moon
             layer->on_detach();
             layers_.erase(it);
             --insert_index_;
+            delete layer;
         }
     }
 
@@ -44,6 +45,7 @@ namespace moon
         {
             layer->on_detach();
             layers_.erase(it);
+            delete layer;
         }
     }
 }

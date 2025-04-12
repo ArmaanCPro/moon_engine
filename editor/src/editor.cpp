@@ -16,7 +16,6 @@ public:
 
     void on_imgui_render() override
     {
-        ImGui::Begin("hello world");
         ImGui::Text("test");
         ImGui::End();
     }

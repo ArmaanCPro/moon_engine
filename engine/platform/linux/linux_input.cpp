@@ -5,6 +5,8 @@
 #include "linux_window.h"
 #include "core/application.h"
 
+#include <GLFW/glfw3.h>
+
 namespace moon
 {
     input* input::s_instance = new linux_input();

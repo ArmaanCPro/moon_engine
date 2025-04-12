@@ -4,6 +4,7 @@
 
 #include "moonpch.h"
 #include "events/event.h"
+#include "graphics_context.h"
 
 namespace moon
 {
@@ -39,5 +40,8 @@ namespace moon
         virtual void* get_native_window() const = 0;
 
         static window* create(const window_props& props = window_props());
+
+    protected:
+        graphics_context* context_;
     };
 }

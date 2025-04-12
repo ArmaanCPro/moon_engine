@@ -3,11 +3,8 @@
 #include "imgui_layer.h"
 
 #include "core/application.h"
-#include "core/events/application_event.h"
-#include "core/events/key_event.h"
-#include "core/events/mouse_event.h"
 
-#include "core/core.h"
+#include <GLFW/glfw3.h>
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>

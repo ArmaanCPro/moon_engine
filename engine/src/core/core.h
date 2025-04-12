@@ -52,5 +52,4 @@
     #define MOON_CORE_ASSERT(x, ...) do { (void)(x); } while(0)
 #endif
 
-
 #define BIT(x) (1 << x)

@@ -17,10 +17,6 @@
 #include <unordered_set>
 #include <array>
 
-// graphics (glad must be included before glfw)
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 // our stuff
 #include "core/log.h"
 #include "core/key_codes.h"

@@ -15,6 +15,7 @@ set(ENGINE_SOURCES
         src/core/layer.cpp
         src/core/layer_stack.cpp
         src/core/imgui/imgui_layer.cpp
+        platform/opengl/opengl_context.cpp
 )
 
 set(ENGINE_HEADERS
@@ -35,6 +36,8 @@ set(ENGINE_HEADERS
         src/core/input.h
         src/core/key_codes.h
         src/core/mouse_codes.h
+        src/core/graphics_context.h
+        platform/opengl/opengl_context.h
 )
 
 # platform

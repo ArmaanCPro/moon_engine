@@ -31,24 +31,16 @@ namespace moon
         glGenVertexArrays(1, &VAO_);
         glBindVertexArray(VAO_);
 
-        glGenBuffers(1, &VBO_);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-
         constexpr float verts[3*3] = {
             -0.5f, -0.5f, 0.0f,
              0.5f, -0.5f, 0.0f,
              0.0f,  0.5f, 0.0f
         };
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(0);
+        vertex_buffer_ = std::unique_ptr<vertex_buffer>(vertex_buffer::create(verts, sizeof(verts)));
 
-        glGenBuffers(1, &IBO_);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO_);
-
-        unsigned int indices[3] = { 0, 1, 2 };
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        constexpr uint32_t indices[3] = { 0, 1, 2 };
+        index_buffer_ = std::unique_ptr<index_buffer>(index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
 
         // shader
         std::string vertex_shader_src = R"(
@@ -77,8 +69,6 @@ namespace moon
 
     application::~application()
     {
-        glDeleteBuffers(1, &VBO_);
-        glDeleteBuffers(1, &IBO_);
         glDeleteVertexArrays(1, &VAO_);
     }
 
@@ -101,7 +91,7 @@ namespace moon
 
             shader_->bind();
             glBindVertexArray(VAO_);
-            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, index_buffer_->get_count(), GL_UNSIGNED_INT, nullptr);
 
             for (layer* l : layer_stack_)
                 l->on_update();

@@ -5,6 +5,7 @@
 #include "layer.h"
 #include "layer_stack.h"
 #include "imgui/imgui_layer.h"
+#include "renderer/buffer.h"
 
 #include "renderer/shader.h"
 
@@ -39,7 +40,9 @@ namespace moon
 
         static application* s_instance;
 
-        unsigned int VAO_{0}, VBO_{0}, IBO_{0};
+        unsigned int VAO_{0};
+        std::unique_ptr<vertex_buffer> vertex_buffer_;
+        std::unique_ptr<index_buffer> index_buffer_;
         std::unique_ptr<shader> shader_;
     };
 

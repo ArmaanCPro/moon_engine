@@ -17,6 +17,9 @@ set(ENGINE_SOURCES
         src/core/imgui/imgui_layer.cpp
         platform/opengl/opengl_context.cpp
         src/core/renderer/shader.cpp
+        src/core/renderer/buffer.cpp
+        platform/opengl/opengl_buffer.cpp
+        src/core/renderer/renderer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -40,6 +43,9 @@ set(ENGINE_HEADERS
         src/core/renderer/graphics_context.h
         platform/opengl/opengl_context.h
         src/core/renderer/shader.h
+        src/core/renderer/buffer.h
+        platform/opengl/opengl_buffer.h
+        src/core/renderer/renderer.h
 )
 
 # platform

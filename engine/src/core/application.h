@@ -39,12 +39,6 @@ namespace moon
         layer_stack layer_stack_;
 
         static application* s_instance;
-
-        std::shared_ptr<vertex_array> vertex_array_;
-        std::shared_ptr<shader> shader_;
-
-        std::shared_ptr<vertex_array> square_va_;
-        std::shared_ptr<shader> blue_shader_;
     };
 
     // to be defined in the client

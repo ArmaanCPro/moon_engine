@@ -13,6 +13,13 @@
 
 #include "core/entry_point.h"
 
+#include "core/renderer/vertex_array.h"
+#include "core/renderer/buffer.h"
+#include "core/renderer/renderer.h"
+#include "core/renderer/render_command.h"
+#include "core/renderer/renderer_api.h"
+#include "core/renderer/shader.h"
+
 #ifndef MOON_IS_MONOLITHIC
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context();
 #endif

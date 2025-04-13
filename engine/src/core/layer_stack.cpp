@@ -29,7 +29,7 @@ namespace moon
     void layer_stack::pop_layer(layer* layer)
     {
         auto it = std::ranges::find(layers_, layer);
-        if (it != layers_.end())
+        if (it != layers_.begin() + insert_index_)
         {
             layer->on_detach();
             layers_.erase(it);

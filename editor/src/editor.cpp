@@ -9,7 +9,7 @@ public:
         : layer("editor")
     {}
 
-    void on_update() override
+    void on_update(timestep ts) override
     {
 
     }

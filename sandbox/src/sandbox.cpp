@@ -104,20 +104,21 @@ public:
         blue_shader_ = std::make_shared<moon::shader>(blue_shader_vertex_src, blue_shader_fragment_src);
     }
 
-    void on_update() override
+    void on_update(moon::timestep ts) override
     {
+        MOON_INFO("Delta time: {0} s ({1} ms)", ts.get_seconds(), ts.get_milliseconds());
         if (moon::input::is_key_pressed(MOON_KEY_W))
-            cam_pos_.y += cam_move_speed_;
+            cam_pos_.y += cam_move_speed_ * ts;
         if (moon::input::is_key_pressed(MOON_KEY_S))
-            cam_pos_.y -= cam_move_speed_;
+            cam_pos_.y -= cam_move_speed_ * ts;
         if (moon::input::is_key_pressed(MOON_KEY_A))
-            cam_pos_.x -= cam_move_speed_;
+            cam_pos_.x -= cam_move_speed_ * ts;
         if (moon::input::is_key_pressed(MOON_KEY_D))
-            cam_pos_.x += cam_move_speed_;
+            cam_pos_.x += cam_move_speed_ * ts;
         if (moon::input::is_key_pressed(MOON_KEY_Q))
-            cam_rot_ += cam_rot_speed;
+            cam_rot_ += cam_rot_speed * ts;
         if (moon::input::is_key_pressed(MOON_KEY_E))
-            cam_rot_ -= cam_rot_speed;
+            cam_rot_ -= cam_rot_speed * ts;
 
         moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
@@ -142,20 +143,6 @@ public:
 
     void on_event(moon::event& e) override
     {
-        moon::event_dispatcher dispatcher(e);
-        dispatcher.dispatch<moon::key_pressed_event>([&](moon::key_pressed_event& ke) -> bool
-        {
-            if (ke.get_keycode() == MOON_KEY_W)
-                cam_pos_.y += cam_move_speed_;
-            if (ke.get_keycode() == MOON_KEY_S)
-                cam_pos_.y -= cam_move_speed_;
-            if (ke.get_keycode() == MOON_KEY_A)
-                cam_pos_.x -= cam_move_speed_;
-            if (ke.get_keycode() == MOON_KEY_D)
-                cam_pos_.x += cam_move_speed_;
-
-            return false;
-        });
     }
 
 private:
@@ -167,9 +154,9 @@ private:
 
     moon::ortho_camera camera_;
     glm::vec3 cam_pos_ {0.0f};
-    float cam_move_speed_ = 0.001f;
+    float cam_move_speed_ = 2.5f;
     float cam_rot_ = 0.0f;
-    float cam_rot_speed = 0.01f;
+    float cam_rot_speed = 180.0f;
 };
 
 class sandbox_app : public moon::application

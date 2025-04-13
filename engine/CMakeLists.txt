@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.28)
 project(moon_engine CXX)
 
 if (MSVC)
-    add_compile_options(/W4 /wd4201 /WX) #Warning level 4, all warnings are errors
+    add_compile_options(/W4 /wd4201 /wd4100 /WX) #Warning level 4, all warnings are errors
 else ()
-    add_compile_options(-W -Wall -Werror) #All Warnings, all warnings are errors
+    add_compile_options(-W -Wall -Werror -Wno-unused-parameter) #All Warnings, all warnings are errors
 endif ()
 
 set(ENGINE_SOURCES
@@ -58,6 +58,7 @@ set(ENGINE_HEADERS
         src/core/renderer/render_command.h
         platform/opengl/opengl_renderer_api.h
         src/core/renderer/camera.h
+        src/core/core/timestep.h
 )
 
 # platform

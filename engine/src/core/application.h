@@ -9,6 +9,8 @@
 #include "renderer/shader.h"
 #include "renderer/vertex_array.h"
 
+#include "core/core/timestep.h"
+
 namespace moon
 {
     class window_close_event;
@@ -39,6 +41,8 @@ namespace moon
         layer_stack layer_stack_;
 
         static application* s_instance;
+
+        float last_frame_time_ = 0.0f;
     };
 
     // to be defined in the client

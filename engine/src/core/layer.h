@@ -1,6 +1,7 @@
 #pragma once
 
 #include "events/event.h"
+#include "core/core/timestep.h"
 
 namespace moon
 {
@@ -12,7 +13,7 @@ namespace moon
 
         virtual void on_attach() {};
         virtual void on_detach() {};
-        virtual void on_update() {};
+        virtual void on_update([[maybe_unused]] timestep ts) {};
         virtual void on_imgui_render() {};
         virtual void on_event(event&) {};
 

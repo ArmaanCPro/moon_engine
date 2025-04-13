@@ -50,8 +50,12 @@ namespace moon
     {
         while (running_)
         {
+            const auto time = (float)glfwGetTime(); // Should be Platform::GetTime
+            timestep ts = time - last_frame_time_;
+            last_frame_time_ = time;
+
             for (layer* l : layer_stack_)
-                l->on_update();
+                l->on_update(ts);
 
             imgui_layer_->begin();
             for (layer* l : layer_stack_)

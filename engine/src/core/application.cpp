@@ -8,7 +8,9 @@
 
 #include "imgui/imgui_layer.h"
 
-#include <glad/glad.h>
+#include "renderer/renderer.h"
+#include "renderer/render_command.h"
+
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <memory>
@@ -133,16 +135,18 @@ namespace moon
     {
         while (running_)
         {
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            render_command::set_clear_color( { 0.1f, 0.1f, 0.1f, 1.0f } );
+            render_command::clear();
+
+            renderer::begin_scene();
 
             blue_shader_->bind();
-            square_va_->bind();
-            glDrawElements(GL_TRIANGLES, (GLsizei)square_va_->get_index_buffer()->get_count(), GL_UNSIGNED_INT, nullptr);
+            renderer::submit(square_va_);
 
             shader_->bind();
-            vertex_array_->bind();
-            glDrawElements(GL_TRIANGLES, (GLsizei)vertex_array_->get_index_buffer()->get_count(), GL_UNSIGNED_INT, nullptr);
+            renderer::submit(vertex_array_);
+
+            renderer::end_scene();
 
             for (layer* l : layer_stack_)
                 l->on_update();

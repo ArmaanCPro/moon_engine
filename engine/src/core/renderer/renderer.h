@@ -1,18 +1,16 @@
 #pragma  once
+#include "renderer_api.h"
 
 namespace moon
 {
-    enum class RendererAPI
-    {
-        None = 0, OpenGL = 1,
-    };
-
     class MOON_API renderer
     {
     public:
+        static void begin_scene();
+        static void end_scene();
 
-        inline static RendererAPI get_api() { return renderer_api; }
-    private:
-        static RendererAPI renderer_api;
+        static void submit(const std::shared_ptr<vertex_array>& vertex_array);
+
+        inline static renderer_api::API get_api() { return renderer_api::get_api(); }
     };
 }

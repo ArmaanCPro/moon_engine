@@ -6,7 +6,6 @@
 #include "layer_stack.h"
 #include "imgui/imgui_layer.h"
 
-#include "renderer/buffer.h"
 #include "renderer/shader.h"
 #include "renderer/vertex_array.h"
 

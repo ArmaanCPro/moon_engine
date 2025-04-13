@@ -22,6 +22,9 @@ set(ENGINE_SOURCES
         src/core/renderer/renderer.cpp
         src/core/renderer/vertex_array.cpp
         platform/opengl/opengl_vertex_array.cpp
+        src/core/renderer/renderer_api.cpp
+        src/core/renderer/render_command.cpp
+        platform/opengl/opengl_renderer_api.cpp
 )
 
 set(ENGINE_HEADERS
@@ -50,6 +53,9 @@ set(ENGINE_HEADERS
         src/core/renderer/renderer.h
         src/core/renderer/vertex_array.h
         platform/opengl/opengl_vertex_array.h
+        src/core/renderer/renderer_api.h
+        src/core/renderer/render_command.h
+        platform/opengl/opengl_renderer_api.h
 )
 
 # platform

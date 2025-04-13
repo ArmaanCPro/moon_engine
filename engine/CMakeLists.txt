@@ -56,6 +56,7 @@ set(ENGINE_HEADERS
         src/core/renderer/renderer_api.h
         src/core/renderer/render_command.h
         platform/opengl/opengl_renderer_api.h
+        ../sandbox/src/sandbox.cpp
 )
 
 # platform

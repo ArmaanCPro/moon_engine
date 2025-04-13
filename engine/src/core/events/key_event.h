@@ -2,6 +2,8 @@
 
 #include "event.h"
 
+#include <sstream>
+
 namespace moon
 {
     class MOON_API key_event : public event

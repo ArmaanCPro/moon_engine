@@ -1,3 +1,6 @@
+#include "core/events/key_event.h"
+#include "core/events/mouse_event.h"
+
 #include <moon.h>
 
 #include <imgui.h>
@@ -8,6 +11,7 @@ public:
     sandbox_layer()
         : layer("sandbox")
     {
+        camera_.translate({ 0.0f, 0.0f, 10.0f });
         vertex_array_ = std::shared_ptr<moon::vertex_array>(moon::vertex_array::create());
 
         constexpr float verts[3 * 7] = {
@@ -33,11 +37,14 @@ public:
             layout (location = 0) in vec3 a_Pos;
             layout (location = 1) in vec4 a_Color;
 
+            uniform mat4 u_VP;
+            uniform mat4 u_Model;
+
             out vec4 v_Color;
             void main()
             {
                 v_Color = a_Color;
-                gl_Position = vec4(a_Pos, 1.0);
+                gl_Position = u_VP * u_Model * vec4(a_Pos, 1.0);
             }
         )";
         std::string fragment_shader_src = R"(
@@ -75,9 +82,12 @@ public:
             #version 460 core
             layout (location = 0) in vec3 a_Pos;
 
+            uniform mat4 u_VP;
+            uniform mat4 u_Model;
+
             void main()
             {
-                gl_Position = vec4(a_Pos, 1.0);
+                gl_Position = u_VP * u_Model * vec4(a_Pos, 1.0);
             }
         )";
         std::string blue_shader_fragment_src = R"(
@@ -98,7 +108,7 @@ public:
         moon::render_command::set_clear_color( { 0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
 
-        moon::renderer::begin_scene();
+        moon::renderer::begin_scene(camera_);
 
         blue_shader_->bind();
         moon::renderer::submit(square_va_);
@@ -116,9 +126,30 @@ public:
         ImGui::End();
     }
 
-    void on_event(moon::event&) override
+    void on_event(moon::event& e) override
     {
+        moon::event_dispatcher dispatcher(e);
 
+        dispatcher.dispatch<moon::key_pressed_event>([&](moon::key_pressed_event& ke)
+        {
+            if (ke.get_keycode() == MOON_KEY_W)
+            {
+                camera_.translate({ 0.0f, 0.0f, -1.0f });
+            }
+            else if (ke.get_keycode() == MOON_KEY_S)
+            {
+                camera_.translate({ 0.0f, 0.0f, 1.0f });
+            }
+            else if (ke.get_keycode() == MOON_KEY_A)
+            {
+                camera_.translate({ -1.0f, 0.0f, 0.0f });
+            }
+            else if (ke.get_keycode() == MOON_KEY_D)
+            {
+                camera_.translate({ 1.0f, 0.0f, 0.0f });
+            }
+            return true;
+        });
     }
 
 private:
@@ -127,6 +158,8 @@ private:
 
     std::shared_ptr<moon::vertex_array> square_va_;
     std::shared_ptr<moon::shader> blue_shader_;
+
+    moon::camera camera_;
 };
 
 class sandbox_app : public moon::application

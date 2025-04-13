@@ -2,6 +2,8 @@
 
 #include "core/core.h"
 
+#include <string>
+#include <functional>
 
 namespace moon
 {

@@ -17,8 +17,8 @@ namespace moon
 
     void ortho_camera::recalculate_view_matrix()
     {
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position_)
-            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation_), glm::vec3(0, 0, 1));
+        glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_), glm::vec3(0, 0, 1))
+            * glm::translate(glm::mat4(1.0f), position_);
 
         view_matrix_ = glm::inverse(transform);
         view_projection_matrix_ = projection_matrix_ * view_matrix_;

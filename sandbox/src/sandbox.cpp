@@ -106,11 +106,19 @@ public:
 
     void on_update() override
     {
-        moon::render_command::set_clear_color( { 0.1f, 0.1f, 0.1f, 1.0f } );
+        if (moon::input::is_key_pressed(MOON_KEY_W))
+            cam_pos_.y += cam_speed_;
+        if (moon::input::is_key_pressed(MOON_KEY_S))
+            cam_pos_.y -= cam_speed_;
+        if (moon::input::is_key_pressed(MOON_KEY_A))
+            cam_pos_.x -= cam_speed_;
+        if (moon::input::is_key_pressed(MOON_KEY_D))
+            cam_pos_.x += cam_speed_;
+
+        moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
 
-        //camera_.set_position({ 0.5f, 0.5f, 0.0f });
-        //camera_.set_rotation(45.0f);
+        camera_.set_position(cam_pos_);
 
         moon::renderer::begin_scene(camera_);
 
@@ -130,21 +138,18 @@ public:
     void on_event(moon::event& e) override
     {
         moon::event_dispatcher dispatcher(e);
-        dispatcher.dispatch<moon::key_pressed_event>([&](moon::key_pressed_event& ke)
+        dispatcher.dispatch<moon::key_pressed_event>([&](moon::key_pressed_event& ke) -> bool
         {
             if (ke.get_keycode() == MOON_KEY_W)
-            {
-                camera_.set_position(camera_.get_position() + glm::vec3(0.0f, 0.1f, 0.0f));
-            }
+                cam_pos_.y += cam_speed_;
             if (ke.get_keycode() == MOON_KEY_S)
-            {
-                camera_.set_position(camera_.get_position() + glm::vec3(0.0f, -0.1f, 0.0f));
-            }
+                cam_pos_.y -= cam_speed_;
             if (ke.get_keycode() == MOON_KEY_A)
-                camera_.set_position(camera_.get_position() + glm::vec3(-0.1f, 0.0f, 0.0f));
+                cam_pos_.x -= cam_speed_;
             if (ke.get_keycode() == MOON_KEY_D)
-                camera_.set_position(camera_.get_position() + glm::vec3(0.1f, 0.0f, 0.0f));
-            return true;
+                cam_pos_.x += cam_speed_;
+
+            return false;
         });
     }
 
@@ -156,6 +161,8 @@ private:
     std::shared_ptr<moon::shader> blue_shader_;
 
     moon::ortho_camera camera_;
+    glm::vec3 cam_pos_ {0.0f};
+    float cam_speed_ = 0.001f;
 };
 
 class sandbox_app : public moon::application

@@ -5,9 +5,10 @@
 #include "layer.h"
 #include "layer_stack.h"
 #include "imgui/imgui_layer.h"
-#include "renderer/buffer.h"
 
+#include "renderer/buffer.h"
 #include "renderer/shader.h"
+#include "renderer/vertex_array.h"
 
 namespace moon
 {
@@ -40,10 +41,11 @@ namespace moon
 
         static application* s_instance;
 
-        unsigned int VAO_{0};
-        std::unique_ptr<vertex_buffer> vertex_buffer_;
-        std::unique_ptr<index_buffer> index_buffer_;
-        std::unique_ptr<shader> shader_;
+        std::shared_ptr<vertex_array> vertex_array_;
+        std::shared_ptr<shader> shader_;
+
+        std::shared_ptr<vertex_array> square_va_;
+        std::shared_ptr<shader> blue_shader_;
     };
 
     // to be defined in the client

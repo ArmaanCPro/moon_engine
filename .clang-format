@@ -25,3 +25,4 @@ ReferenceAlignment: Left
 SpaceBeforeCpp11BracedList: true
 
 AllowShortFunctionsOnASingleLine: All
+InsertNewlineAtEOF: true

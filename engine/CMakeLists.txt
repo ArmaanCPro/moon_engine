@@ -20,6 +20,8 @@ set(ENGINE_SOURCES
         src/core/renderer/buffer.cpp
         platform/opengl/opengl_buffer.cpp
         src/core/renderer/renderer.cpp
+        src/core/renderer/vertex_array.cpp
+        platform/opengl/opengl_vertex_array.cpp
 )
 
 set(ENGINE_HEADERS
@@ -46,6 +48,8 @@ set(ENGINE_HEADERS
         src/core/renderer/buffer.h
         platform/opengl/opengl_buffer.h
         src/core/renderer/renderer.h
+        src/core/renderer/vertex_array.h
+        platform/opengl/opengl_vertex_array.h
 )
 
 # platform

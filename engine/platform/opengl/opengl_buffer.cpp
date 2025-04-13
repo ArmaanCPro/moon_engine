@@ -14,9 +14,6 @@ namespace moon
         glCreateBuffers(1, &renderer_id_);
         glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(0);
     }
 
     opengl_vertex_buffer::~opengl_vertex_buffer()
@@ -47,11 +44,17 @@ namespace moon
     }
 
     opengl_index_buffer::~opengl_index_buffer()
-    {}
+    {
+        glDeleteBuffers(1, &renderer_id_);
+    }
 
     void opengl_index_buffer::bind() const
-    {}
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
+    }
 
     void opengl_index_buffer::unbind() const
-    {}
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
 }

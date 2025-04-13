@@ -7,30 +7,53 @@
 
 namespace moon
 {
-    class MOON_API ortho_camera
+    class MOON_API camera
+    {
+    public:
+        virtual ~camera() = default;
+
+        virtual void set_position(const glm::vec3& pos) = 0;
+        virtual void set_rotation(const glm::vec3& rot) = 0;
+
+        [[nodiscard]] virtual const glm::vec3& get_position() const = 0;
+        [[nodiscard]] virtual const glm::vec3& get_rotation() const = 0;
+
+        [[nodiscard]] virtual const glm::mat4& get_projection_matrix() const = 0;
+        [[nodiscard]] virtual const glm::mat4& get_view_matrix() const = 0;
+        [[nodiscard]] virtual const glm::mat4& get_view_projection_matrix() const = 0;
+
+    protected:
+        camera(const glm::mat4& projection_matrix, const glm::mat4& view_matrix)
+            :
+            projection_matrix_(projection_matrix),
+            view_matrix_(view_matrix)
+        {}
+
+        glm::vec3 position_ {0.0f};
+        glm::vec3 rotation_ {0.0f};
+
+        glm::mat4 projection_matrix_;
+        glm::mat4 view_matrix_;
+        glm::mat4 view_projection_matrix_ {1.0f};
+    };
+
+    class MOON_API ortho_camera : public camera
     {
     public:
         explicit ortho_camera(float left, float right, float bottom, float top);
 
-        void set_position(const glm::vec3& position) { position_ = position; recalculate_view_matrix(); }
-        void set_rotation(float rotation) { rotation_ = rotation; recalculate_view_matrix(); }
+        void set_position(const glm::vec3& position) override { position_ = position; recalculate_view_matrix(); }
+        void set_rotation(const glm::vec3& rotation) override { rotation_ = rotation; recalculate_view_matrix(); }
 
-        [[nodiscard]] const glm::vec3& get_position() const { return position_; }
-        [[nodiscard]] float get_rotation() const { return rotation_; }
+        [[nodiscard]] const glm::vec3& get_position() const override { return position_; }
+        [[nodiscard]] const glm::vec3& get_rotation() const override { return rotation_; }
 
-        [[nodiscard]] const glm::mat4& get_projection_matrix() const { return projection_matrix_; }
-        [[nodiscard]] const glm::mat4& get_view_matrix() const { return view_matrix_; }
-        [[nodiscard]] const glm::mat4& get_view_projection_matrix() const { return view_projection_matrix_; }
+        [[nodiscard]] const glm::mat4& get_projection_matrix() const override { return projection_matrix_; }
+        [[nodiscard]] const glm::mat4& get_view_matrix() const override { return view_matrix_; }
+        [[nodiscard]] const glm::mat4& get_view_projection_matrix() const override { return view_projection_matrix_; }
 
     private:
         void recalculate_view_matrix();
-    private:
-        glm::mat4 projection_matrix_;
-        glm::mat4 view_matrix_;
-        glm::mat4 view_projection_matrix_;
-
-        glm::vec3 position_ {0.0f};
-        float rotation_ = 0.0f;
     };
 
     class MOON_API perspective_camera

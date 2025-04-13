@@ -9,8 +9,8 @@ namespace moon
 {
     ortho_camera::ortho_camera(float left, float right, float bottom, float top)
         :
-        projection_matrix_(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)),
-        view_matrix_(1.0f)
+        camera(glm::ortho(left, right, bottom, top, -1.0f, 1.0f),
+        glm::mat4(1.0f))
     {
         view_projection_matrix_ = projection_matrix_ * view_matrix_;
     }
@@ -18,7 +18,7 @@ namespace moon
     void ortho_camera::recalculate_view_matrix()
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position_)
-            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation_), glm::vec3(0, 0, 1));
+            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation_.x), glm::vec3(0, 0, 1));
 
         view_matrix_ = glm::inverse(transform);
         view_projection_matrix_ = projection_matrix_ * view_matrix_;
@@ -46,11 +46,10 @@ namespace moon
 
     glm::mat4 perspective_camera::get_view_matrix() const
     {
-        glm::mat4 view_matrix = glm::mat4(1.0f);
-        view_matrix = glm::translate(view_matrix, position_ * glm::vec3(-1.0f, -1.0f, -1.0f));
-        view_matrix = glm::rotate(view_matrix, glm::radians(-1 * rotation_.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), position_);
+        view_matrix = glm::rotate(view_matrix, glm::radians(rotation_.x), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        return view_matrix;
+        return glm::inverse(view_matrix);
     }
 
     glm::mat4 perspective_camera::get_projection_matrix() const

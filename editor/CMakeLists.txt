@@ -16,7 +16,5 @@ source_group("src" FILES ${SOURCES})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-#target_compile_definitions(moon_editor PRIVATE MOON_IS_MONOLITHIC)
-
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_link_libraries(${PROJECT_NAME} PRIVATE moon_engine)

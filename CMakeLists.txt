@@ -15,9 +15,9 @@ endif()
 
 # enforce static linking in msvc. not sure if this is needed
 if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
-    set(VCPKG_HOST_TRIPLET "x64-windows-static-md" CACHE STRING "")
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+    set(VCPKG_HOST_TRIPLET "x64-windows-static" CACHE STRING "")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     add_compile_options(
             /utf-8
             /wd4251
@@ -65,6 +65,9 @@ elseif (UNIX AND NOT APPLE)
     set(PLATFORM_DEFINITIONS ME_LINUX)
 endif ()
 add_compile_definitions(${PLATFORM_DEFINITIONS})
+
+# specify static linking as a macro
+add_compile_definitions(MOON_IS_MONOLITHIC)
 
 # multiprocessor compiling
 if(MSVC)

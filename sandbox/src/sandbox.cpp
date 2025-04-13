@@ -71,7 +71,6 @@ public:
             &square_indices[0], sizeof(square_indices) / sizeof(uint32_t)));
         square_va_->set_index_buffer(square_ib);
 
-
         std::string blue_shader_vertex_src = R"(
             #version 460 core
             layout (location = 0) in vec3 a_Pos;
@@ -112,9 +111,6 @@ public:
 
     void on_imgui_render() override
     {
-        if (!ImGui::GetCurrentContext())
-            ImGui::SetCurrentContext(moon_get_imgui_context());
-
         ImGui::Begin("test");
         ImGui::Text("Hello, world!");
         ImGui::End();

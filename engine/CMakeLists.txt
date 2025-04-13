@@ -27,6 +27,8 @@ set(ENGINE_SOURCES
         platform/opengl/opengl_renderer_api.cpp
         src/core/renderer/camera.cpp
         platform/opengl/opengl_shader.cpp
+        src/core/renderer/texture.cpp
+        platform/opengl/opengl_texture.cpp
 )
 
 set(ENGINE_HEADERS
@@ -61,6 +63,8 @@ set(ENGINE_HEADERS
         src/core/renderer/camera.h
         src/core/core/timestep.h
         platform/opengl/opengl_shader.h
+        src/core/renderer/texture.h
+        platform/opengl/opengl_texture.h
 )
 
 # platform
@@ -111,3 +115,9 @@ find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad glm::glm-header-only)
+
+# stb (image)
+find_package(Stb REQUIRED)
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE textures::rc)

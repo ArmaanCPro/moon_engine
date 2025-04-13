@@ -1,5 +1,7 @@
 #include "core/events/key_event.h"
 #include "core/events/mouse_event.h"
+#include "core/renderer/texture.h"
+#include "opengl/opengl_texture.h"
 
 #include <moon.h>
 
@@ -64,17 +66,18 @@ public:
         shader_ = moon::ref<moon::shader>(moon::shader::create(vertex_shader_src, fragment_shader_src));
 
         square_va_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
-        constexpr float square_verts[3 * 4] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f,
+        constexpr float square_verts[5 * 4] = {
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
         };
         uint32_t square_indices[6] = {0, 1, 2, 2, 3, 0};
         moon::ref<moon::vertex_buffer> square_vb = moon::ref<moon::vertex_buffer>(moon::vertex_buffer::create(
             &square_verts[0], sizeof(square_verts)));
         square_vb->set_layout({
-            { moon::ShaderDataType::Float3, "a_Pos" }
+            { moon::ShaderDataType::Float3, "a_Pos" },
+            { moon::ShaderDataType::Float2, "a_TexCoord" }
         });
         square_va_->add_vertex_buffer(square_vb);
 
@@ -107,6 +110,45 @@ public:
         )";
 
         flat_color_shader_ = moon::ref<moon::shader>(moon::shader::create(flat_color_vertex_src, flat_color_fragment_src));
+
+        std::string texture_shader_vertex_src = R"(
+            #version 460 core
+            layout (location = 0) in vec3 a_Pos;
+            layout (location = 1) in vec2 a_TexCoord;
+
+            uniform mat4 u_VP = mat4(1.0);
+            uniform mat4 u_Model = mat4(1.0);
+
+            out vec2 v_TexCoord;
+
+            void main()
+            {
+                v_TexCoord = a_TexCoord;
+                gl_Position = u_VP * u_Model * vec4(a_Pos, 1.0);
+            }
+        )";
+        std::string texture_shader_fragment_src = R"(
+            #version 460 core
+            layout(location = 0) out vec4 FragColor;
+
+            uniform vec3 u_Color;
+
+            in vec2 v_TexCoord;
+
+            uniform sampler2D u_Texture;
+
+            void main()
+            {
+                FragColor = texture(u_Texture, v_TexCoord);
+            }
+        )";
+
+        texture_shader_ = moon::ref<moon::shader>(moon::shader::create(texture_shader_vertex_src, texture_shader_fragment_src));
+
+        texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
+
+        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->bind();
+        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->upload_uniform_int("u_Texture", 0);
     }
 
     void on_update(moon::timestep ts) override
@@ -146,6 +188,10 @@ public:
                 moon::renderer::submit(flat_color_shader_, square_va_, transform);
             }
         }
+
+        texture_->bind(0);
+        moon::renderer::submit(texture_shader_, square_va_, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        // Triangle
         //moon::renderer::submit(shader_, vertex_array_);
 
         moon::renderer::end_scene();
@@ -167,7 +213,9 @@ private:
     moon::ref<moon::shader> shader_;
 
     moon::ref<moon::vertex_array> square_va_;
-    moon::ref<moon::shader> flat_color_shader_;
+    moon::ref<moon::shader> flat_color_shader_, texture_shader_;
+
+    moon::ref<moon::texture2d> texture_;
 
     moon::ortho_camera camera_;
     glm::vec3 cam_pos_ {0.0f};

@@ -80,6 +80,19 @@ else()
     endif()
 endif()
 
+
+# Find CMRC package once at the top level
+find_package(CMakeRC CONFIG REQUIRED)
+
+# Create the textures resource library here at the top level
+file(GLOB_RECURSE TEXTURE_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/assets/textures/*.*")
+cmrc_add_resource_library(textures-resources
+        ALIAS textures::rc
+        NAMESPACE textures
+        WHENCE "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/"
+        ${TEXTURE_FILES}
+)
+
 add_subdirectory(engine)
 add_subdirectory(editor)
 add_subdirectory(sandbox)

@@ -18,7 +18,9 @@
         "opengl3-binding"
       ]
     },
-    "glm"
+    "glm",
+    "stb",
+    "cmakerc"
   ],
   "builtin-baseline": "9b75e789ece3f942159b8500584e35aafe3979ff"
 }

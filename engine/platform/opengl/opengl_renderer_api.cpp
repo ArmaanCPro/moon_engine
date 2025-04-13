@@ -20,11 +20,6 @@ namespace moon
 
     void opengl_renderer_api::draw_indexed(const std::shared_ptr<vertex_array>& vertex_array)
     {
-        vertex_array->bind();
-        GLint id = 0;
-        glGetIntegerv(GL_CURRENT_PROGRAM, &id);
-        glUniformMatrix4fv(glGetUniformLocation(id, "u_VP"), 1, GL_FALSE, glm::value_ptr(renderer::get_view_projection_matrix()));
-        glUniformMatrix4fv(glGetUniformLocation(id, "u_Model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
         glDrawElements(GL_TRIANGLES, vertex_array->get_index_buffer()->get_count(), GL_UNSIGNED_INT, nullptr);
     }
 }

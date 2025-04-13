@@ -9,9 +9,10 @@ class sandbox_layer : public moon::layer
 {
 public:
     sandbox_layer()
-        : layer("sandbox")
+        :
+        layer("sandbox"),
+        camera_(-1.6f, 1.6f, -0.9f, 0.9f)
     {
-        camera_.translate({ 0.0f, 0.0f, 10.0f });
         vertex_array_ = std::shared_ptr<moon::vertex_array>(moon::vertex_array::create());
 
         constexpr float verts[3 * 7] = {
@@ -38,7 +39,7 @@ public:
             layout (location = 1) in vec4 a_Color;
 
             uniform mat4 u_VP;
-            uniform mat4 u_Model;
+            uniform mat4 u_Model = mat4(1.0);
 
             out vec4 v_Color;
             void main()
@@ -83,7 +84,7 @@ public:
             layout (location = 0) in vec3 a_Pos;
 
             uniform mat4 u_VP;
-            uniform mat4 u_Model;
+            uniform mat4 u_Model = mat4(1.0);
 
             void main()
             {
@@ -108,13 +109,13 @@ public:
         moon::render_command::set_clear_color( { 0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
 
+        //camera_.set_position({ 0.5f, 0.5f, 0.0f });
+        //camera_.set_rotation(45.0f);
+
         moon::renderer::begin_scene(camera_);
 
-        blue_shader_->bind();
-        moon::renderer::submit(square_va_);
-
-        shader_->bind();
-        moon::renderer::submit(vertex_array_);
+        moon::renderer::submit(blue_shader_, square_va_);
+        moon::renderer::submit(shader_, vertex_array_);
 
         moon::renderer::end_scene();
     }
@@ -129,25 +130,20 @@ public:
     void on_event(moon::event& e) override
     {
         moon::event_dispatcher dispatcher(e);
-
         dispatcher.dispatch<moon::key_pressed_event>([&](moon::key_pressed_event& ke)
         {
             if (ke.get_keycode() == MOON_KEY_W)
             {
-                camera_.translate({ 0.0f, 0.0f, -1.0f });
+                camera_.set_position(camera_.get_position() + glm::vec3(0.0f, 0.1f, 0.0f));
             }
-            else if (ke.get_keycode() == MOON_KEY_S)
+            if (ke.get_keycode() == MOON_KEY_S)
             {
-                camera_.translate({ 0.0f, 0.0f, 1.0f });
+                camera_.set_position(camera_.get_position() + glm::vec3(0.0f, -0.1f, 0.0f));
             }
-            else if (ke.get_keycode() == MOON_KEY_A)
-            {
-                camera_.translate({ -1.0f, 0.0f, 0.0f });
-            }
-            else if (ke.get_keycode() == MOON_KEY_D)
-            {
-                camera_.translate({ 1.0f, 0.0f, 0.0f });
-            }
+            if (ke.get_keycode() == MOON_KEY_A)
+                camera_.set_position(camera_.get_position() + glm::vec3(-0.1f, 0.0f, 0.0f));
+            if (ke.get_keycode() == MOON_KEY_D)
+                camera_.set_position(camera_.get_position() + glm::vec3(0.1f, 0.0f, 0.0f));
             return true;
         });
     }
@@ -159,7 +155,7 @@ private:
     std::shared_ptr<moon::vertex_array> square_va_;
     std::shared_ptr<moon::shader> blue_shader_;
 
-    moon::camera camera_;
+    moon::ortho_camera camera_;
 };
 
 class sandbox_app : public moon::application

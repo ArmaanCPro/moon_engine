@@ -7,27 +7,44 @@
 
 namespace moon
 {
-    void camera::translate(const glm::vec3& translation)
+    ortho_camera::ortho_camera(float left, float right, float bottom, float top)
+        :
+        projection_matrix_(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)),
+        view_matrix_(1.0f)
+    {
+        view_projection_matrix_ = projection_matrix_ * view_matrix_;
+    }
+
+    void ortho_camera::recalculate_view_matrix()
+    {
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position_)
+            * glm::rotate(glm::mat4(1.0f), glm::radians(rotation_), glm::vec3(0, 0, 1));
+
+        view_matrix_ = glm::inverse(transform);
+        view_projection_matrix_ = projection_matrix_ * view_matrix_;
+    }
+
+    void perspective_camera::translate(const glm::vec3& translation)
     {
         position_ += translation;
     }
 
-    void camera::rotate(const glm::quat& rotation)
+    void perspective_camera::rotate(const glm::quat& rotation)
     {
         rotation_ += rotation;
     }
 
-    void camera::set_position(const glm::vec3& position)
+    void perspective_camera::set_position(const glm::vec3& position)
     {
         position_ = position;
     }
 
-    void camera::set_rotation(const glm::quat& rotation)
+    void perspective_camera::set_rotation(const glm::quat& rotation)
     {
         rotation_ = rotation;
     }
 
-    glm::mat4 camera::get_view_matrix() const
+    glm::mat4 perspective_camera::get_view_matrix() const
     {
         glm::mat4 view_matrix = glm::mat4(1.0f);
         view_matrix = glm::translate(view_matrix, position_ * glm::vec3(-1.0f, -1.0f, -1.0f));
@@ -36,12 +53,12 @@ namespace moon
         return view_matrix;
     }
 
-    glm::mat4 camera::get_projection_matrix() const
+    glm::mat4 perspective_camera::get_projection_matrix() const
     {
         return glm::perspective(glm::radians(fov_), aspect_ratio_, near_plane_, far_plane_);
     }
 
-    glm::mat4 camera::get_view_projection_matrix() const
+    glm::mat4 perspective_camera::get_view_projection_matrix() const
     {
         return get_projection_matrix() * get_view_matrix();
     }

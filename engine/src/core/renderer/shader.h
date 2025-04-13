@@ -5,6 +5,8 @@
 #include <string_view>
 #include <cstdint>
 
+#include <glm/glm.hpp>
+
 namespace moon
 {
     class MOON_API shader
@@ -15,6 +17,8 @@ namespace moon
 
         void bind() const;
         void unbind() const;
+
+        void upload_uniform_mat4(std::string_view name, const glm::mat4& matrix);
 
     private:
         uint32_t renderer_id_{0};

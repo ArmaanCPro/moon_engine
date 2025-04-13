@@ -3,6 +3,7 @@
 #include "shader.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace moon
 {
@@ -96,5 +97,11 @@ namespace moon
     void shader::unbind() const
     {
         glUseProgram(0);
+    }
+
+    void shader::upload_uniform_mat4(std::string_view name, const glm::mat4& matrix)
+    {
+        GLint location = glGetUniformLocation(renderer_id_, name.data());
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 }

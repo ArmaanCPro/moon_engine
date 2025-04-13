@@ -18,6 +18,7 @@ namespace moon
         void bind() const;
         void unbind() const;
 
+        void upload_uniform_float4(std::string_view name, const glm::vec4& vector);
         void upload_uniform_mat4(std::string_view name, const glm::mat4& matrix);
 
     private:

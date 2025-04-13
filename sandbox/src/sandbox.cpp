@@ -79,7 +79,7 @@ public:
             &square_indices[0], sizeof(square_indices) / sizeof(uint32_t)));
         square_va_->set_index_buffer(square_ib);
 
-        std::string blue_shader_vertex_src = R"(
+        std::string flat_color_vertex_src = R"(
             #version 460 core
             layout (location = 0) in vec3 a_Pos;
 
@@ -91,17 +91,19 @@ public:
                 gl_Position = u_VP * u_Model * vec4(a_Pos, 1.0);
             }
         )";
-        std::string blue_shader_fragment_src = R"(
+        std::string flat_color_fragment_src = R"(
             #version 460 core
-            out vec4 FragColor;
+            layout(location = 0) out vec4 FragColor;
+
+            uniform vec4 u_Color;
 
             void main()
             {
-                FragColor = vec4(0.2, 0.3, 0.8, 1.0);
+                FragColor = u_Color;
             }
         )";
 
-        blue_shader_ = std::make_shared<moon::shader>(blue_shader_vertex_src, blue_shader_fragment_src);
+        flat_color_shader_ = std::make_shared<moon::shader>(flat_color_vertex_src, flat_color_fragment_src);
     }
 
     void on_update(moon::timestep ts) override
@@ -128,17 +130,23 @@ public:
 
         moon::renderer::begin_scene(camera_);
 
+        static glm::vec4 red_c = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        static glm::vec4 blue_c = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
         static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-        for (int y = -10; y < 10; ++y)
+        for (int y = 0; y < 20; ++y)
         {
-            for (int x = -10; x < 10; ++x)
+            for (int x = 0; x < 20; ++x)
             {
                 glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                 glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-                moon::renderer::submit(blue_shader_, square_va_, transform);
+                if (x % 2 == 0)
+                    flat_color_shader_->upload_uniform_float4("u_Color", red_c);
+                else
+                    flat_color_shader_->upload_uniform_float4("u_Color", blue_c);
+                moon::renderer::submit(flat_color_shader_, square_va_, transform);
             }
         }
-        moon::renderer::submit(shader_, vertex_array_);
+        //moon::renderer::submit(shader_, vertex_array_);
 
         moon::renderer::end_scene();
     }
@@ -159,7 +167,7 @@ private:
     std::shared_ptr<moon::shader> shader_;
 
     std::shared_ptr<moon::vertex_array> square_va_;
-    std::shared_ptr<moon::shader> blue_shader_;
+    std::shared_ptr<moon::shader> flat_color_shader_;
 
     moon::ortho_camera camera_;
     glm::vec3 cam_pos_ {0.0f};

@@ -112,6 +112,9 @@ public:
 
     void on_imgui_render() override
     {
+        if (!ImGui::GetCurrentContext())
+            ImGui::SetCurrentContext(moon_get_imgui_context());
+
         ImGui::Begin("test");
         ImGui::Text("Hello, world!");
         ImGui::End();

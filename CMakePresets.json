@@ -10,10 +10,7 @@
       "name": "default-common",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "build/${presetName}",
-      "environment": {
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg-overlays"
-      }
+      "binaryDir": "build/${presetName}"
     },
     {
       "name": "debug-default",

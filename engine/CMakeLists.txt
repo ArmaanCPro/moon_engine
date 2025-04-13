@@ -56,7 +56,6 @@ set(ENGINE_HEADERS
         src/core/renderer/renderer_api.h
         src/core/renderer/render_command.h
         platform/opengl/opengl_renderer_api.h
-        ../sandbox/src/sandbox.cpp
 )
 
 # platform
@@ -79,10 +78,10 @@ list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
 list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
 
 # Create a static lib
-add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
 # compile definitions
-target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_IS_MONOLITHIC MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
 if (WIN32 OR MINGW)
     target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
 endif ()

@@ -18,7 +18,7 @@ namespace moon
     void renderer::end_scene()
     {}
 
-    void renderer::submit(const std::shared_ptr<shader>& shader, const std::shared_ptr<vertex_array>& vertex_array, const glm::mat4& transform)
+    void renderer::submit(const ref<shader>& shader, const ref<vertex_array>& vertex_array, const glm::mat4& transform)
     {
         shader->bind();
         std::dynamic_pointer_cast<opengl_shader>(shader)->upload_uniform_mat4("u_VP", s_scene_data_->view_projection_matrix);

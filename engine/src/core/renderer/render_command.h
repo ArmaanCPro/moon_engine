@@ -21,7 +21,7 @@ namespace moon
             s_renderer_api_->clear();
         }
 
-        inline static void draw_indexed(const std::shared_ptr<vertex_array>& vertex_array)
+        inline static void draw_indexed(const ref<vertex_array>& vertex_array)
         {
             s_renderer_api_->draw_indexed(vertex_array);
         }

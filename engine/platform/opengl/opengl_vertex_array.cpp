@@ -45,7 +45,7 @@ namespace moon
         glBindVertexArray(0);
     }
 
-    void opengl_vertex_array::add_vertex_buffer(std::shared_ptr<vertex_buffer> vbuf)
+    void opengl_vertex_array::add_vertex_buffer(ref<vertex_buffer> vbuf)
     {
         MOON_CORE_ASSERT(!vbuf->get_layout().get_elements().empty(), "Vertex Buffer has no layout!");
         glBindVertexArray(renderer_id_);
@@ -70,7 +70,7 @@ namespace moon
         vertex_buffers_.push_back(vbuf);
     }
 
-    void opengl_vertex_array::set_index_buffer(std::shared_ptr<index_buffer> ibuf)
+    void opengl_vertex_array::set_index_buffer(ref<index_buffer> ibuf)
     {
         glBindVertexArray(renderer_id_);
         ibuf->bind();

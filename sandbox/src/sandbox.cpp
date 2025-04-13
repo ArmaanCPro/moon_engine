@@ -16,14 +16,14 @@ public:
         layer("sandbox"),
         camera_(-1.6f, 1.6f, -0.9f, 0.9f)
     {
-        vertex_array_ = std::shared_ptr<moon::vertex_array>(moon::vertex_array::create());
+        vertex_array_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
 
         constexpr float verts[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.7f, 1.0f,
              0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.85f, 1.0f,
              0.0f,  0.5f, 0.0f, 0.7f, 0.8f, 0.2f, 1.0f,
         };
-        std::shared_ptr<moon::vertex_buffer> vbuf = std::shared_ptr<moon::vertex_buffer>(moon::vertex_buffer::create(verts, sizeof(verts)));
+        moon::ref<moon::vertex_buffer> vbuf = moon::ref<moon::vertex_buffer>(moon::vertex_buffer::create(verts, sizeof(verts)));
         moon::buffer_layout layout = {
             { moon::ShaderDataType::Float3, "a_Pos" },
             { moon::ShaderDataType::Float4, "a_Color" }
@@ -32,7 +32,7 @@ public:
         vertex_array_->add_vertex_buffer(vbuf);
 
         constexpr uint32_t indices[3] = { 0, 1, 2 };
-        std::shared_ptr<moon::index_buffer> ibuf = std::shared_ptr<moon::index_buffer>(moon::index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
+        moon::ref<moon::index_buffer> ibuf = moon::ref<moon::index_buffer>(moon::index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t)));
         vertex_array_->set_index_buffer(ibuf);
 
         // shader
@@ -61,9 +61,9 @@ public:
             }
         )";
 
-        shader_ = std::shared_ptr<moon::shader>(moon::shader::create(vertex_shader_src, fragment_shader_src));
+        shader_ = moon::ref<moon::shader>(moon::shader::create(vertex_shader_src, fragment_shader_src));
 
-        square_va_ = std::shared_ptr<moon::vertex_array>(moon::vertex_array::create());
+        square_va_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
         constexpr float square_verts[3 * 4] = {
             -0.5f, -0.5f, 0.0f,
              0.5f, -0.5f, 0.0f,
@@ -71,14 +71,14 @@ public:
             -0.5f,  0.5f, 0.0f,
         };
         uint32_t square_indices[6] = {0, 1, 2, 2, 3, 0};
-        std::shared_ptr<moon::vertex_buffer> square_vb = std::shared_ptr<moon::vertex_buffer>(moon::vertex_buffer::create(
+        moon::ref<moon::vertex_buffer> square_vb = moon::ref<moon::vertex_buffer>(moon::vertex_buffer::create(
             &square_verts[0], sizeof(square_verts)));
         square_vb->set_layout({
             { moon::ShaderDataType::Float3, "a_Pos" }
         });
         square_va_->add_vertex_buffer(square_vb);
 
-        std::shared_ptr<moon::index_buffer> square_ib = std::shared_ptr<moon::index_buffer>(moon::index_buffer::create(
+        moon::ref<moon::index_buffer> square_ib = moon::ref<moon::index_buffer>(moon::index_buffer::create(
             &square_indices[0], sizeof(square_indices) / sizeof(uint32_t)));
         square_va_->set_index_buffer(square_ib);
 
@@ -106,7 +106,7 @@ public:
             }
         )";
 
-        flat_color_shader_ = std::shared_ptr<moon::shader>(moon::shader::create(flat_color_vertex_src, flat_color_fragment_src));
+        flat_color_shader_ = moon::ref<moon::shader>(moon::shader::create(flat_color_vertex_src, flat_color_fragment_src));
     }
 
     void on_update(moon::timestep ts) override
@@ -163,11 +163,11 @@ public:
     }
 
 private:
-    std::shared_ptr<moon::vertex_array> vertex_array_;
-    std::shared_ptr<moon::shader> shader_;
+    moon::ref<moon::vertex_array> vertex_array_;
+    moon::ref<moon::shader> shader_;
 
-    std::shared_ptr<moon::vertex_array> square_va_;
-    std::shared_ptr<moon::shader> flat_color_shader_;
+    moon::ref<moon::vertex_array> square_va_;
+    moon::ref<moon::shader> flat_color_shader_;
 
     moon::ortho_camera camera_;
     glm::vec3 cam_pos_ {0.0f};

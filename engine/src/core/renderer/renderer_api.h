@@ -20,7 +20,7 @@ namespace moon
         virtual void set_clear_color(const glm::vec4& color) = 0;
         virtual void clear() = 0;
 
-        virtual void draw_indexed(const std::shared_ptr<vertex_array>& vertex_array) = 0;
+        virtual void draw_indexed(const ref<vertex_array>& vertex_array) = 0;
 
         static API get_api() { return s_API_; }
     private:

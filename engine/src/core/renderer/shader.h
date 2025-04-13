@@ -3,7 +3,6 @@
 #include "core/core.h"
 
 #include <string_view>
-#include <cstdint>
 
 #include <glm/glm.hpp>
 
@@ -12,16 +11,11 @@ namespace moon
     class MOON_API shader
     {
     public:
-        shader(std::string_view vertex_src, std::string_view fragment_src);
-        ~shader();
+        virtual ~shader() = default;
 
-        void bind() const;
-        void unbind() const;
+        virtual void bind() const = 0;
+        virtual void unbind() const = 0;
 
-        void upload_uniform_float4(std::string_view name, const glm::vec4& vector);
-        void upload_uniform_mat4(std::string_view name, const glm::mat4& matrix);
-
-    private:
-        uint32_t renderer_id_{0};
+        static shader* create(std::string_view vertex_src, std::string_view fragment_src);
     };
 }

@@ -5,6 +5,9 @@
 
 #include <imgui.h>
 
+#include <opengl/opengl_shader.h>
+#include <glm/gtc/type_ptr.hpp>
+
 class sandbox_layer : public moon::layer
 {
 public:
@@ -58,7 +61,7 @@ public:
             }
         )";
 
-        shader_ = std::make_shared<moon::shader>(vertex_shader_src, fragment_shader_src);
+        shader_ = std::shared_ptr<moon::shader>(moon::shader::create(vertex_shader_src, fragment_shader_src));
 
         square_va_ = std::shared_ptr<moon::vertex_array>(moon::vertex_array::create());
         constexpr float square_verts[3 * 4] = {
@@ -95,15 +98,15 @@ public:
             #version 460 core
             layout(location = 0) out vec4 FragColor;
 
-            uniform vec4 u_Color;
+            uniform vec3 u_Color;
 
             void main()
             {
-                FragColor = u_Color;
+                FragColor = vec4(u_Color, 1.0);
             }
         )";
 
-        flat_color_shader_ = std::make_shared<moon::shader>(flat_color_vertex_src, flat_color_fragment_src);
+        flat_color_shader_ = std::shared_ptr<moon::shader>(moon::shader::create(flat_color_vertex_src, flat_color_fragment_src));
     }
 
     void on_update(moon::timestep ts) override
@@ -130,19 +133,16 @@ public:
 
         moon::renderer::begin_scene(camera_);
 
-        static glm::vec4 red_c = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-        static glm::vec4 blue_c = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
         static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+        std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->bind();
+        std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->upload_uniform_float3("u_Color", square_color_);
         for (int y = 0; y < 20; ++y)
         {
             for (int x = 0; x < 20; ++x)
             {
                 glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                 glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-                if (x % 2 == 0)
-                    flat_color_shader_->upload_uniform_float4("u_Color", red_c);
-                else
-                    flat_color_shader_->upload_uniform_float4("u_Color", blue_c);
                 moon::renderer::submit(flat_color_shader_, square_va_, transform);
             }
         }
@@ -153,8 +153,8 @@ public:
 
     void on_imgui_render() override
     {
-        ImGui::Begin("test");
-        ImGui::Text("Hello, world!");
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("Square Color", glm::value_ptr(square_color_));
         ImGui::End();
     }
 
@@ -174,6 +174,8 @@ private:
     float cam_move_speed_ = 2.5f;
     float cam_rot_ = 0.0f;
     float cam_rot_speed = 180.0f;
+
+    glm::vec3 square_color_ { 0.2f, 0.3f, 0.4f };
 };
 
 class sandbox_app : public moon::application

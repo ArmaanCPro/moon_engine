@@ -26,6 +26,7 @@ set(ENGINE_SOURCES
         src/core/renderer/render_command.cpp
         platform/opengl/opengl_renderer_api.cpp
         src/core/renderer/camera.cpp
+        platform/opengl/opengl_shader.cpp
 )
 
 set(ENGINE_HEADERS
@@ -59,6 +60,7 @@ set(ENGINE_HEADERS
         platform/opengl/opengl_renderer_api.h
         src/core/renderer/camera.h
         src/core/core/timestep.h
+        platform/opengl/opengl_shader.h
 )
 
 # platform

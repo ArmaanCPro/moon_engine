@@ -4,6 +4,7 @@
 #include "render_command.h"
 #include "camera.h"
 #include "shader.h"
+#include "opengl/opengl_shader.h"
 
 namespace moon
 {
@@ -20,8 +21,8 @@ namespace moon
     void renderer::submit(const std::shared_ptr<shader>& shader, const std::shared_ptr<vertex_array>& vertex_array, const glm::mat4& transform)
     {
         shader->bind();
-        shader->upload_uniform_mat4("u_VP", s_scene_data_->view_projection_matrix);
-        shader->upload_uniform_mat4("u_Model", transform);
+        std::dynamic_pointer_cast<opengl_shader>(shader)->upload_uniform_mat4("u_VP", s_scene_data_->view_projection_matrix);
+        std::dynamic_pointer_cast<opengl_shader>(shader)->upload_uniform_mat4("u_Model", transform);
 
         vertex_array->bind();
         render_command::draw_indexed(vertex_array);

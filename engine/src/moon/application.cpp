@@ -56,8 +56,11 @@ namespace moon
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
 
-            for (layer* l : layer_stack_)
-                l->on_update(ts);
+            if (!minimized_)
+            {
+                for (layer* l : layer_stack_)
+                    l->on_update(ts);
+            }
 
             imgui_layer_->begin();
             for (layer* l : layer_stack_)
@@ -74,6 +77,7 @@ namespace moon
     {
         event_dispatcher dispatcher(e);
         dispatcher.dispatch<window_close_event>([&](window_close_event& wce) { return on_window_close(wce); });
+        dispatcher.dispatch<window_resize_event>([&](window_resize_event& wre) { return on_window_resize(wre); });
 
         for (auto it = layer_stack_.end(); it != layer_stack_.begin(); )
         {
@@ -87,5 +91,21 @@ namespace moon
     {
         running_ = false;
         return true;
+    }
+
+    bool application::on_window_resize(window_resize_event& e)
+    {
+        // if window is minimized, it should stop running
+        if (e.get_width() == 0 || e.get_height() == 0)
+        {
+            minimized_ = true;
+            running_ = false;
+            return false;
+        }
+
+        minimized_ = false;
+        renderer::on_window_resize(e.get_width(), e.get_height());
+
+        return false;
     }
 }

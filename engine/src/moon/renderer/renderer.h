@@ -1,6 +1,8 @@
 #pragma  once
 #include "renderer_api.h"
 
+#include <cstdint>
+
 namespace moon
 {
     class ortho_camera;
@@ -10,6 +12,7 @@ namespace moon
     {
     public:
         static void init();
+        static void on_window_resize(uint32_t width, uint32_t height);
 
         static void begin_scene(const ortho_camera& cam);
         static void end_scene();

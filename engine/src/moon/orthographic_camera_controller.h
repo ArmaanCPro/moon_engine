@@ -21,6 +21,9 @@ namespace moon
 
         ortho_camera& get_camera() { return camera_; }
         const ortho_camera& get_camera() const { return camera_; }
+
+        void set_zoom_level(float level) { zoom_level_ = level; }
+        float get_zoom_level() const { return zoom_level_; }
     private:
         float aspect_ratio_;
         float zoom_level_ {1.0f};

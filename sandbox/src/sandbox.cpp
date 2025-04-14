@@ -63,7 +63,7 @@ public:
             }
         )";
 
-        shader_ = moon::ref<moon::shader>(moon::shader::create(vertex_shader_src, fragment_shader_src));
+        shader_ = moon::shader::create("vertex pos color", vertex_shader_src, fragment_shader_src);
 
         square_va_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
         constexpr float square_verts[5 * 4] = {
@@ -109,15 +109,15 @@ public:
             }
         )";
 
-        flat_color_shader_ = moon::ref<moon::shader>(moon::shader::create(flat_color_vertex_src, flat_color_fragment_src));
+        flat_color_shader_ = moon::shader::create("flat color", flat_color_vertex_src, flat_color_fragment_src);
 
-        texture_shader_ = moon::ref<moon::shader>(moon::shader::create("assets/shaders/texture.glsl"));
+        auto texture_shader = shader_library_.load("assets/shaders/texture.glsl");
 
         texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
         moon_logo_texture_ = moon::texture2d::create("assets/textures/MoonLogo.png");
 
-        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->bind();
-        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->upload_uniform_int("u_Texture", 0);
+        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader)->bind();
+        std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader)->upload_uniform_int("u_Texture", 0);
     }
 
     void on_update(moon::timestep ts) override
@@ -158,10 +158,12 @@ public:
             }
         }
 
+        auto texture_shader = shader_library_.get("texture");
+
         texture_->bind(0);
-        moon::renderer::submit(texture_shader_, square_va_, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        moon::renderer::submit(texture_shader, square_va_, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
         moon_logo_texture_->bind(0);
-        moon::renderer::submit(texture_shader_, square_va_,
+        moon::renderer::submit(texture_shader, square_va_,
             glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         // Triangle
@@ -182,11 +184,13 @@ public:
     }
 
 private:
+    moon::shader_library shader_library_;
+
     moon::ref<moon::vertex_array> vertex_array_;
     moon::ref<moon::shader> shader_;
 
     moon::ref<moon::vertex_array> square_va_;
-    moon::ref<moon::shader> flat_color_shader_, texture_shader_;
+    moon::ref<moon::shader> flat_color_shader_;
 
     moon::ref<moon::texture2d> texture_;
     moon::ref<moon::texture2d> moon_logo_texture_;

@@ -26,9 +26,19 @@ namespace moon
         std::string shader_source = read_file(filepath);
         auto shader_sources = preprocess(shader_source);
         compile(shader_sources);
+
+        // Extract the name from the filepath
+        auto last_slash = filepath.find_last_of("/\\");
+        last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
+        auto last_dot = filepath.rfind('.');
+
+        auto count = last_dot == std::string::npos ? filepath.size() - last_slash : last_dot - last_slash;
+        name_ = filepath.substr(last_slash, count);
     }
 
-    opengl_shader::opengl_shader(std::string_view vertex_src, std::string_view fragment_src)
+    opengl_shader::opengl_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
+        :
+        name_(name)
     {
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = std::string(vertex_src);
@@ -58,7 +68,7 @@ namespace moon
             else
             {
                 // Fallback to filesystem loading
-                std::ifstream in(filepath.data(), std::ios::binary);
+                std::ifstream in(filepath.data(), std::ios::in | std::ios::binary);
                 in.seekg(0, std::ios::end);
                 result.resize(in.tellg());
                 in.seekg(0, std::ios::beg);
@@ -71,7 +81,7 @@ namespace moon
             // Fallback to filesystem loading
             MOON_CORE_WARN("Failed to file {0} load from embedded resources: {1}, trying filesystem", filepath, e.what());
             // Fallback to filesystem loading
-            std::ifstream in(filepath.data(), std::ios::binary);
+            std::ifstream in(filepath.data(), std::ios::in | std::ios::binary);
             in.seekg(0, std::ios::end);
             result.resize(in.tellg());
             in.seekg(0, std::ios::beg);
@@ -108,8 +118,9 @@ namespace moon
     void opengl_shader::compile(const std::unordered_map<GLenum, std::string>& shader_sources)
     {
         GLuint program = glCreateProgram();
-        std::vector<GLuint> gl_shader_ids;
-        gl_shader_ids.reserve(shader_sources.size());
+        MOON_CORE_ASSERT(shader_sources.size() <= 2, "Only 2 shaders are supported!");
+        std::array<GLuint, 2> gl_shader_ids {};
+        int gl_shader_id_index = 0;
 
         for (auto&& [type, source] : shader_sources)
         {
@@ -139,7 +150,8 @@ namespace moon
             }
 
             glAttachShader(program, shader);
-            gl_shader_ids.push_back(shader);
+
+            gl_shader_ids[gl_shader_id_index++] = shader;
         }
 
         glLinkProgram(program);

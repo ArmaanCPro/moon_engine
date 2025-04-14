@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vertex_array.h"
-#include "core/core.h"
+#include "moon/core.h"
 #include <glm/glm.hpp>
 
 namespace moon

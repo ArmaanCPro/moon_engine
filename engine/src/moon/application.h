@@ -1,7 +1,7 @@
 #pragma once
 
 #include "window.h"
-#include "core/core.h"
+#include "../moon/core.h"
 #include "layer.h"
 #include "layer_stack.h"
 #include "imgui/imgui_layer.h"
@@ -9,7 +9,7 @@
 #include "renderer/shader.h"
 #include "renderer/vertex_array.h"
 
-#include "core/core/timestep.h"
+#include "../moon/core/timestep.h"
 
 namespace moon
 {

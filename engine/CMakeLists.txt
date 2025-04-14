@@ -10,60 +10,60 @@ endif ()
 
 set(ENGINE_SOURCES
         src/moonpch.cpp
-        src/core/application.cpp
-        src/core/log.cpp
-        src/core/layer.cpp
-        src/core/layer_stack.cpp
-        src/core/imgui/imgui_layer.cpp
+        src/moon/application.cpp
+        src/moon/log.cpp
+        src/moon/layer.cpp
+        src/moon/layer_stack.cpp
+        src/moon/imgui/imgui_layer.cpp
         platform/opengl/opengl_context.cpp
-        src/core/renderer/shader.cpp
-        src/core/renderer/buffer.cpp
+        src/moon/renderer/shader.cpp
+        src/moon/renderer/buffer.cpp
         platform/opengl/opengl_buffer.cpp
-        src/core/renderer/renderer.cpp
-        src/core/renderer/vertex_array.cpp
+        src/moon/renderer/renderer.cpp
+        src/moon/renderer/vertex_array.cpp
         platform/opengl/opengl_vertex_array.cpp
-        src/core/renderer/renderer_api.cpp
-        src/core/renderer/render_command.cpp
+        src/moon/renderer/renderer_api.cpp
+        src/moon/renderer/render_command.cpp
         platform/opengl/opengl_renderer_api.cpp
-        src/core/renderer/camera.cpp
+        src/moon/renderer/camera.cpp
         platform/opengl/opengl_shader.cpp
-        src/core/renderer/texture.cpp
+        src/moon/renderer/texture.cpp
         platform/opengl/opengl_texture.cpp
 )
 
 set(ENGINE_HEADERS
         src/moonpch.h
         include/moon.h
-        src/core/application.h
-        src/core/core.h
-        src/core/entry_point.h
-        src/core/events/application_event.h
-        src/core/events/event.h
-        src/core/events/key_event.h
-        src/core/events/mouse_event.h
-        src/core/log.h
-        src/core/window.h
-        src/core/layer.h
-        src/core/layer_stack.h
-        src/core/imgui/imgui_layer.h
-        src/core/input.h
-        src/core/key_codes.h
-        src/core/mouse_codes.h
-        src/core/renderer/graphics_context.h
+        src/moon/application.h
+        src/moon/core.h
+        src/moon/entry_point.h
+        src/moon/events/application_event.h
+        src/moon/events/event.h
+        src/moon/events/key_event.h
+        src/moon/events/mouse_event.h
+        src/moon/log.h
+        src/moon/window.h
+        src/moon/layer.h
+        src/moon/layer_stack.h
+        src/moon/imgui/imgui_layer.h
+        src/moon/input.h
+        src/moon/key_codes.h
+        src/moon/mouse_codes.h
+        src/moon/renderer/graphics_context.h
         platform/opengl/opengl_context.h
-        src/core/renderer/shader.h
-        src/core/renderer/buffer.h
+        src/moon/renderer/shader.h
+        src/moon/renderer/buffer.h
         platform/opengl/opengl_buffer.h
-        src/core/renderer/renderer.h
-        src/core/renderer/vertex_array.h
+        src/moon/renderer/renderer.h
+        src/moon/renderer/vertex_array.h
         platform/opengl/opengl_vertex_array.h
-        src/core/renderer/renderer_api.h
-        src/core/renderer/render_command.h
+        src/moon/renderer/renderer_api.h
+        src/moon/renderer/render_command.h
         platform/opengl/opengl_renderer_api.h
-        src/core/renderer/camera.h
-        src/core/core/timestep.h
+        src/moon/renderer/camera.h
+        src/moon/core/timestep.h
         platform/opengl/opengl_shader.h
-        src/core/renderer/texture.h
+        src/moon/renderer/texture.h
         platform/opengl/opengl_texture.h
 )
 

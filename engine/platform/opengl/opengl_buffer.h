@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/core.h"
-#include "core/renderer/buffer.h"
+#include "moon/core.h"
+#include "moon/renderer/buffer.h"
 
 namespace moon
 {

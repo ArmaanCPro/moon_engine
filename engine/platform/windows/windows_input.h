@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/input.h"
+#include "moon/input.h"
 
 namespace moon
 {

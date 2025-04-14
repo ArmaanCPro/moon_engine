@@ -1,7 +1,7 @@
 #include "moonpch.h"
 
 #include "opengl_vertex_array.h"
-#include "core/renderer/buffer.h"
+#include "moon/renderer/buffer.h"
 #include <glad/glad.h>
 
 namespace moon

@@ -1,7 +1,7 @@
 #include "moonpch.h"
 #include "opengl_renderer_api.h"
 
-#include "core/renderer/renderer.h"
+#include "moon/renderer/renderer.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.inl>

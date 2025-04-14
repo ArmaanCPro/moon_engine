@@ -2,10 +2,10 @@
 
 #include "windows_window.h"
 
-#include "core/log.h"
-#include "core/events/application_event.h"
-#include "core/events/mouse_event.h"
-#include "core/events/key_event.h"
+#include "moon/log.h"
+#include "moon/events/application_event.h"
+#include "moon/events/mouse_event.h"
+#include "moon/events/key_event.h"
 #include "opengl/opengl_context.h"
 
 #include <GLFW/glfw3.h>

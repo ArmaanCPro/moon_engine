@@ -1,6 +1,6 @@
-#include "core/events/key_event.h"
-#include "core/events/mouse_event.h"
-#include "core/renderer/texture.h"
+#include "moon/events/key_event.h"
+#include "moon/events/mouse_event.h"
+#include "moon/renderer/texture.h"
 #include "opengl/opengl_texture.h"
 
 #include <moon.h>

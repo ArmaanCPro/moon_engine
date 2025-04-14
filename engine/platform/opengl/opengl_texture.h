@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/renderer/texture.h"
+#include "moon/renderer/texture.h"
 #include <string_view>
 
 namespace moon

@@ -1,6 +1,6 @@
 #include "moonpch.h"
 
-#include "core/log.h"
+#include "../moon/log.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>

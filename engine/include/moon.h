@@ -28,6 +28,8 @@
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"
 
+#include "moon/orthographic_camera_controller.h"
+
 //#ifndef MOON_IS_MONOLITHIC
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context();
 //#endif

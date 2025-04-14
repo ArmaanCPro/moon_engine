@@ -29,6 +29,7 @@ set(ENGINE_SOURCES
         platform/opengl/opengl_shader.cpp
         src/moon/renderer/texture.cpp
         platform/opengl/opengl_texture.cpp
+        src/moon/orthographic_camera_controller.cpp
 )
 
 set(ENGINE_HEADERS
@@ -65,6 +66,7 @@ set(ENGINE_HEADERS
         platform/opengl/opengl_shader.h
         src/moon/renderer/texture.h
         platform/opengl/opengl_texture.h
+        src/moon/orthographic_camera_controller.h
 )
 
 # platform

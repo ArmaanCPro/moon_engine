@@ -11,6 +11,7 @@ namespace moon
     {
     public:
         explicit ortho_camera(float left, float right, float bottom, float top);
+        void set_projection(float left, float right, float bottom, float top);
 
         void set_position(const glm::vec3& position) { position_ = position; recalculate_view_matrix(); }
         void set_rotation(float rotation) { rotation_ = rotation; recalculate_view_matrix(); }

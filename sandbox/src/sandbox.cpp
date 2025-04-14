@@ -16,7 +16,7 @@ public:
     sandbox_layer()
         :
         layer("sandbox"),
-        camera_(-1.6f, 1.6f, -0.9f, 0.9f)
+        camera_controller_(16.0f / 9.0f, true)
     {
         vertex_array_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
 
@@ -122,27 +122,12 @@ public:
 
     void on_update(moon::timestep ts) override
     {
-        MOON_INFO("Delta time: {0} s ({1} ms)", ts.get_seconds(), ts.get_milliseconds());
-        if (moon::input::is_key_pressed(MOON_KEY_W))
-            cam_pos_.y += cam_move_speed_ * ts;
-        if (moon::input::is_key_pressed(MOON_KEY_S))
-            cam_pos_.y -= cam_move_speed_ * ts;
-        if (moon::input::is_key_pressed(MOON_KEY_A))
-            cam_pos_.x -= cam_move_speed_ * ts;
-        if (moon::input::is_key_pressed(MOON_KEY_D))
-            cam_pos_.x += cam_move_speed_ * ts;
-        if (moon::input::is_key_pressed(MOON_KEY_Q))
-            cam_rot_ += cam_rot_speed * ts;
-        if (moon::input::is_key_pressed(MOON_KEY_E))
-            cam_rot_ -= cam_rot_speed * ts;
+        camera_controller_.on_update(ts);
 
         moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
 
-        camera_.set_position(cam_pos_);
-        camera_.set_rotation(cam_rot_);
-
-        moon::renderer::begin_scene(camera_);
+        moon::renderer::begin_scene(camera_controller_.get_camera());
 
         static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -181,6 +166,7 @@ public:
 
     void on_event(moon::event& e) override
     {
+        camera_controller_.on_event(e);
     }
 
 private:
@@ -195,11 +181,7 @@ private:
     moon::ref<moon::texture2d> texture_;
     moon::ref<moon::texture2d> moon_logo_texture_;
 
-    moon::ortho_camera camera_;
-    glm::vec3 cam_pos_ {0.0f};
-    float cam_move_speed_ = 2.5f;
-    float cam_rot_ = 0.0f;
-    float cam_rot_speed = 180.0f;
+    moon::orthographic_camera_controller camera_controller_;
 
     glm::vec3 square_color_ { 0.2f, 0.3f, 0.4f };
 };

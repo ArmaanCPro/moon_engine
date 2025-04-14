@@ -27,6 +27,8 @@ namespace moon
         window_ = std::unique_ptr<window>(window::create());
         window_->set_event_callback([&](event& e) { on_event(e); });
 
+        renderer::init();
+
         imgui_layer_ = new imgui_layer();
         push_layer(imgui_layer_);
     }

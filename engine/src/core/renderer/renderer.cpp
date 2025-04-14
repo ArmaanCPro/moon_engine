@@ -10,6 +10,11 @@ namespace moon
 {
     renderer::scene_data* renderer::s_scene_data_ = new renderer::scene_data;
 
+    void renderer::init()
+    {
+        render_command::init();
+    }
+
     void renderer::begin_scene(const ortho_camera& cam)
     {
         s_scene_data_->view_projection_matrix = cam.get_view_projection_matrix();

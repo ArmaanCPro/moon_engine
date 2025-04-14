@@ -12,6 +12,10 @@ namespace moon
     class MOON_API render_command
     {
     public:
+        inline static void init()
+        {
+            s_renderer_api_->init();
+        }
         inline static void set_clear_color(const glm::vec4& color)
         {
             s_renderer_api_->set_clear_color(color);

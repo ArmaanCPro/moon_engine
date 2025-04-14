@@ -10,6 +10,8 @@ namespace moon
         opengl_renderer_api() = default;
         ~opengl_renderer_api() override = default;
 
+        void init() override;
+
         void set_clear_color(const glm::vec4& color) override;
         void clear() override;
 

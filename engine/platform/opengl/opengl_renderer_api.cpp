@@ -8,6 +8,12 @@
 
 namespace moon
 {
+    void opengl_renderer_api::init()
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
     void opengl_renderer_api::set_clear_color(const glm::vec4& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);

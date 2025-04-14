@@ -9,6 +9,8 @@ namespace moon
     class MOON_API renderer
     {
     public:
+        static void init();
+
         static void begin_scene(const ortho_camera& cam);
         static void end_scene();
 

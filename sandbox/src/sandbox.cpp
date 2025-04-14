@@ -146,6 +146,7 @@ public:
         texture_shader_ = moon::ref<moon::shader>(moon::shader::create(texture_shader_vertex_src, texture_shader_fragment_src));
 
         texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
+        moon_logo_texture_ = moon::texture2d::create("assets/textures/MoonLogo.png");
 
         std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->bind();
         std::dynamic_pointer_cast<moon::opengl_shader>(texture_shader_)->upload_uniform_int("u_Texture", 0);
@@ -191,6 +192,10 @@ public:
 
         texture_->bind(0);
         moon::renderer::submit(texture_shader_, square_va_, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        moon_logo_texture_->bind(0);
+        moon::renderer::submit(texture_shader_, square_va_,
+            glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
         // Triangle
         //moon::renderer::submit(shader_, vertex_array_);
 
@@ -216,6 +221,7 @@ private:
     moon::ref<moon::shader> flat_color_shader_, texture_shader_;
 
     moon::ref<moon::texture2d> texture_;
+    moon::ref<moon::texture2d> moon_logo_texture_;
 
     moon::ortho_camera camera_;
     glm::vec3 cam_pos_ {0.0f};

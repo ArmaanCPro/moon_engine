@@ -81,6 +81,7 @@ else()
 endif()
 
 
+# this CMRC code is very temporary, a far better solution would be an asset manager without CMRC.
 # Find CMRC package once at the top level
 find_package(CMakeRC CONFIG REQUIRED)
 

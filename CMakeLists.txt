@@ -84,7 +84,6 @@ endif()
 # this CMRC code is very temporary, a far better solution would be an asset manager without CMRC.
 # Find CMRC package once at the top level
 find_package(CMakeRC CONFIG REQUIRED)
-
 # Create the textures resource library here at the top level
 file(GLOB_RECURSE TEXTURE_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/assets/textures/*.*")
 cmrc_add_resource_library(textures-resources
@@ -92,6 +91,13 @@ cmrc_add_resource_library(textures-resources
         NAMESPACE textures
         WHENCE "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/"
         ${TEXTURE_FILES}
+)
+file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/assets/shaders/*.*")
+cmrc_add_resource_library(shaders-resources
+        ALIAS shaders::rc
+        NAMESPACE shaders
+        WHENCE "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/"
+        ${SHADER_FILES}
 )
 
 add_subdirectory(engine)

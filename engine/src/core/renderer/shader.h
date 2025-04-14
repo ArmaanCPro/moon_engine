@@ -16,6 +16,7 @@ namespace moon
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
+        static shader* create(std::string_view file_path);
         static shader* create(std::string_view vertex_src, std::string_view fragment_src);
     };
 }

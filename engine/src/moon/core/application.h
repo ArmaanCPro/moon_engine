@@ -1,15 +1,12 @@
 #pragma once
 
-#include "window.h"
-#include "../moon/core.h"
-#include "layer.h"
-#include "layer_stack.h"
-#include "imgui/imgui_layer.h"
+#include "moon/core/window.h"
+#include "moon/core/core.h"
+#include "moon/core/layer.h"
+#include "moon/core/layer_stack.h"
+#include "moon/imgui/imgui_layer.h"
 
-#include "renderer/shader.h"
-#include "renderer/vertex_array.h"
-
-#include "../moon/core/timestep.h"
+#include "moon/renderer/vertex_array.h"
 
 namespace moon
 {

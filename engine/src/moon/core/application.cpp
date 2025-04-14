@@ -3,13 +3,13 @@
 #include "application.h"
 
 #include "log.h"
-#include "events/application_event.h"
-#include "events/event.h"
+#include "moon/events/application_event.h"
+#include "moon/events/event.h"
 
-#include "imgui/imgui_layer.h"
+#include "moon/imgui/imgui_layer.h"
 
-#include "renderer/renderer.h"
-#include "renderer/render_command.h"
+#include "moon/renderer/renderer.h"
+#include "moon/renderer/render_command.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

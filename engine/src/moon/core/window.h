@@ -3,8 +3,8 @@
 #include <utility>
 
 #include "moonpch.h"
-#include "events/event.h"
-#include "renderer/graphics_context.h"
+#include "moon/events/event.h"
+#include "moon/renderer/graphics_context.h"
 
 namespace moon
 {

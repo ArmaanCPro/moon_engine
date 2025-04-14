@@ -2,7 +2,7 @@
 #include "vertex_array.h"
 
 #include "renderer.h"
-#include "opengl/opengl_vertex_array.h"
+#include "platform/opengl/opengl_vertex_array.h"
 
 namespace moon
 {

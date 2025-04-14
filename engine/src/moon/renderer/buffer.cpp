@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 #include "renderer.h"
-#include "opengl/opengl_buffer.h"
+#include "platform/opengl/opengl_buffer.h"
 
 namespace moon
 {

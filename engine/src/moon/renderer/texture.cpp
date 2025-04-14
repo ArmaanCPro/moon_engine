@@ -2,7 +2,7 @@
 #include "texture.h"
 
 #include "renderer.h"
-#include "opengl/opengl_texture.h"
+#include "platform/opengl/opengl_texture.h"
 
 namespace moon
 {

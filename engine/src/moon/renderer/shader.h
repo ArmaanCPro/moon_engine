@@ -1,11 +1,9 @@
 #pragma once
 
-#include "moon/core.h"
+#include "moon/core/core.h"
 
 #include <string_view>
 #include <unordered_map>
-
-#include <glm/glm.hpp>
 
 namespace moon
 {

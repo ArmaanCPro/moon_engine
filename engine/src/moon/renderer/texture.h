@@ -1,6 +1,6 @@
 #pragma once
 
-#include "moon/core.h"
+#include "moon/core/core.h"
 
 #include <cstdint>
 #include <string_view>

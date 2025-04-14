@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vertex_array.h"
-#include "moon/core.h"
+#include "moon/core/core.h"
 #include <glm/glm.hpp>
 #include <cstdint>
 

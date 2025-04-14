@@ -18,9 +18,9 @@
 #include <array>
 
 // our stuff
-#include "moon/log.h"
-#include "moon/key_codes.h"
-#include "moon/mouse_codes.h"
+#include "moon/core/log.h"
+#include "moon/core/key_codes.h"
+#include "moon/core/mouse_codes.h"
 
 #ifdef _WIN32
     #include <windows.h>

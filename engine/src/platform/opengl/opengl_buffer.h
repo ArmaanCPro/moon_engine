@@ -1,6 +1,5 @@
 #pragma once
 
-#include "moon/core.h"
 #include "moon/renderer/buffer.h"
 
 namespace moon

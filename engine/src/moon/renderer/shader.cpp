@@ -2,7 +2,7 @@
 #include "shader.h"
 
 #include "renderer.h"
-#include "opengl/opengl_shader.h"
+#include "platform/opengl/opengl_shader.h"
 
 namespace moon
 {

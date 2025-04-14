@@ -10,63 +10,63 @@ endif ()
 
 set(ENGINE_SOURCES
         src/moonpch.cpp
-        src/moon/application.cpp
-        src/moon/log.cpp
-        src/moon/layer.cpp
-        src/moon/layer_stack.cpp
+        src/moon/core/application.cpp
+        src/moon/core/log.cpp
+        src/moon/core/layer.cpp
+        src/moon/core/layer_stack.cpp
         src/moon/imgui/imgui_layer.cpp
-        platform/opengl/opengl_context.cpp
+        src/platform/opengl/opengl_context.cpp
         src/moon/renderer/shader.cpp
         src/moon/renderer/buffer.cpp
-        platform/opengl/opengl_buffer.cpp
+        src/platform/opengl/opengl_buffer.cpp
         src/moon/renderer/renderer.cpp
         src/moon/renderer/vertex_array.cpp
-        platform/opengl/opengl_vertex_array.cpp
+        src/platform/opengl/opengl_vertex_array.cpp
         src/moon/renderer/renderer_api.cpp
         src/moon/renderer/render_command.cpp
-        platform/opengl/opengl_renderer_api.cpp
+        src/platform/opengl/opengl_renderer_api.cpp
         src/moon/renderer/camera.cpp
-        platform/opengl/opengl_shader.cpp
+        src/platform/opengl/opengl_shader.cpp
         src/moon/renderer/texture.cpp
-        platform/opengl/opengl_texture.cpp
-        src/moon/orthographic_camera_controller.cpp
+        src/platform/opengl/opengl_texture.cpp
+        src/moon/renderer/orthographic_camera_controller.cpp
 )
 
 set(ENGINE_HEADERS
         src/moonpch.h
         include/moon.h
-        src/moon/application.h
-        src/moon/core.h
-        src/moon/entry_point.h
+        src/moon/core/application.h
+        src/moon/core/core.h
+        src/moon/core/entry_point.h
         src/moon/events/application_event.h
         src/moon/events/event.h
         src/moon/events/key_event.h
         src/moon/events/mouse_event.h
-        src/moon/log.h
-        src/moon/window.h
-        src/moon/layer.h
-        src/moon/layer_stack.h
+        src/moon/core/log.h
+        src/moon/core/window.h
+        src/moon/core/layer.h
+        src/moon/core/layer_stack.h
         src/moon/imgui/imgui_layer.h
-        src/moon/input.h
-        src/moon/key_codes.h
-        src/moon/mouse_codes.h
+        src/moon/core/input.h
+        src/moon/core/key_codes.h
+        src/moon/core/mouse_codes.h
         src/moon/renderer/graphics_context.h
-        platform/opengl/opengl_context.h
+        src/platform/opengl/opengl_context.h
         src/moon/renderer/shader.h
         src/moon/renderer/buffer.h
-        platform/opengl/opengl_buffer.h
+        src/platform/opengl/opengl_buffer.h
         src/moon/renderer/renderer.h
         src/moon/renderer/vertex_array.h
-        platform/opengl/opengl_vertex_array.h
+        src/platform/opengl/opengl_vertex_array.h
         src/moon/renderer/renderer_api.h
         src/moon/renderer/render_command.h
-        platform/opengl/opengl_renderer_api.h
+        src/platform/opengl/opengl_renderer_api.h
         src/moon/renderer/camera.h
         src/moon/core/timestep.h
-        platform/opengl/opengl_shader.h
+        src/platform/opengl/opengl_shader.h
         src/moon/renderer/texture.h
-        platform/opengl/opengl_texture.h
-        src/moon/orthographic_camera_controller.h
+        src/platform/opengl/opengl_texture.h
+        src/moon/renderer/orthographic_camera_controller.h
 )
 
 # platform
@@ -78,12 +78,12 @@ elseif (UNIX)
     SET(PLATFORM_PREFIX linux)
 endif ()
 set(PLATFORM_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.cpp"
+        "src/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.cpp"
+        "src/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.cpp"
 )
 set(PLATFORM_HEADERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.h"
+        "src/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_window.h"
+        "src/platform/${PLATFORM_PREFIX}/${PLATFORM_PREFIX}_input.h"
 )
 list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
 list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
@@ -102,7 +102,8 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/platform
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/moon
+        ${CMAKE_CURRENT_SOURCE_DIR}src/platform
 )
 
 # pch

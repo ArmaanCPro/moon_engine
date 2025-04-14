@@ -1,10 +1,10 @@
 #pragma once
 // for use by client apps
 
-#include "moon/core.h"
-#include "moon/application.h"
-#include "moon/log.h"
-#include "moon/layer.h"
+#include "moon/core/core.h"
+#include "moon/core/application.h"
+#include "moon/core/log.h"
+#include "moon/core/layer.h"
 #include "moon/imgui/imgui_layer.h"
 
 #include "moon/events/event.h"
@@ -14,11 +14,11 @@
 
 #include "moon/core/timestep.h"
 
-#include "moon/input.h"
-#include "moon/key_codes.h"
-#include "moon/mouse_codes.h"
+#include "moon/core/input.h"
+#include "moon/core/key_codes.h"
+#include "moon/core/mouse_codes.h"
 
-#include "moon/entry_point.h"
+#include "moon/core/entry_point.h"
 
 #include "moon/renderer/vertex_array.h"
 #include "moon/renderer/buffer.h"
@@ -28,8 +28,9 @@
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"
 
-#include "moon/orthographic_camera_controller.h"
+#include "moon/renderer/orthographic_camera_controller.h"
 
 //#ifndef MOON_IS_MONOLITHIC
+struct ImGuiContext;
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context();
 //#endif

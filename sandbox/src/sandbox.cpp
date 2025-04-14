@@ -1,14 +1,14 @@
-#include "moon/events/key_event.h"
-#include "moon/events/mouse_event.h"
-#include "moon/renderer/texture.h"
-#include "opengl/opengl_texture.h"
+#include <events/key_event.h>
+#include <events/mouse_event.h>
+#include <platform/opengl/opengl_texture.h>
+#include <renderer/texture.h>
 
 #include <moon.h>
 
 #include <imgui.h>
 
-#include <opengl/opengl_shader.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <platform/opengl/opengl_shader.h>
 
 class sandbox_layer : public moon::layer
 {

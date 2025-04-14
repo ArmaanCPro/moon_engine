@@ -1,7 +1,7 @@
 #pragma once
 
 #include "renderer_api.h"
-#include "moon/core.h"
+#include "moon/core/core.h"
 
 #include <glm/glm.hpp>
 

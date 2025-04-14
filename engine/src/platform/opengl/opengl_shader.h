@@ -5,6 +5,7 @@
 #include <string_view>
 #include <cstdint>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 namespace moon
 {

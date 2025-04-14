@@ -1,11 +1,9 @@
 #pragma once
 
-#include "renderer/camera.h"
-#include "core/timestep.h"
+#include "camera.h"
+#include "moon/core/timestep.h"
 
 #include "moon/events/event.h"
-#include "events/application_event.h"
-#include "moon/events/mouse_event.h"
 
 #include <glm/glm.hpp>
 

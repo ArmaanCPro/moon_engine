@@ -1,8 +1,11 @@
 #include "moonpch.h"
 #include "orthographic_camera_controller.h"
 
-#include "moon/input.h"
-#include "moon/key_codes.h"
+#include "moon/core/input.h"
+#include "moon/core/key_codes.h"
+#include "moon/events/event.h"
+#include "moon/events/application_event.h"
+#include "moon/events/mouse_event.h"
 
 namespace moon
 {

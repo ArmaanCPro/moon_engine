@@ -1,7 +1,7 @@
 #pragma once
 
-#include "events/event.h"
-#include "../moon/core/timestep.h"
+#include "moon/events/event.h"
+#include "timestep.h"
 
 namespace moon
 {

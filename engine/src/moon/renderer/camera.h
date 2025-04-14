@@ -1,6 +1,6 @@
 #pragma once
 
-#include "moon/core.h"
+#include "moon/core/core.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>

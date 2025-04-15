@@ -1,26 +1,41 @@
 cmake_minimum_required(VERSION 3.28)
 
-# Set vcpkg linkage types (BEFORE toolchain file)
-set(VCPKG_CRT_LINKAGE "dynamic" CACHE STRING "")
+# main option determining static linking (on if is monolithic is on)
+option(IS_MONOLITHIC "Is Monolithic" OFF)
+
+
+set(VCPKG_CRT_LINKAGE "static" CACHE STRING "")
 set(VCPKG_LIBRARY_LINKAGE "static" CACHE STRING "")
+
+if (NOT IS_MONOLITHIC)
+    set(VCPKG_CRT_LINKAGE "dynamic" CACHE STRING "")
+endif ()
 
 # Additional package-specific settings (optional)
 set(GLAD_PROFILE "core" CACHE STRING "")
 
-# MINGW keyword doesn't always work. However, selecting the preset usually works. VCPKG_CM... is defined by preset
+# MINGW is always static triplet
 if (MINGW OR VCPKG_CMAKE_SYSTEM STREQUAL MINGW)
     set(VCPKG_TARGET_TRIPLET "x64-mingw-static" CACHE STRING "")
     set(VCPKG_HOST_TRIPLET "x64-mingw-static" CACHE STRING "")
 endif()
 
 if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
-    set(VCPKG_HOST_TRIPLET "x64-windows-static-md" CACHE STRING "")
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
+    if (IS_MONOLITHIC)
+        set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+        set(VCPKG_HOST_TRIPLET "x64-windows-static" CACHE STRING "")
+    else ()
+        set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
+        set(VCPKG_HOST_TRIPLET "x64-windows-static-md" CACHE STRING "")
+    endif ()
+
+    if (IS_MONOLITHIC)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    else ()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    endif ()
     add_compile_options(
-            $<$<CONFIG:>:/MD>
-            $<$<CONFIG:Debug>:/MDd>
-            $<$<CONFIG:Release>:/MD>
             /utf-8
             /wd4251
             /EHsc
@@ -41,8 +56,6 @@ else ()
 endif()
 message(STATUS "Using VCPKG_ROOT: ${VCPKG_ROOT}")
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
-
-option(IS_MONOLITHIC "Is Monolithic" OFF)
 
 #--------
 # project

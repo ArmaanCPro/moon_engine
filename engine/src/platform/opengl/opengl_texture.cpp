@@ -12,6 +12,23 @@ CMRC_DECLARE(textures);
 
 namespace moon
 {
+    opengl_texture2d::opengl_texture2d(uint32_t width, uint32_t height)
+        :
+        width_(width), height_(height)
+    {
+        internal_format_ = GL_RGBA8;
+        data_format_ = GL_RGBA;
+
+        glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
+        glTextureStorage2D(renderer_id_, 1, internal_format_, width_, height_);
+
+        glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+
     opengl_texture2d::opengl_texture2d(std::string_view path)
         :
         path_(path.data())
@@ -65,6 +82,9 @@ namespace moon
             data_format = GL_RGB;
         }
 
+        internal_format = internal_format ? internal_format : GL_RGBA;
+        data_format = data_format ? data_format : GL_RGBA;
+
         MOON_CORE_ASSERT(internal_format & data_format, "Format not supported!");
 
         glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
@@ -84,6 +104,13 @@ namespace moon
     opengl_texture2d::~opengl_texture2d()
     {
         glDeleteTextures(1, &renderer_id_);
+    }
+
+    void opengl_texture2d::set_data(void* data, uint32_t size)
+    {
+        uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
+        MOON_CORE_ASSERT(size == width_ * height_ * bpp, "Data must be entire texture!");
+        glTextureSubImage2D(renderer_id_, 0, 0, 0, width_, height_, data_format_, GL_UNSIGNED_BYTE, data);
     }
 
     void opengl_texture2d::bind(uint32_t slot) const

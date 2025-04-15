@@ -1,6 +1,9 @@
 #include "moonpch.h"
 #include "opengl_shader.h"
 
+#include "renderer/camera.h"
+#include "renderer/camera.h"
+
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -190,6 +193,21 @@ namespace moon
     void opengl_shader::unbind() const
     {
         glUseProgram(0);
+    }
+
+    void opengl_shader::set_float3(::std::string_view name, const glm::vec3& value)
+    {
+        upload_uniform_float3(name, value);
+    }
+
+    void opengl_shader::set_float4(std::string_view name, const glm::vec4& value)
+    {
+        upload_uniform_float4(name, value);
+    }
+
+    void opengl_shader::set_mat4(std::string_view name, const glm::mat4& value)
+    {
+        upload_uniform_mat4(name, value);
     }
 
     void opengl_shader::upload_uniform_int(std::string_view name, int value)

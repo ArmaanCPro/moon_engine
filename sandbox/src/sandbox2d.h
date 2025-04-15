@@ -18,7 +18,7 @@ private:
     // temp
     moon::ref<moon::vertex_array> square_va_;
     moon::ref<moon::shader> flat_color_shader_;
-    glm::vec4 square_color_ { 0.2f, 0.3f, 0.4f, 1.0f };
+    glm::vec4 square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 
     moon::orthographic_camera_controller camera_controller_;
 

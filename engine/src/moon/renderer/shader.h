@@ -4,6 +4,7 @@
 
 #include <string_view>
 #include <unordered_map>
+#include <glm/glm.hpp>
 
 namespace moon
 {
@@ -16,6 +17,10 @@ namespace moon
         virtual void unbind() const = 0;
 
         virtual std::string_view get_name() = 0;
+
+        virtual void set_float3(std::string_view name, const glm::vec3& value) = 0;
+        virtual void set_float4(std::string_view name, const glm::vec4& value) = 0;
+        virtual void set_mat4(std::string_view name, const glm::mat4& value) = 0;
 
         static ref<shader> create(std::string_view file_path);
         static ref<shader> create(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);

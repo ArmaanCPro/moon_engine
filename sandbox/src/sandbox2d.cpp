@@ -1,10 +1,4 @@
-//
-// Created by Armaan Chahal on 4/14/2025.
-//
-
 #include "sandbox2d.h"
-
-#include <platform/opengl/opengl_shader.h>
 
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -34,11 +28,10 @@ void sandbox2d_layer::on_update(moon::timestep ts)
 
     moon::renderer2d::begin_scene(camera_controller_.get_camera());
 
-    moon::renderer2d::draw_quad(glm::vec3(0.0f), glm::vec2(1.0f), square_color_);
+    moon::renderer2d::draw_quad({ -0.4f, 0.75f }, glm::vec2(1.0f), square_color_);
+    moon::renderer2d::draw_quad({ 0.25f, 0.0f }, { 0.5f, 0.75f }, { 0.2f, 0.1f, 0.8f, 1.0f });
 
     moon::renderer2d::end_scene();
-    //std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->bind();
-    //std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->upload_uniform_float4("u_Color", square_color_);
 }
 
 void sandbox2d_layer::on_imgui_render()

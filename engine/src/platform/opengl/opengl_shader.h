@@ -2,6 +2,12 @@
 
 #include "moon/core/core.h"
 #include "moon/renderer/shader.h"
+#include "renderer/camera.h"
+#include "renderer/camera.h"
+#include "renderer/camera.h"
+#include "renderer/camera.h"
+#include "renderer/camera.h"
+#include "renderer/camera.h"
 
 #include <string_view>
 #include <glad/glad.h>
@@ -19,6 +25,10 @@ namespace moon
 
         void bind() const override;
         void unbind() const override;
+
+        void set_float3(::std::string_view name, const glm::vec3& value) override;
+        void set_float4(::std::string_view name, const glm::vec4& value) override;
+        void set_mat4(::std::string_view name, const glm::mat4& value) override;
 
         std::string_view get_name() override { return name_; }
 

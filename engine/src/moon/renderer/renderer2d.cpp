@@ -5,7 +5,9 @@
 #include "moon/renderer/shader.h"
 #include "moon/renderer/buffer.h"
 #include "moon/renderer/vertex_array.h"
-#include "platform/opengl/opengl_shader.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace moon
 {
@@ -52,8 +54,8 @@ namespace moon
 
     void renderer2d::begin_scene(const ortho_camera& camera)
     {
-        std::dynamic_pointer_cast<opengl_shader>(s_data->quad_shader)->bind();
-        std::dynamic_pointer_cast<opengl_shader>(s_data->quad_shader)->upload_uniform_mat4("u_VP", camera.get_view_projection_matrix());
+        s_data->quad_shader->bind();
+        s_data->quad_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
     }
 
     void renderer2d::end_scene()
@@ -68,11 +70,12 @@ namespace moon
 
     void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
     {
-        std::dynamic_pointer_cast<opengl_shader>(s_data->quad_shader)->bind();
+        s_data->quad_shader->bind();
 
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
-        std::dynamic_pointer_cast<opengl_shader>(s_data->quad_shader)->upload_uniform_mat4("u_Model", transform);
-        std::dynamic_pointer_cast<opengl_shader>(s_data->quad_shader)->upload_uniform_float4("u_Color", color);
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  x Rotation */
+            * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
+        s_data->quad_shader->set_mat4("u_Model", transform);
+        s_data->quad_shader->set_float4("u_Color", color);
 
         s_data->quad_vertex_array->bind();
         render_command::draw_indexed(s_data->quad_vertex_array);

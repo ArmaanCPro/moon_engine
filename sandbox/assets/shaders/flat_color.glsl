@@ -24,9 +24,10 @@ in vec3 v_Pos;
 
 void main()
 {
-    vec3 circle = vec3(v_Pos.x / 2.0, v_Pos.y / 2.0, 0.1);
-    float d = length(v_Pos.xy - circle.xy) - circle.z;
-    d = smoothstep(0.0, 0.001, d);
+    //vec3 circle = vec3(v_Pos.x / 2.0, v_Pos.y / 2.0, 0.1);
+    //float d = length(v_Pos.xy - circle.xy) - circle.z;
+    //d = smoothstep(0.0, 0.001, d);
 
+    float d = 0.0;
     FragColor = u_Color * (1 - d);
 }

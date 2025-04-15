@@ -1,15 +1,16 @@
 #pragma once
 
+#include "moon/core/core.h"
 #include "moon/renderer/shader.h"
 
 #include <string_view>
-#include <cstdint>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
 namespace moon
 {
-    class opengl_shader : public shader
+    // NOTE temporarily MOON_API; normally it isn't exported into DLL but since we have some jank code in sandbox it is necessary
+    class MOON_API opengl_shader : public shader
     {
     public:
         explicit opengl_shader(std::string_view filepath);

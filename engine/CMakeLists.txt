@@ -89,7 +89,7 @@ list(APPEND ENGINE_SOURCES ${PLATFORM_SOURCES})
 list(APPEND ENGINE_HEADERS ${PLATFORM_HEADERS})
 
 # Create a static lib
-add_library(${PROJECT_NAME} STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
+add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS} )
 
 # compile definitions
 target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
@@ -117,7 +117,9 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad)
+
+# GLAD has to be public if this is a shared lib, at least while OpenGL Shader is MOON_API
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad)
 
 # stb (image)
 find_package(Stb REQUIRED)

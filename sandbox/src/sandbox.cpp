@@ -159,6 +159,9 @@ public:
 
     void on_imgui_render() override
     {
+        if (!ImGui::GetCurrentContext())
+            ImGui::SetCurrentContext(moon_get_imgui_context());
+
         ImGui::Begin("Settings");
         ImGui::ColorEdit3("Square Color", glm::value_ptr(square_color_));
         ImGui::End();

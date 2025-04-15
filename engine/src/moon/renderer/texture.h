@@ -18,7 +18,7 @@ namespace moon
         virtual void bind(uint32_t slot = 0) const = 0;
     };
 
-    class texture2d : public texture
+    class MOON_API texture2d : public texture
     {
     public:
         virtual ~texture2d() override = default;

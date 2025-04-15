@@ -42,6 +42,8 @@ endif()
 message(STATUS "Using VCPKG_ROOT: ${VCPKG_ROOT}")
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
 
+option(IS_MONOLITHIC "Is Monolithic" OFF)
+
 #--------
 # project
 # -------
@@ -68,8 +70,10 @@ elseif (UNIX AND NOT APPLE)
 endif ()
 add_compile_definitions(${PLATFORM_DEFINITIONS})
 
-# specify static linking as a macro
-#add_compile_definitions(MOON_IS_MONOLITHIC)
+if (IS_MONOLITHIC)
+    # specify static linking as a macro
+    add_compile_definitions(MOON_IS_MONOLITHIC)
+endif ()
 
 # multiprocessor compiling
 if(MSVC)

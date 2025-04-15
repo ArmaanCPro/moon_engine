@@ -18,8 +18,6 @@
 #include "moon/core/key_codes.h"
 #include "moon/core/mouse_codes.h"
 
-#include "moon/core/entry_point.h"
-
 #include "moon/renderer/vertex_array.h"
 #include "moon/renderer/buffer.h"
 #include "moon/renderer/renderer.h"
@@ -27,6 +25,7 @@
 #include "moon/renderer/renderer_api.h"
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"
+#include "moon/renderer/texture.h"
 
 #include "moon/renderer/orthographic_camera_controller.h"
 

@@ -110,7 +110,7 @@ namespace moon
         virtual const buffer_layout& get_layout() const = 0;
         virtual void set_layout(const buffer_layout& layout) = 0;
 
-        static vertex_buffer* create(const float* vertices, uint32_t size);
+        static ref<vertex_buffer> create(const float* vertices, uint32_t size);
     };
 
     class MOON_API index_buffer
@@ -123,6 +123,6 @@ namespace moon
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
-        static index_buffer* create(const uint32_t* indices, uint32_t count);
+        static ref<index_buffer> create(const uint32_t* indices, uint32_t count);
     };
 }

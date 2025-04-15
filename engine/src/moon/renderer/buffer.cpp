@@ -6,7 +6,7 @@
 
 namespace moon
 {
-    vertex_buffer* vertex_buffer::create(const float* vertices, uint32_t size)
+    ref<vertex_buffer> vertex_buffer::create(const float* vertices, uint32_t size)
     {
         switch (renderer::get_api())
         {
@@ -14,14 +14,14 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return new opengl_vertex_buffer(vertices, size);
+            return std::make_shared<opengl_vertex_buffer>(vertices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    index_buffer* index_buffer::create(const unsigned int* indices, uint32_t size)
+    ref<index_buffer> index_buffer::create(const unsigned int* indices, uint32_t size)
     {
         switch (renderer::get_api())
         {
@@ -29,7 +29,7 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return new opengl_index_buffer(indices, size);
+            return std::make_shared<opengl_index_buffer>(indices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

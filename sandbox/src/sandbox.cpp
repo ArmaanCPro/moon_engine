@@ -4,11 +4,14 @@
 #include <renderer/texture.h>
 
 #include <moon.h>
+#include <moon/core/entry_point.h>
 
 #include <imgui.h>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <platform/opengl/opengl_shader.h>
+
+#include "sandbox2d.h"
 
 class sandbox_layer : public moon::layer
 {
@@ -195,10 +198,9 @@ public:
     sandbox_app()
     {
         MOON_INFO("sandbox app created");
-        push_layer(new sandbox_layer());
+        //push_layer(new sandbox_layer());
+        push_layer(new sandbox2d_layer());
     }
-
-private:
 
 };
 

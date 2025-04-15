@@ -10,6 +10,8 @@ endif ()
 
 set(SOURCES
         "src/sandbox.cpp"
+        src/sandbox2d.cpp
+        src/sandbox2d.h
 )
 
 source_group("src" FILES ${SOURCES})

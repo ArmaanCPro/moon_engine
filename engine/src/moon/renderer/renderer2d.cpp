@@ -14,7 +14,8 @@ namespace moon
     struct renderer2d_storage
     {
         ref<vertex_array> quad_vertex_array;
-        ref<shader> quad_shader;
+        ref<shader> flat_color_shader;
+        ref<shader> texture_shader;
     };
 
     static renderer2d_storage* s_data;
@@ -27,16 +28,17 @@ namespace moon
 
         s_data->quad_vertex_array = moon::ref<vertex_array>(vertex_array::create());
 
-        constexpr float square_verts[3 * 4] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f
+        constexpr float square_verts[5 * 4] = {
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
         };
 
         ref<vertex_buffer> square_vb = vertex_buffer::create(&square_verts[0], sizeof(square_verts));
         square_vb->set_layout({
-            { ShaderDataType::Float3, "a_Pos" }
+            { ShaderDataType::Float3, "a_Pos" },
+            { ShaderDataType::Float2, "a_TexCoord" }
         });
         s_data->quad_vertex_array->add_vertex_buffer(square_vb);
 
@@ -44,7 +46,10 @@ namespace moon
         ref<index_buffer> square_ib = index_buffer::create(&square_indices[0], sizeof(square_indices) / sizeof(uint32_t));
         s_data->quad_vertex_array->set_index_buffer(square_ib);
 
-        s_data->quad_shader = shader::create("assets/shaders/flat_color.glsl");
+        s_data->flat_color_shader = shader::create("assets/shaders/flat_color.glsl");
+        s_data->texture_shader = shader::create("assets/shaders/texture.glsl");
+        s_data->texture_shader->bind();
+        s_data->texture_shader->set_int("u_Texture", 0);
     }
 
     void renderer2d::shutdown()
@@ -54,8 +59,11 @@ namespace moon
 
     void renderer2d::begin_scene(const ortho_camera& camera)
     {
-        s_data->quad_shader->bind();
-        s_data->quad_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
+        s_data->flat_color_shader->bind();
+        s_data->flat_color_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
+
+        s_data->texture_shader->bind();
+        s_data->texture_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
     }
 
     void renderer2d::end_scene()
@@ -70,12 +78,32 @@ namespace moon
 
     void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
     {
-        s_data->quad_shader->bind();
+        s_data->flat_color_shader->bind();
 
         const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  x Rotation */
             * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
-        s_data->quad_shader->set_mat4("u_Model", transform);
-        s_data->quad_shader->set_float4("u_Color", color);
+        s_data->flat_color_shader->set_mat4("u_Model", transform);
+        s_data->flat_color_shader->set_float4("u_Color", color);
+
+        s_data->quad_vertex_array->bind();
+        render_command::draw_indexed(s_data->quad_vertex_array);
+    }
+
+    void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size, const ref<texture2d>& texture)
+    {
+        draw_quad({ position.x, position.y, 0.0f }, size, texture);
+    }
+
+    void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const ref<texture2d>& texture)
+    {
+        s_data->texture_shader->bind();
+
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  x Rotation */
+            * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
+        s_data->texture_shader->set_mat4("u_Model", transform);
+
+        s_data->texture_shader->set_int("u_Texture", 0);
+        texture->bind();
 
         s_data->quad_vertex_array->bind();
         render_command::draw_indexed(s_data->quad_vertex_array);

@@ -195,6 +195,11 @@ namespace moon
         glUseProgram(0);
     }
 
+    void opengl_shader::set_int(std::string_view name, uint32_t value)
+    {
+        upload_uniform_int(name, value);
+    }
+
     void opengl_shader::set_float3(::std::string_view name, const glm::vec3& value)
     {
         upload_uniform_float3(name, value);

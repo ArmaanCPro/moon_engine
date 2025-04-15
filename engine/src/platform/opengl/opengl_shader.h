@@ -26,6 +26,7 @@ namespace moon
         void bind() const override;
         void unbind() const override;
 
+        void set_int(std::string_view name, uint32_t value) override;
         void set_float3(::std::string_view name, const glm::vec3& value) override;
         void set_float4(::std::string_view name, const glm::vec4& value) override;
         void set_mat4(::std::string_view name, const glm::mat4& value) override;

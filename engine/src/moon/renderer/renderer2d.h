@@ -3,6 +3,7 @@
 #include "moon/core/core.h"
 
 #include "moon/renderer/camera.h"
+#include "moon/renderer/texture.h"
 
 namespace moon
 {
@@ -19,5 +20,7 @@ namespace moon
         // primitives
         static void draw_quad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
         static void draw_quad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+        static void draw_quad(const glm::vec2& position, const glm::vec2& size, const ref<texture2d>& texture);
+        static void draw_quad(const glm::vec3& position, const glm::vec2& size, const ref<texture2d>& texture);
     };
 }

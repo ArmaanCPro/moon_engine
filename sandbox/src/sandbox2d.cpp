@@ -11,7 +11,7 @@ sandbox2d_layer::sandbox2d_layer()
 
 void sandbox2d_layer::on_attach()
 {
-
+    checkerboard_texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
 }
 
 void sandbox2d_layer::on_detach()
@@ -28,8 +28,9 @@ void sandbox2d_layer::on_update(moon::timestep ts)
 
     moon::renderer2d::begin_scene(camera_controller_.get_camera());
 
-    moon::renderer2d::draw_quad({ -0.4f, 0.75f }, glm::vec2(1.0f), square_color_);
-    moon::renderer2d::draw_quad({ 0.25f, 0.0f }, { 0.5f, 0.75f }, { 0.2f, 0.1f, 0.8f, 1.0f });
+    moon::renderer2d::draw_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
+    moon::renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, square_color_);
+    moon::renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec3(10.0f), checkerboard_texture_);
 
     moon::renderer2d::end_scene();
 }

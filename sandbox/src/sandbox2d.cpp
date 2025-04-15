@@ -17,27 +17,7 @@ sandbox2d_layer::sandbox2d_layer()
 
 void sandbox2d_layer::on_attach()
 {
-    square_va_ = moon::ref<moon::vertex_array>(moon::vertex_array::create());
-    constexpr float square_verts[3 * 4] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f
-    };
-    uint32_t square_indices[6] = {0, 1, 2, 2, 3, 0};
-    moon::ref<moon::vertex_buffer> square_vb = moon::vertex_buffer::create(&square_verts[0], sizeof(square_verts));
-    square_vb->set_layout({
-        { moon::ShaderDataType::Float3, "a_Pos" }
-    });
-    square_va_->add_vertex_buffer(square_vb);
 
-    moon::ref<moon::index_buffer> square_ib = moon::index_buffer::create(&square_indices[0], sizeof(square_indices) / sizeof(uint32_t));
-    square_va_->set_index_buffer(square_ib);
-
-    flat_color_shader_ = moon::shader::create("assets/shaders/flat_color.glsl");
-
-    std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->bind();
-    std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->upload_uniform_float4("u_Color", square_color_);
 }
 
 void sandbox2d_layer::on_detach()
@@ -52,14 +32,13 @@ void sandbox2d_layer::on_update(moon::timestep ts)
     moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
     moon::render_command::clear();
 
-    moon::renderer::begin_scene(camera_controller_.get_camera());
+    moon::renderer2d::begin_scene(camera_controller_.get_camera());
 
-    std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->bind();
-    std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->upload_uniform_float4("u_Color", square_color_);
+    moon::renderer2d::draw_quad(glm::vec3(0.0f), glm::vec2(1.0f), square_color_);
 
-    moon::renderer::submit(flat_color_shader_, square_va_, glm::mat4(1.0f));
-
-    moon::renderer::end_scene();
+    moon::renderer2d::end_scene();
+    //std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->bind();
+    //std::dynamic_pointer_cast<moon::opengl_shader>(flat_color_shader_)->upload_uniform_float4("u_Color", square_color_);
 }
 
 void sandbox2d_layer::on_imgui_render()

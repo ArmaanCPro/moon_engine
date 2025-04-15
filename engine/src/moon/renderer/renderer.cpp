@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "shader.h"
 #include "platform/opengl/opengl_shader.h"
+#include "moon/renderer/renderer2d.h"
 
 namespace moon
 {
@@ -13,6 +14,7 @@ namespace moon
     void renderer::init()
     {
         render_command::init();
+        renderer2d::init();
     }
 
     void renderer::on_window_resize(uint32_t width, uint32_t height)

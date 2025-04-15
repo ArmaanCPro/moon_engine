@@ -69,6 +69,7 @@ set(ENGINE_HEADERS
         src/platform/opengl/opengl_texture.h
         src/moon/renderer/orthographic_camera_controller.h
         src/moon/renderer/renderer2d.h
+        src/moon/debug/instrumentor.h
 )
 
 # platform

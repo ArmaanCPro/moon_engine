@@ -52,6 +52,17 @@
     #define MOON_CORE_ASSERT(x, ...) do { (void)(x); } while(0)
 #endif
 
+
+// function signature
+#if defined(_MSC_VER)
+#define MOON_FUNCSIG __FUNCSIG__
+#elif defined(__GNUC__) || defined(__clang__)
+        #define MOON_FUNCSIG __PRETTY_FUNCTION__
+#else
+        #define MOON_FUNCSIG __func__
+#endif
+
+
 #define BIT(x) (1 << x)
 
 

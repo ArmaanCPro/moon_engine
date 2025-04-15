@@ -19,6 +19,7 @@
 
 // our stuff
 #include "moon/core/log.h"
+#include "moon/debug/instrumentor.h"
 #include "moon/core/key_codes.h"
 #include "moon/core/mouse_codes.h"
 

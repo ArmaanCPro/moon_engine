@@ -7,6 +7,8 @@
 #include "moon/core/layer.h"
 #include "moon/imgui/imgui_layer.h"
 
+#include "moon/debug/instrumentor.h"
+
 #include "moon/events/event.h"
 #include "moon/events/application_event.h"
 #include "moon/events/key_event.h"
@@ -27,7 +29,6 @@
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"
 #include "moon/renderer/texture.h"
-
 #include "moon/renderer/orthographic_camera_controller.h"
 
 //#ifndef MOON_IS_MONOLITHIC

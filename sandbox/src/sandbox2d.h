@@ -21,13 +21,6 @@ private:
     moon::ref<moon::texture2d> checkerboard_texture_;
     glm::vec4 square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 
-    struct profile_result
-    {
-        const char* name;
-        float time;
-    };
-    std::vector<profile_result> profile_results_;
-
     moon::orthographic_camera_controller camera_controller_;
 
 };

@@ -99,9 +99,6 @@ endif ()
 
 # compile definitions
 target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
-if (WIN32 OR MINGW)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
-endif ()
 
 # Set include directories
 target_include_directories(${PROJECT_NAME}

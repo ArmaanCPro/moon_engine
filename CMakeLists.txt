@@ -75,6 +75,10 @@ if (IS_MONOLITHIC)
     add_compile_definitions(MOON_IS_MONOLITHIC)
 endif ()
 
+if (WIN32 OR MINGW)
+    add_compile_definitions(NOMINMAX _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN)
+endif ()
+
 # multiprocessor compiling
 if(MSVC)
     add_compile_options(/MP)

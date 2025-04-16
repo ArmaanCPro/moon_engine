@@ -42,7 +42,6 @@
       "name": "msvc-common",
       "inherits": "default-common",
       "hidden": true,
-      "generator": "Visual Studio 17 2022",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl",
         "VCPKG_CMAKE_SYSTEM": "MSVC"

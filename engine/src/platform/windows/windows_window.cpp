@@ -12,7 +12,7 @@
 
 namespace moon
 {
-    static bool s_glfw_initialized = false;
+    static int s_glfw_window_count = 0;
 
     static void glfw_error_callback(int error, const char* description)
     {
@@ -26,16 +26,22 @@ namespace moon
 
     windows_window::windows_window(const window_props& props)
     {
+        MOON_PROFILE_FUNCTION();
+
         init(props);
     }
 
     windows_window::~windows_window()
     {
+        MOON_PROFILE_FUNCTION();
+
         shutdown();
     }
 
     void windows_window::on_update()
     {
+        MOON_PROFILE_FUNCTION();
+
         context_->swap_buffers();
         glfwPollEvents();
     }
@@ -47,6 +53,8 @@ namespace moon
 
     void windows_window::set_vsync(bool enabled)
     {
+        MOON_PROFILE_FUNCTION();
+
         if (enabled)
             glfwSwapInterval(1);
         else
@@ -56,24 +64,31 @@ namespace moon
 
     void windows_window::init(const window_props& props)
     {
+        MOON_PROFILE_FUNCTION();
+
         data_.height = props.height;
         data_.width = props.width;
         data_.title = props.title;
 
         MOON_CORE_INFO("Creating window {0} ({1}, {2})", data_.title, data_.width, data_.height);
 
-        if (!s_glfw_initialized)
+        if (s_glfw_window_count == 0)
         {
+            MOON_PROFILE_SCOPE("glfw init");
             int success = glfwInit();
             MOON_CORE_ASSERT(success, "Could not initialize GLFW!");
             glfwSetErrorCallback(glfw_error_callback);
-            s_glfw_initialized = true;
+            s_glfw_window_count = true;
         }
         
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
+        {
+            MOON_PROFILE_SCOPE("glfwCreateWindow");
+            window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
+            ++s_glfw_window_count;
+        }
 
         context_ = new opengl_context(window_);
         context_->init();
@@ -169,6 +184,8 @@ namespace moon
 
     void windows_window::shutdown()
     {
+        MOON_PROFILE_FUNCTION();
+
         glfwDestroyWindow(window_);
         window_ = nullptr;
     }

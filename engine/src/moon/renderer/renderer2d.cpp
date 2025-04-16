@@ -22,6 +22,8 @@ namespace moon
 
     void renderer2d::init()
     {
+        MOON_PROFILE_FUNCTION();
+
         s_data = new renderer2d_storage;
 
         render_command::init();
@@ -57,17 +59,22 @@ namespace moon
 
     void renderer2d::shutdown()
     {
+        MOON_PROFILE_FUNCTION();
+
         delete s_data;
     }
 
     void renderer2d::begin_scene(const ortho_camera& camera)
     {
+        MOON_PROFILE_FUNCTION();
+
         s_data->texture_shader->bind();
         s_data->texture_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
     }
 
     void renderer2d::end_scene()
     {
+        MOON_PROFILE_FUNCTION();
 
     }
 
@@ -78,6 +85,8 @@ namespace moon
 
     void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
     {
+        MOON_PROFILE_FUNCTION();
+
         s_data->texture_shader->set_float4("u_Color", color);
         s_data->white_texture->bind();
 
@@ -96,6 +105,8 @@ namespace moon
 
     void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const ref<texture2d>& texture)
     {
+        MOON_PROFILE_FUNCTION();
+
         s_data->texture_shader->set_float4("u_Color", glm::vec4(1.0f));
         texture->bind();
 

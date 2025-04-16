@@ -8,11 +8,10 @@ namespace moon
     {
     public:
         imgui_layer();
-        ~imgui_layer() override;
+        ~imgui_layer() override = default;
 
         void on_attach() override;
         void on_detach() override;
-        void on_imgui_render() override;
 
         void begin();
         void end();

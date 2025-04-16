@@ -8,12 +8,24 @@
 
 namespace moon
 {
-    renderer::scene_data* renderer::s_scene_data_ = new renderer::scene_data;
+    renderer::scene_data* renderer::s_scene_data_ = nullptr;
 
     void renderer::init()
     {
+        MOON_PROFILE_FUNCTION();
+
+        s_scene_data_ = new scene_data;
+
         render_command::init();
         renderer2d::init();
+    }
+
+    void renderer::shutdown()
+    {
+        MOON_PROFILE_FUNCTION();
+
+        delete s_scene_data_;
+        renderer2d::shutdown();
     }
 
     void renderer::on_window_resize(uint32_t width, uint32_t height)

@@ -16,6 +16,8 @@ namespace moon
         :
         width_(width), height_(height)
     {
+        MOON_PROFILE_FUNCTION();
+
         internal_format_ = GL_RGBA8;
         data_format_ = GL_RGBA;
 
@@ -33,38 +35,43 @@ namespace moon
         :
         path_(path.data())
     {
+        MOON_PROFILE_FUNCTION();
+
         stbi_set_flip_vertically_on_load(true);
         int width, height, channels;
         stbi_uc* data = nullptr;
 
-        // Try loading from embedded resources first
-        try
         {
-            auto fs = cmrc::textures::get_filesystem();
-            if (fs.exists(path.data()))
+            MOON_PROFILE_SCOPE("stbi_load - opengl_texture2d::opengl_texture2d(std::string_view path)");
+
+            // Try loading from embedded resources first
+            try
             {
-                auto resource = fs.open(path.data());
-                data = stbi_load_from_memory(
-                    reinterpret_cast<const stbi_uc*>(resource.begin()),
-                    static_cast<int>(resource.size()),
-                    &width, &height, &channels, 0
-                    );
-                MOON_CORE_INFO("Loading embedded texture: {0}", path.data());
+                auto fs = cmrc::textures::get_filesystem();
+                if (fs.exists(path.data()))
+                {
+                    auto resource = fs.open(path.data());
+                    data = stbi_load_from_memory(
+                        (const stbi_uc*)resource.begin(),
+                        (int)resource.size(),
+                        &width, &height, &channels, 0
+                        );
+                    MOON_CORE_INFO("Loading embedded texture: {0}", path.data());
+                }
+                else
+                {
+                    // Fallback to filesystem loading
+                    data = stbi_load(path.data(), &width, &height, &channels, 0);
+                    MOON_CORE_INFO("Loading file system texture: {0}", path.data());
+                }
             }
-            else
+            catch (const std::exception& e)
             {
                 // Fallback to filesystem loading
+                MOON_CORE_WARN("Failed to load from embedded resources: {0}, trying filesystem", e.what());
                 data = stbi_load(path.data(), &width, &height, &channels, 0);
-                MOON_CORE_INFO("Loading file system texture: {0}", path.data());
             }
         }
-        catch (const std::exception& e)
-        {
-            // Fallback to filesystem loading
-            MOON_CORE_WARN("Failed to load from embedded resources: {0}, trying filesystem", e.what());
-            data = stbi_load(path.data(), &width, &height, &channels, 0);
-        }
-
         MOON_CORE_ASSERT(data, "Failed to load image!");
 
         width_ = width;
@@ -103,11 +110,15 @@ namespace moon
 
     opengl_texture2d::~opengl_texture2d()
     {
+        MOON_PROFILE_FUNCTION();
+
         glDeleteTextures(1, &renderer_id_);
     }
 
     void opengl_texture2d::set_data(void* data, uint32_t size)
     {
+        MOON_PROFILE_FUNCTION();
+
         uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
         MOON_CORE_ASSERT(size == width_ * height_ * bpp, "Data must be entire texture!");
         glTextureSubImage2D(renderer_id_, 0, 0, 0, width_, height_, data_format_, GL_UNSIGNED_BYTE, data);
@@ -115,6 +126,8 @@ namespace moon
 
     void opengl_texture2d::bind(uint32_t slot) const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindTextureUnit(slot, renderer_id_);
     }
 }

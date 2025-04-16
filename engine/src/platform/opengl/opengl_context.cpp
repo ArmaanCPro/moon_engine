@@ -15,6 +15,8 @@ namespace moon
 
     void opengl_context::init()
     {
+        MOON_PROFILE_FUNCTION();
+
         glfwMakeContextCurrent(window_handle_);
         // setup glad
         int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -27,6 +29,8 @@ namespace moon
 
     void opengl_context::swap_buffers()
     {
+        MOON_PROFILE_FUNCTION();
+
         glfwSwapBuffers(window_handle_);
     }
 }

@@ -12,7 +12,7 @@ namespace moon
     class MOON_API orthographic_camera_controller
     {
     public:
-        orthographic_camera_controller(float aspect_ratio, bool rotation = false);
+        explicit orthographic_camera_controller(float aspect_ratio, bool rotation = false);
 
         void on_update(timestep ts);
         void on_event(event& e);

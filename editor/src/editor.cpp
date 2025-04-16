@@ -1,4 +1,5 @@
 #include <moon.h>
+#include <moon/core/entry_point.h>
 
 #include <imgui.h>
 

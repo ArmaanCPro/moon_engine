@@ -26,6 +26,8 @@ namespace moon
 
     opengl_shader::opengl_shader(std::string_view filepath)
     {
+        MOON_PROFILE_FUNCTION();
+
         std::string shader_source = read_file(filepath);
         auto shader_sources = preprocess(shader_source);
         compile(shader_sources);
@@ -43,6 +45,8 @@ namespace moon
         :
         name_(name)
     {
+        MOON_PROFILE_FUNCTION();
+
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = std::string(vertex_src);
         sources[GL_FRAGMENT_SHADER] = std::string(fragment_src);
@@ -51,11 +55,15 @@ namespace moon
 
     opengl_shader::~opengl_shader()
     {
+        MOON_PROFILE_FUNCTION();
+
         glDeleteProgram(renderer_id_);
     }
 
     std::string opengl_shader::read_file(std::string_view filepath)
     {
+        MOON_PROFILE_FUNCTION();
+
         std::string result;
 
         try
@@ -96,6 +104,8 @@ namespace moon
 
     std::unordered_map<GLenum, std::string> opengl_shader::preprocess(const std::string& source)
     {
+        MOON_PROFILE_FUNCTION();
+
         std::unordered_map<GLenum, std::string> result;
 
         const char* type_token = "#type";
@@ -120,6 +130,8 @@ namespace moon
 
     void opengl_shader::compile(const std::unordered_map<GLenum, std::string>& shader_sources)
     {
+        MOON_PROFILE_FUNCTION();
+
         GLuint program = glCreateProgram();
         MOON_CORE_ASSERT(shader_sources.size() <= 2, "Only 2 shaders are supported!");
         std::array<GLuint, 2> gl_shader_ids {};
@@ -187,31 +199,43 @@ namespace moon
 
     void opengl_shader::bind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glUseProgram(renderer_id_);
     }
 
     void opengl_shader::unbind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glUseProgram(0);
     }
 
     void opengl_shader::set_int(std::string_view name, uint32_t value)
     {
+        MOON_PROFILE_FUNCTION();
+
         upload_uniform_int(name, value);
     }
 
     void opengl_shader::set_float3(::std::string_view name, const glm::vec3& value)
     {
+        MOON_PROFILE_FUNCTION();
+
         upload_uniform_float3(name, value);
     }
 
     void opengl_shader::set_float4(std::string_view name, const glm::vec4& value)
     {
+        MOON_PROFILE_FUNCTION();
+
         upload_uniform_float4(name, value);
     }
 
     void opengl_shader::set_mat4(std::string_view name, const glm::mat4& value)
     {
+        MOON_PROFILE_FUNCTION();
+
         upload_uniform_mat4(name, value);
     }
 

@@ -18,6 +18,8 @@ namespace moon
 
     void orthographic_camera_controller::on_update(timestep ts)
     {
+        MOON_PROFILE_FUNCTION();
+
         if (input::is_key_pressed(MOON_KEY_W))
             camera_position_.y += camera_translation_speed_ * ts;
         if (input::is_key_pressed(MOON_KEY_S))
@@ -44,6 +46,8 @@ namespace moon
 
     void orthographic_camera_controller::on_event(event& e)
     {
+        MOON_PROFILE_FUNCTION();
+
         event_dispatcher dispatcher(e);
         dispatcher.dispatch<mouse_scrolled_event>([&](mouse_scrolled_event& me) -> bool
         {

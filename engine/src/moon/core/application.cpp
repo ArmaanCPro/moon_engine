@@ -21,6 +21,8 @@ namespace moon
 
     application::application()
     {
+        MOON_PROFILE_FUNCTION();
+
         MOON_CORE_ASSERT(!s_instance, "Application already exists!");
         s_instance = this;
 
@@ -35,37 +37,57 @@ namespace moon
 
     application::~application()
     {
+        MOON_PROFILE_FUNCTION();
 
+        renderer::shutdown();
     }
 
     void application::push_layer(layer* layer)
     {
+        MOON_PROFILE_FUNCTION();
+
         layer_stack_.push_layer(layer);
+        layer->on_attach();
     }
 
     void application::push_overlay(layer* layer)
     {
+        MOON_PROFILE_FUNCTION();
+
         layer_stack_.push_overlay(layer);
+        layer->on_attach();
     }
 
     void application::run()
     {
+        MOON_PROFILE_FUNCTION();
+
         while (running_)
         {
+            MOON_PROFILE_SCOPE("Run Loop");
+
             const auto time = (float)glfwGetTime(); // Should be Platform::GetTime
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
 
             if (!minimized_)
             {
-                for (layer* l : layer_stack_)
-                    l->on_update(ts);
+                {
+                    MOON_PROFILE_SCOPE("layer_stack on_update");
+
+                    for (layer* l : layer_stack_)
+                        l->on_update(ts);
+                }
             }
 
             imgui_layer_->begin();
-            for (layer* l : layer_stack_)
             {
-                l->on_imgui_render();
+                MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
+
+                for (layer* l : layer_stack_)
+                {
+                    l->on_imgui_render();
+                }
             }
             imgui_layer_->end();
 
@@ -75,6 +97,8 @@ namespace moon
 
     void application::on_event(event& e)
     {
+        MOON_PROFILE_FUNCTION();
+
         event_dispatcher dispatcher(e);
         dispatcher.dispatch<window_close_event>([&](window_close_event& wce) { return on_window_close(wce); });
         dispatcher.dispatch<window_resize_event>([&](window_resize_event& wre) { return on_window_resize(wre); });
@@ -95,6 +119,8 @@ namespace moon
 
     bool application::on_window_resize(window_resize_event& e)
     {
+        MOON_PROFILE_FUNCTION();
+
         // if window is minimized, it should stop running
         if (e.get_width() == 0 || e.get_height() == 0)
         {

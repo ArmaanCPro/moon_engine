@@ -11,6 +11,8 @@ namespace moon
 
     opengl_vertex_buffer::opengl_vertex_buffer(const float* vertices, uint32_t size)
     {
+        MOON_PROFILE_FUNCTION();
+
         glCreateBuffers(1, &renderer_id_);
         glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -18,16 +20,22 @@ namespace moon
 
     opengl_vertex_buffer::~opengl_vertex_buffer()
     {
+        MOON_PROFILE_FUNCTION();
+
         glDeleteBuffers(1, &renderer_id_);
     }
 
     void opengl_vertex_buffer::bind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
     }
 
     void opengl_vertex_buffer::unbind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
@@ -38,6 +46,8 @@ namespace moon
         :
         count_(count)
     {
+        MOON_PROFILE_FUNCTION();
+
         glCreateBuffers(1, &renderer_id_);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
@@ -45,16 +55,22 @@ namespace moon
 
     opengl_index_buffer::~opengl_index_buffer()
     {
+        MOON_PROFILE_FUNCTION();
+
         glDeleteBuffers(1, &renderer_id_);
     }
 
     void opengl_index_buffer::bind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
     }
 
     void opengl_index_buffer::unbind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }

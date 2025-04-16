@@ -14,6 +14,8 @@
 // declared in moon.h, this function is to allow editor to access our context, useful for dll linking.
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context()
 {
+    MOON_PROFILE_FUNCTION();
+
     return ImGui::GetCurrentContext();
 }
 //#endif
@@ -25,11 +27,10 @@ namespace moon
         layer("ImGuiLayer")
     {}
 
-    imgui_layer::~imgui_layer()
-    {}
-
     void imgui_layer::on_attach()
     {
+        MOON_PROFILE_FUNCTION();
+
         IMGUI_CHECKVERSION();
         ImGuiContext* context = ImGui::CreateContext();
         if (!context) {
@@ -57,6 +58,8 @@ namespace moon
 
     void imgui_layer::on_detach()
     {
+        MOON_PROFILE_FUNCTION();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyPlatformWindows();
@@ -64,13 +67,10 @@ namespace moon
         MOON_CORE_TRACE("ImGui shutdown");
     }
 
-    void imgui_layer::on_imgui_render()
-    {
-
-    }
-
     void imgui_layer::begin()
     {
+        MOON_PROFILE_FUNCTION();
+
         if (glfwGetWindowAttrib((GLFWwindow*)application::get().get_window().get_native_window(), GLFW_ICONIFIED) != 0)
         {
             ImGui_ImplGlfw_Sleep(10);
@@ -83,6 +83,8 @@ namespace moon
 
     void imgui_layer::end()
     {
+        MOON_PROFILE_FUNCTION();
+
         ImGuiIO& io = ImGui::GetIO();
         auto& app = application::get();
         io.DisplaySize = ImVec2((float)app.get_window().get_width(), (float)app.get_window().get_height());

@@ -27,26 +27,36 @@ namespace moon
 
     opengl_vertex_array::opengl_vertex_array()
     {
+        MOON_PROFILE_FUNCTION();
+
         glCreateVertexArrays(1, &renderer_id_);
     }
 
     opengl_vertex_array::~opengl_vertex_array()
     {
+        MOON_PROFILE_FUNCTION();
+
         glDeleteVertexArrays(1, &renderer_id_);
     }
 
     void opengl_vertex_array::bind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindVertexArray(renderer_id_);
     }
 
     void opengl_vertex_array::unbind() const
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindVertexArray(0);
     }
 
     void opengl_vertex_array::add_vertex_buffer(ref<vertex_buffer> vbuf)
     {
+        MOON_PROFILE_FUNCTION();
+
         MOON_CORE_ASSERT(!vbuf->get_layout().get_elements().empty(), "Vertex Buffer has no layout!");
         glBindVertexArray(renderer_id_);
         vbuf->bind();
@@ -72,6 +82,8 @@ namespace moon
 
     void opengl_vertex_array::set_index_buffer(ref<index_buffer> ibuf)
     {
+        MOON_PROFILE_FUNCTION();
+
         glBindVertexArray(renderer_id_);
         ibuf->bind();
 

@@ -13,6 +13,7 @@ namespace moon
     {
     public:
         static void init();
+        static void shutdown();
         static void on_window_resize(uint32_t width, uint32_t height);
 
         static void begin_scene(const ortho_camera& cam);

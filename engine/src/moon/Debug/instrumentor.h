@@ -23,7 +23,7 @@ namespace moon
         std::string name;
     };
 
-    class instrumentor
+    class MOON_API instrumentor
     {
     private:
         instrumentation_session* current_session_;
@@ -91,7 +91,7 @@ namespace moon
         }
     };
 
-    class instrumentation_timer
+    class MOON_API instrumentation_timer
     {
     public:
         explicit instrumentation_timer(const char* name)
@@ -130,7 +130,8 @@ namespace moon
     #define MOON_PROFILE_BEGIN_SESSION(name, filepath) ::moon::instrumentor::get().begin_session(name, filepath)
     #define MOON_PROFILE_END_SESSION() ::moon::instrumentor::get().end_session()
     #define MOON_PROFILE_SCOPE(name) ::moon::instrumentation_timer CONCATENATE(timer, __LINE__)(name)
-    #define CONCATENATE(a, b) a##b
+    #define CONCATENATE(a, b) CONCATENATE_INNER(a, b)
+    #define CONCATENATE_INNER(a, b) a##b
     #define MOON_PROFILE_FUNCTION() MOON_PROFILE_SCOPE(MOON_FUNCSIG)
 #else
     #define MOON_PROFILE_BEGIN_SESSION(name, filepath)

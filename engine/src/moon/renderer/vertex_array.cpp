@@ -6,7 +6,6 @@
 
 namespace moon
 {
-
     vertex_array* vertex_array::create()
     {
         switch (renderer::get_api())

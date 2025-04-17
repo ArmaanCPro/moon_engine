@@ -8,12 +8,40 @@
 
 namespace moon
 {
+    void MOON_API OpenGLMessageCallback(
+    [[maybe_unused]] unsigned source,
+    [[maybe_unused]] unsigned type,
+    [[maybe_unused]] unsigned id,
+    [[maybe_unused]] unsigned severity,
+    [[maybe_unused]] int length,
+    [[maybe_unused]] const char* message,
+    [[maybe_unused]] const void* userParam)
+    {
+        switch (severity)
+        {
+        case GL_DEBUG_SEVERITY_HIGH:         MOON_CORE_FATAL(message); return;
+        case GL_DEBUG_SEVERITY_MEDIUM:       MOON_CORE_ERROR(message); return;
+        case GL_DEBUG_SEVERITY_LOW:          MOON_CORE_WARN(message); return;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: MOON_CORE_TRACE(message); return;
+        }
+
+        MOON_CORE_ASSERT(false, "Unknown severity level!");
+    }
+
     void opengl_renderer_api::init()
     {
         MOON_PROFILE_FUNCTION();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+#ifdef DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+#endif
 
         glEnable(GL_DEPTH_TEST);
     }

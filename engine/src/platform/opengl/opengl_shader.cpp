@@ -211,11 +211,18 @@ namespace moon
         glUseProgram(0);
     }
 
-    void opengl_shader::set_int(std::string_view name, uint32_t value)
+    void opengl_shader::set_int(std::string_view name, int value)
     {
         MOON_PROFILE_FUNCTION();
 
         upload_uniform_int(name, value);
+    }
+
+    void opengl_shader::set_int_array(std::string_view name, int* values, uint32_t count)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        upload_uniform_int_array(name, values, count);
     }
 
     void opengl_shader::set_float(std::string_view name, float value)
@@ -257,6 +264,12 @@ namespace moon
     {
         GLint location = glGetUniformLocation(renderer_id_, name.data());
         glUniform1i(location, value);
+    }
+
+    void opengl_shader::upload_uniform_int_array(std::string_view name, int* values, uint32_t count)
+    {
+        GLint location = glGetUniformLocation(renderer_id_, name.data());
+        glUniform1iv(location, count, values);
     }
 
     void opengl_shader::upload_uniform_float(std::string_view name, float value)

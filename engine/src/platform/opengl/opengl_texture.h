@@ -20,6 +20,11 @@ namespace moon
 
         void bind(uint32_t slot = 0) const override;
 
+        bool operator==(const texture& other) const override
+        {
+            return renderer_id_ == ((opengl_texture2d&)other).renderer_id_;
+        }
+
     private:
         std::string path_;
         uint32_t width_, height_;

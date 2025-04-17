@@ -18,7 +18,8 @@ namespace moon
 
         virtual std::string_view get_name() = 0;
 
-        virtual void set_int(std::string_view name, uint32_t value) = 0;
+        virtual void set_int(std::string_view name, int value) = 0;
+        virtual void set_int_array(std::string_view name, int* values, uint32_t count) = 0;
         virtual void set_float(std::string_view name, float value) = 0;
         virtual void set_float2(std::string_view name, const glm::vec2& value) = 0;
         virtual void set_float3(std::string_view name, const glm::vec3& value) = 0;

@@ -16,7 +16,8 @@ namespace moon
         glm::vec3 position;
         glm::vec4 color;
         glm::vec2 tex_coords;
-        // TODO: texid
+        float tex_index;
+        float tiling_factor;
     };
 
     struct renderer2d_data
@@ -24,6 +25,7 @@ namespace moon
         static constexpr uint32_t max_quads = 10000;
         static constexpr uint32_t max_vertices = max_quads * 4;
         static constexpr uint32_t max_indices = max_quads * 6;
+        static constexpr uint32_t max_texture_slots = 32; // TODO: Render Capabilities
 
         ref<vertex_array> quad_vertex_array;
         ref<vertex_buffer> quad_vertex_buffer;
@@ -33,6 +35,9 @@ namespace moon
         uint32_t quad_index_count = 0;
         quad_vertex* quad_vertex_buffer_base = nullptr;
         quad_vertex* quad_vertex_buffer_ptr = nullptr;
+
+        std::array<ref<texture2d>, max_texture_slots> texture_slots;
+        uint32_t texture_slot_index = 1; // 0 = white texture
     };
 
     static renderer2d_data s_data;
@@ -50,7 +55,9 @@ namespace moon
         s_data.quad_vertex_buffer->set_layout({
             { ShaderDataType::Float3, "a_Position" },
             { ShaderDataType::Float4, "a_Color" },
-            { ShaderDataType::Float2, "a_TexCoord" }
+            { ShaderDataType::Float2, "a_TexCoord" },
+            { ShaderDataType::Float, "a_TexIndex" },
+            { ShaderDataType::Float, "a_TilingFactor" }
         });
         s_data.quad_vertex_array->add_vertex_buffer(s_data.quad_vertex_buffer);
 
@@ -82,10 +89,19 @@ namespace moon
         uint32_t white_texture_data = 0xffffffff;
         s_data.white_texture->set_data(&white_texture_data, sizeof(uint32_t));
 
+        int32_t samplers[s_data.max_texture_slots];
+        for (uint32_t i = 0; i < s_data.max_texture_slots; i++)
+        {
+            samplers[i] = (int32_t)i;
+        }
+
         // create our texture shader
         s_data.texture_shader = shader::create("assets/shaders/texture.glsl");
         s_data.texture_shader->bind();
-        s_data.texture_shader->set_int("u_Texture", 0);
+        s_data.texture_shader->set_int_array("u_Textures", samplers, s_data.max_texture_slots);
+
+        // set index 0 to white texture
+        s_data.texture_slots[0] = s_data.white_texture;
     }
 
     void renderer2d::shutdown()
@@ -104,6 +120,8 @@ namespace moon
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
+
+        s_data.texture_slot_index = 1;
     }
 
     void renderer2d::end_scene()
@@ -120,10 +138,13 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        s_data.quad_vertex_array->bind();
+        // bind textures
+        for (uint32_t i = 0; i < s_data.texture_slot_index; i++)
+        {
+            s_data.texture_slots[i]->bind(i);
+        }
+
         render_command::draw_indexed(s_data.quad_vertex_array, s_data.quad_index_count);
-        s_data.quad_index_count = 0;
-        s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
     }
 
     void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -135,26 +156,34 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        s_data.white_texture->bind();
+        constexpr float texindex = 0.0f;
 
         s_data.quad_vertex_buffer_ptr->position = position;
         s_data.quad_vertex_buffer_ptr->color = color;
         s_data.quad_vertex_buffer_ptr->tex_coords = { 0.0f, 0.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
         s_data.quad_vertex_buffer_ptr++;
 
-        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y, 0.0f };
+        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y, position.z };
         s_data.quad_vertex_buffer_ptr->color = color;
         s_data.quad_vertex_buffer_ptr->tex_coords = { 1.0f, 0.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
         s_data.quad_vertex_buffer_ptr++;
 
-        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y + size.y, 0.0f };
+        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y + size.y, position.z };
         s_data.quad_vertex_buffer_ptr->color = color;
         s_data.quad_vertex_buffer_ptr->tex_coords = { 1.0f, 1.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
         s_data.quad_vertex_buffer_ptr++;
 
-        s_data.quad_vertex_buffer_ptr->position = { position.x, position.y + size.y, 0.0f };
+        s_data.quad_vertex_buffer_ptr->position = { position.x, position.y + size.y, position.z };
         s_data.quad_vertex_buffer_ptr->color = color;
         s_data.quad_vertex_buffer_ptr->tex_coords = { 0.0f, 1.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
         s_data.quad_vertex_buffer_ptr++;
 
         // 4 vertices, but a quad has 6 indices
@@ -184,6 +213,56 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        float texindex = 0.0f;
+
+        for (uint32_t i = 1; i < s_data.texture_slot_index; i++)
+        {
+            if (*s_data.texture_slots[i].get() == *texture.get())
+            {
+                texindex = (float)i;
+                break;
+            }
+        }
+
+        if (texindex == 0.0f)
+        {
+            texindex = (float)s_data.texture_slot_index;
+            s_data.texture_slots[s_data.texture_slot_index] = texture;
+            s_data.texture_slot_index++;
+        }
+
+        s_data.quad_vertex_buffer_ptr->position = position;
+        s_data.quad_vertex_buffer_ptr->color = tint_color;
+        s_data.quad_vertex_buffer_ptr->tex_coords = { 0.0f, 0.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
+        s_data.quad_vertex_buffer_ptr++;
+
+        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y, position.z };
+        s_data.quad_vertex_buffer_ptr->color = tint_color;
+        s_data.quad_vertex_buffer_ptr->tex_coords = { 1.0f, 0.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
+        s_data.quad_vertex_buffer_ptr++;
+
+        s_data.quad_vertex_buffer_ptr->position = { position.x + size.x, position.y + size.y, position.z };
+        s_data.quad_vertex_buffer_ptr->color = tint_color;
+        s_data.quad_vertex_buffer_ptr->tex_coords = { 1.0f, 1.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
+        s_data.quad_vertex_buffer_ptr++;
+
+        s_data.quad_vertex_buffer_ptr->position = { position.x, position.y + size.y, position.z };
+        s_data.quad_vertex_buffer_ptr->color = tint_color;
+        s_data.quad_vertex_buffer_ptr->tex_coords = { 0.0f, 1.0f };
+        s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+        s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
+        s_data.quad_vertex_buffer_ptr++;
+
+        // 4 vertices, but a quad has 6 indices
+        s_data.quad_index_count += 6;
+
+#if OLD_PATH
         s_data.texture_shader->set_float4("u_Color", tint_color);
         s_data.texture_shader->set_float("u_TilingFactor", tiling_factor);
         texture->bind();
@@ -196,6 +275,7 @@ namespace moon
 
         s_data.quad_vertex_array->bind();
         render_command::draw_indexed(s_data.quad_vertex_array);
+#endif
     }
 
     void renderer2d::draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation,

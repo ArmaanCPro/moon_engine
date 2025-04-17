@@ -29,9 +29,9 @@ namespace moon
             s_renderer_api_->clear();
         }
 
-        inline static void draw_indexed(const ref<vertex_array>& vertex_array)
+        inline static void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count = 0)
         {
-            s_renderer_api_->draw_indexed(vertex_array);
+            s_renderer_api_->draw_indexed(vertex_array, index_count);
         }
     private:
         static renderer_api* s_renderer_api_;

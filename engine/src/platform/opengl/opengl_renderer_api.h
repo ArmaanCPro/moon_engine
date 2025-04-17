@@ -16,6 +16,6 @@ namespace moon
         void set_clear_color(const glm::vec4& color) override;
         void clear() override;
 
-        void draw_indexed(const ref<vertex_array>& vertex_array) override;
+        void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count) override;
     };
 }

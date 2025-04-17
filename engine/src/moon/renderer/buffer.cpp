@@ -6,6 +6,21 @@
 
 namespace moon
 {
+    ref<vertex_buffer> vertex_buffer::create(uint32_t size)
+    {
+        switch (renderer::get_api())
+        {
+        case renderer_api::API::None:
+            MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            return nullptr;
+        case renderer_api::API::OpenGL:
+            return std::make_shared<opengl_vertex_buffer>(size);
+        }
+
+        MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
     ref<vertex_buffer> vertex_buffer::create(const float* vertices, uint32_t size)
     {
         switch (renderer::get_api())

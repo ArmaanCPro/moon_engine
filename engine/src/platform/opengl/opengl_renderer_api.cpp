@@ -33,9 +33,10 @@ namespace moon
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void opengl_renderer_api::draw_indexed(const ref<vertex_array>& vertex_array)
+    void opengl_renderer_api::draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count)
     {
-        glDrawElements(GL_TRIANGLES, vertex_array->get_index_buffer()->get_count(), GL_UNSIGNED_INT, nullptr);
+        uint32_t count = index_count ? index_count : vertex_array->get_index_buffer()->get_count();
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

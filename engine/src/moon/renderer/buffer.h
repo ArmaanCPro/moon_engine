@@ -92,8 +92,8 @@ namespace moon
             {
                 element.offset = offset;
                 offset += element.size;
-                stride_ += element.size;
             }
+            stride_ = offset;
         }
         std::vector<buffer_element> elements_;
         uint32_t stride_{0};
@@ -107,12 +107,16 @@ namespace moon
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
+        virtual void set_data(const void* data, uint32_t size) = 0;
+
         virtual const buffer_layout& get_layout() const = 0;
         virtual void set_layout(const buffer_layout& layout) = 0;
 
+        static ref<vertex_buffer> create(uint32_t size);
         static ref<vertex_buffer> create(const float* vertices, uint32_t size);
     };
 
+    // Currently, only 32-bit index buffers are supported
     class MOON_API index_buffer
     {
     public:

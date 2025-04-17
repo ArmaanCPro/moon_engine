@@ -9,6 +9,15 @@ namespace moon
     // ////////////////////////////////////////////////
     // VERTEX BUFFER ///////////////////////////////////
 
+    opengl_vertex_buffer::opengl_vertex_buffer(uint32_t size)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        glCreateBuffers(1, &renderer_id_);
+        glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+    }
+
     opengl_vertex_buffer::opengl_vertex_buffer(const float* vertices, uint32_t size)
     {
         MOON_PROFILE_FUNCTION();
@@ -37,6 +46,14 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    void opengl_vertex_buffer::set_data(const void* data, uint32_t size)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
     }
 
     // ////////////////////////////////////////////////

@@ -30,7 +30,7 @@ public:
         };
         moon::ref<moon::vertex_buffer> vbuf = moon::ref<moon::vertex_buffer>(moon::vertex_buffer::create(verts, sizeof(verts)));
         moon::buffer_layout layout = {
-            { moon::ShaderDataType::Float3, "a_Pos" },
+            { moon::ShaderDataType::Float3, "a_Position" },
             { moon::ShaderDataType::Float4, "a_Color" }
         };
         vbuf->set_layout(layout);
@@ -43,7 +43,7 @@ public:
         // shader
         std::string vertex_shader_src = R"(
             #version 460 core
-            layout (location = 0) in vec3 a_Pos;
+            layout (location = 0) in vec3 a_Position;
             layout (location = 1) in vec4 a_Color;
 
             uniform mat4 u_VP = mat4(1.0);
@@ -53,7 +53,7 @@ public:
             void main()
             {
                 v_Color = a_Color;
-                gl_Position = u_VP * u_Model * vec4(a_Pos, 1.0);
+                gl_Position = u_VP * u_Model * vec4(a_Position, 1.0);
             }
         )";
         std::string fragment_shader_src = R"(
@@ -79,7 +79,7 @@ public:
         moon::ref<moon::vertex_buffer> square_vb = moon::ref<moon::vertex_buffer>(moon::vertex_buffer::create(
             &square_verts[0], sizeof(square_verts)));
         square_vb->set_layout({
-            { moon::ShaderDataType::Float3, "a_Pos" },
+            { moon::ShaderDataType::Float3, "a_Position" },
             { moon::ShaderDataType::Float2, "a_TexCoord" }
         });
         square_va_->add_vertex_buffer(square_vb);

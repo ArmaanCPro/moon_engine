@@ -218,6 +218,20 @@ namespace moon
         upload_uniform_int(name, value);
     }
 
+    void opengl_shader::set_float(std::string_view name, float value)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        upload_uniform_float(name, value);
+    }
+
+    void opengl_shader::set_float2(std::string_view name, const glm::vec2& value)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        upload_uniform_float2(name, value);
+    }
+
     void opengl_shader::set_float3(::std::string_view name, const glm::vec3& value)
     {
         MOON_PROFILE_FUNCTION();

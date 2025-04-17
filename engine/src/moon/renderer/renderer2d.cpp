@@ -90,7 +90,7 @@ namespace moon
         s_data->texture_shader->set_float4("u_Color", color);
         s_data->white_texture->bind();
 
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  x Rotation */
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
             * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
         s_data->texture_shader->set_mat4("u_Model", transform);
 
@@ -98,19 +98,71 @@ namespace moon
         render_command::draw_indexed(s_data->quad_vertex_array);
     }
 
-    void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size, const ref<texture2d>& texture)
+    void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size,
+        const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
     {
-        draw_quad({ position.x, position.y, 0.0f }, size, texture);
+        draw_quad({ position.x, position.y, 0.0f }, size, texture, tiling_factor, tint_color);
     }
 
-    void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const ref<texture2d>& texture)
+    void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size,
+        const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
     {
         MOON_PROFILE_FUNCTION();
 
-        s_data->texture_shader->set_float4("u_Color", glm::vec4(1.0f));
+        s_data->texture_shader->set_float4("u_Color", tint_color);
+        s_data->texture_shader->set_float("u_TilingFactor", tiling_factor);
         texture->bind();
 
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  x Rotation */
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+            * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
+        s_data->texture_shader->set_mat4("u_Model", transform);
+
+        s_data->texture_shader->set_int("u_Texture", 0);
+
+        s_data->quad_vertex_array->bind();
+        render_command::draw_indexed(s_data->quad_vertex_array);
+    }
+
+    void renderer2d::draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation,
+        const glm::vec4& color)
+    {
+        draw_rotated_quad({ position.x, position.y, 0.0f }, size, rotation, color);
+    }
+
+    void renderer2d::draw_rotated_quad(const glm::vec3& position, const glm::vec2& size, float rotation,
+        const glm::vec4& color)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        s_data->texture_shader->set_float4("u_Color", color);
+        s_data->white_texture->bind();
+
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+            * glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 0, 1))
+            * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
+        s_data->texture_shader->set_mat4("u_Model", transform);
+
+        s_data->quad_vertex_array->bind();
+        render_command::draw_indexed(s_data->quad_vertex_array);
+    }
+
+    void renderer2d::draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation,
+        const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
+    {
+        draw_rotated_quad({ position.x, position.y, 0.0f }, size, rotation, texture, tiling_factor, tint_color);
+    }
+
+    void renderer2d::draw_rotated_quad(const glm::vec3& position, const glm::vec2& size, float rotation,
+        const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        s_data->texture_shader->set_float4("u_Color", tint_color);
+        s_data->texture_shader->set_float("u_TilingFactor", tiling_factor);
+        texture->bind();
+
+        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+            * glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 0, 1))
             * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
         s_data->texture_shader->set_mat4("u_Model", transform);
 

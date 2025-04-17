@@ -23,9 +23,10 @@ layout(location = 0) out vec4 FragColor;
 in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
-uniform vec4 u_Color;
+uniform float u_TilingFactor = 1.0;
+uniform vec4 u_Color = vec4(1.0);
 
 void main()
 {
-    FragColor = texture(u_Texture, v_TexCoord * 10.0) * u_Color;
+    FragColor = texture(u_Texture, v_TexCoord * u_TilingFactor) * u_Color;
 }

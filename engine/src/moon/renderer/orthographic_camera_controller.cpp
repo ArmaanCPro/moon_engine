@@ -36,12 +36,18 @@ namespace moon
                 camera_rotation_ += camera_rotation_speed_ * ts;
             if (input::is_key_pressed(MOON_KEY_E))
                 camera_rotation_ -= camera_rotation_speed_ * ts;
+
+            if (camera_rotation_ > 180.0f)
+                camera_rotation_ -= 360.0f;
+            else if (camera_rotation_ <= -180.0f)
+                camera_rotation_ += 360.0f;
+
+            camera_.set_rotation(camera_rotation_);
         }
 
         camera_.set_position(camera_position_);
-        camera_.set_rotation(camera_rotation_);
 
-        camera_translation_speed_ = 2.0f * zoom_level_;
+        camera_translation_speed_ = zoom_level_;
     }
 
     void orthographic_camera_controller::on_event(event& e)
@@ -51,7 +57,7 @@ namespace moon
         event_dispatcher dispatcher(e);
         dispatcher.dispatch<mouse_scrolled_event>([&](mouse_scrolled_event& me) -> bool
         {
-            zoom_level_ -= me.get_y_offset() * 0.5f;
+            zoom_level_ -= me.get_y_offset() * 0.25f;
             zoom_level_ = std::max(zoom_level_, 0.25f);
             camera_.set_projection(-aspect_ratio_ * zoom_level_, aspect_ratio_ * zoom_level_, -zoom_level_, zoom_level_);
             return false;

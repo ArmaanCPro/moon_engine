@@ -10,3 +10,6 @@ CMakeUserPresets.json
 **.env
 compile_commands.json
 vcpkg_installed
+
+imgui.ini
+MoonProfile-*.json

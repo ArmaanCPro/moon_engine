@@ -6,7 +6,7 @@
 
 namespace moon
 {
-    vertex_array* vertex_array::create()
+    ref<vertex_array> vertex_array::create()
     {
         switch (renderer::get_api())
         {
@@ -14,7 +14,7 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return new opengl_vertex_array();
+            return create_ref<opengl_vertex_array>();
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

@@ -19,6 +19,6 @@ namespace moon
         virtual const std::vector<ref<vertex_buffer>>& get_vertex_buffers() const = 0;
         virtual const ref<index_buffer>& get_index_buffer() const = 0;
 
-        static vertex_array* create();
+        static ref<vertex_array> create();
     };
 }

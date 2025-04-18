@@ -36,12 +36,12 @@ void sandbox2d_layer::on_update(moon::timestep ts)
     moon::renderer2d::begin_scene(camera_controller_.get_camera());
 
     //moon::renderer2d::draw_rotated_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.2f, 0.1f, 0.8f, 1.0f });
-    moon::renderer2d::draw_quad({ -1.0f, 0.0f, 0.5f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
-    moon::renderer2d::draw_quad({ 0.5f, -0.5f, 0.5f }, { 0.5f, 0.75f }, square_color_);
-    moon::renderer2d::draw_quad({ -5.0f, -5.0f, -0.5f }, glm::vec3(10.0f), checkerboard_texture_, 10.0f);
+    moon::renderer2d::draw_quad({ -1.0f, 0.0f, 0.1f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
+    moon::renderer2d::draw_quad({ 0.5f, -0.5f, 0.2f }, { 0.5f, 0.75f }, square_color_);
+    moon::renderer2d::draw_quad({ -5.0f, -5.0f, -0.1f }, glm::vec3(10.0f), checkerboard_texture_, 10.0f);
+    moon::renderer2d::draw_quad({ 0.0f, 0.0, 0.0f }, glm::vec3(1.0f), checkerboard_texture_, 10.0f);
 
     moon::renderer2d::end_scene();
-
 }
 
 void sandbox2d_layer::on_imgui_render()

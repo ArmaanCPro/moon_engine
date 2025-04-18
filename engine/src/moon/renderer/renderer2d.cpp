@@ -48,7 +48,7 @@ namespace moon
 
         render_command::init();
 
-        s_data.quad_vertex_array = moon::ref<vertex_array>(vertex_array::create());
+        s_data.quad_vertex_array = vertex_array::create();
 
         // vertex buffer
         s_data.quad_vertex_buffer = vertex_buffer::create(s_data.max_vertices * sizeof(quad_vertex));
@@ -215,7 +215,8 @@ namespace moon
 
         float texindex = 0.0f;
 
-        for (uint32_t i = 1; i < s_data.texture_slot_index; i++)
+        // find the texture in the array of textures
+        for (uint32_t i = 1; i < s_data.texture_slot_index; ++i)
         {
             if (*s_data.texture_slots[i].get() == *texture.get())
             {
@@ -224,6 +225,7 @@ namespace moon
             }
         }
 
+        // the texture was not in our array of textures
         if (texindex == 0.0f)
         {
             texindex = (float)s_data.texture_slot_index;

@@ -32,9 +32,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 #ifdef DEBUG
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -42,6 +39,9 @@ namespace moon
 
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
 #endif
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glEnable(GL_DEPTH_TEST);
     }
@@ -64,7 +64,7 @@ namespace moon
     void opengl_renderer_api::draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count)
     {
         uint32_t count = index_count ? index_count : vertex_array->get_index_buffer()->get_count();
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glDrawElements(GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_INT, nullptr);
+        //glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

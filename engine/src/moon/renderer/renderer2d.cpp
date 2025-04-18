@@ -22,7 +22,7 @@ namespace moon
 
     struct renderer2d_data
     {
-        static constexpr uint32_t max_quads = 10000;
+        static constexpr uint32_t max_quads = 20000;
         static constexpr uint32_t max_vertices = max_quads * 4;
         static constexpr uint32_t max_indices = max_quads * 6;
         static constexpr uint32_t max_texture_slots = 32; // TODO: Render Capabilities
@@ -40,6 +40,8 @@ namespace moon
         uint32_t texture_slot_index = 1; // 0 = white texture
 
         glm::vec4 quad_vertex_positions[4];
+
+        renderer2d::statistics stats;
     };
 
     static renderer2d_data s_data;
@@ -152,6 +154,17 @@ namespace moon
         }
 
         render_command::draw_indexed(s_data.quad_vertex_array, s_data.quad_index_count);
+        s_data.stats.draw_calls++;
+    }
+
+    void renderer2d::flush_and_reset()
+    {
+        end_scene();
+
+        s_data.quad_index_count = 0;
+        s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
+
+        s_data.texture_slot_index = 1;
     }
 
     void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -162,6 +175,9 @@ namespace moon
     void renderer2d::draw_quad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
     {
         MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
 
         constexpr float texindex = 0.0f;
 
@@ -199,6 +215,8 @@ namespace moon
 
         // 4 vertices, but a quad has 6 indices
         s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
     }
 
     void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size,
@@ -211,6 +229,9 @@ namespace moon
         const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
     {
         MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
 
         float texindex = 0.0f;
 
@@ -266,6 +287,8 @@ namespace moon
 
         // 4 vertices, but a quad has 6 indices
         s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
     }
 
     void renderer2d::draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation,
@@ -278,6 +301,9 @@ namespace moon
         const glm::vec4& color)
     {
         MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
 
         constexpr float texindex = 0.0f;
         constexpr float tiling_factor = 1.0f;
@@ -317,6 +343,8 @@ namespace moon
 
         // 4 vertices, but a quad has 6 indices
         s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
     }
 
     void renderer2d::draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation,
@@ -329,6 +357,9 @@ namespace moon
         const ref<texture2d>& texture, float tiling_factor, const glm::vec4& tint_color)
     {
         MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
 
         float texindex = 0.0f;
 
@@ -385,5 +416,18 @@ namespace moon
 
         // 4 vertices, but a quad has 6 indices
         s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
+    }
+
+    renderer2d::statistics renderer2d::get_stats()
+    {
+        return s_data.stats;
+    }
+
+    void renderer2d::reset_stats()
+    {
+        s_data.stats = {};
+        //memset(&s_data.stats, 0, sizeof(statistics));
     }
 }

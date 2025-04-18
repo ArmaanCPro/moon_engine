@@ -2,12 +2,12 @@
 
 #include "linux_window.h"
 
-#include "core/log.h"
-#include "core/events/application_event.h"
-#include "core/events/mouse_event.h"
-#include "core/events/key_event.h"
+#include "moon/core/log.h"
+#include "moon/events/application_event.h"
+#include "moon/events/mouse_event.h"
+#include "moon/events/key_event.h"
 
-#include "opengl/opengl_context.h"
+#include "platform/opengl/opengl_context.h"
 
 #include <GLFW/glfw3.h>
 
@@ -74,6 +74,10 @@ namespace moon
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef DEBUG
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+#endif
+
         window_ = glfwCreateWindow((int)props.width, (int)props.height, data_.title.c_str(), nullptr, nullptr);
 
         context_ = new opengl_context(window_);

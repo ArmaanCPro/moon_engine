@@ -4,7 +4,7 @@
 #include "moon/renderer/renderer.h"
 
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.inl>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace moon
 {

@@ -29,6 +29,7 @@
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"
 #include "moon/renderer/texture.h"
+#include "moon/renderer/subtexture2d.h"
 #include "moon/renderer/orthographic_camera_controller.h"
 
 //#ifndef MOON_IS_MONOLITHIC

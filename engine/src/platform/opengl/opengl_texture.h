@@ -10,11 +10,12 @@ namespace moon
     {
     public:
         opengl_texture2d(uint32_t width, uint32_t height);
-        opengl_texture2d(std::string_view path);
+        explicit opengl_texture2d(std::string_view path);
         ~opengl_texture2d() override;
 
         uint32_t get_width() const override { return width_; }
         uint32_t get_height() const override { return height_; }
+        uint32_t get_renderer_id() const override { return renderer_id_; }
 
         void set_data(void* data, uint32_t size) override;
 

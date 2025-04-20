@@ -26,6 +26,8 @@ namespace moon
 
         void on_event(event& e);
 
+        void close();
+
         inline static application& get() { return *s_instance; }
         inline window& get_window() { return *window_; }
 

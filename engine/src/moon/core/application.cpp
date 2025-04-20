@@ -111,6 +111,11 @@ namespace moon
         }
     }
 
+    void application::close()
+    {
+        running_ = false;
+    }
+
     bool application::on_window_close(window_close_event&)
     {
         running_ = false;

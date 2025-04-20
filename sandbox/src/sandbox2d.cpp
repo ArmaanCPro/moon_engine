@@ -71,18 +71,72 @@ void sandbox2d_layer::on_imgui_render()
     if (!ImGui::GetCurrentContext())
         ImGui::SetCurrentContext(moon_get_imgui_context());
 
-    ImGui::Begin("Settings");
+    static constexpr bool docking_enabled = true;
+    if (docking_enabled)
+    {
+        static bool dockspace_open = true;
+        static bool opt_fullscreen_persistant = true;
+        bool opt_fullscreen = opt_fullscreen_persistant;
+        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-    auto stats = moon::renderer2d::get_stats();
-    ImGui::Text("Renderer2D Stats:");
-    ImGui::Text("Draw Calls: %d", stats.draw_calls);
-    ImGui::Text("Quads: %d", stats.quad_count);
-    ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
-    ImGui::Text("Indices: %d", stats.get_total_index_count());
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        if (opt_fullscreen)
+        {
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        }
 
-    ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+            window_flags |= ImGuiWindowFlags_NoBackground;
 
-    ImGui::End();
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("DockSpace Demo", &dockspace_open, window_flags);
+        ImGui::PopStyleVar();
+
+        if (opt_fullscreen)
+            ImGui::PopStyleVar(2);
+
+        // DockSpace
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Exit", "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))
+                    moon::application::get().close();
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
+        }
+
+        ImGui::Begin("Settings");
+
+        auto stats = moon::renderer2d::get_stats();
+        ImGui::Text("Renderer2D Stats:");
+        ImGui::Text("Draw Calls: %d", stats.draw_calls);
+        ImGui::Text("Quads: %d", stats.quad_count);
+        ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
+        ImGui::Text("Indices: %d", stats.get_total_index_count());
+
+        ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
+
+        ImGui::Image(checkerboard_texture_->get_renderer_id(), { 128, 128 }, { 0, 1 }, { 1, 0 });
+        ImGui::End();
+        ImGui::End();
+    }
 }
 
 void sandbox2d_layer::on_event(moon::event& e)

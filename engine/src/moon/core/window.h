@@ -10,8 +10,8 @@ namespace moon
 {
     struct window_props
     {
-        explicit window_props(std::string title = "Moon Engine", uint32_t width = 1280, uint32_t height = 720)
-            : title(std::move(title)), width(width), height(height)
+        explicit window_props(std::string_view title = "Moon Engine", uint32_t width = 1280, uint32_t height = 720)
+            : title(title), width(width), height(height)
         {}
 
         std::string title;

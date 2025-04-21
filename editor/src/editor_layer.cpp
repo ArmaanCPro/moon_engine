@@ -7,7 +7,7 @@ namespace moon
 {
     editor_layer::editor_layer()
         :
-        layer("Sandbox2D"),
+        layer("Moon Engine"),
         camera_controller_(16.0f / 9.0f, true)
     {}
 
@@ -15,12 +15,12 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        checkerboard_texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
+        checkerboard_texture_ = texture2d::create("assets/textures/Checkerboard.png");
 
-        moon::framebuffer_spec fb_spec;
+        framebuffer_spec fb_spec;
         fb_spec.width = 1280;
         fb_spec.height = 720;
-        m_framebuffer_ = moon::framebuffer::create(fb_spec);
+        m_framebuffer_ = framebuffer::create(fb_spec);
     }
 
     void editor_layer::on_detach()
@@ -29,19 +29,19 @@ namespace moon
 
     }
 
-    void editor_layer::on_update(moon::timestep ts)
+    void editor_layer::on_update(timestep ts)
     {
         MOON_PROFILE_FUNCTION();
 
         camera_controller_.on_update(ts);
 
-        moon::renderer2d::reset_stats();
+        renderer2d::reset_stats();
         {
             MOON_PROFILE_SCOPE("Renderer Prep");
 
             m_framebuffer_->bind();
-            moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
-            moon::render_command::clear();
+            render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
+            render_command::clear();
         }
 
         {
@@ -49,24 +49,24 @@ namespace moon
             rotation += ts * 50.0f;
 
             MOON_PROFILE_SCOPE("Renderer Draw");
-            moon::renderer2d::begin_scene(camera_controller_.get_camera());
+            renderer2d::begin_scene(camera_controller_.get_camera());
 
-            moon::renderer2d::draw_rotated_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.2f, 0.1f, 0.8f, 1.0f });
-            moon::renderer2d::draw_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
-            moon::renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, square_color_);
-            moon::renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec2(20.0f), checkerboard_texture_, 10.0f);
-            moon::renderer2d::draw_rotated_quad({ -2.0f, 0.0 }, glm::vec2(1.0f), glm::radians(rotation), checkerboard_texture_, 10.0f);
+            renderer2d::draw_rotated_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.2f, 0.1f, 0.8f, 1.0f });
+            renderer2d::draw_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
+            renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, square_color_);
+            renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec2(20.0f), checkerboard_texture_, 10.0f);
+            renderer2d::draw_rotated_quad({ -2.0f, 0.0 }, glm::vec2(1.0f), glm::radians(rotation), checkerboard_texture_, 10.0f);
 
             for (float y = -5.0f; y < 5.0f; y += 0.5f)
             {
                 for (float x = -5.0f; x < 5.0f; x += 0.5f)
                 {
                     glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-                    moon::renderer2d::draw_quad({ x, y }, { 0.45f, 0.45f }, color);
+                    renderer2d::draw_quad({ x, y }, { 0.45f, 0.45f }, color);
                 }
             }
 
-            moon::renderer2d::end_scene();
+            renderer2d::end_scene();
             m_framebuffer_->unbind();
         }
     }
@@ -118,7 +118,7 @@ namespace moon
             if (ImGui::BeginMenu("File"))
             {
                 if (ImGui::MenuItem("Exit", "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))
-                    moon::application::get().close();
+                    application::get().close();
 
                 ImGui::EndMenu();
             }
@@ -128,7 +128,7 @@ namespace moon
 
         ImGui::Begin("Settings");
 
-        auto stats = moon::renderer2d::get_stats();
+        auto stats = renderer2d::get_stats();
         ImGui::Text("Renderer2D Stats:");
         ImGui::Text("Draw Calls: %d", stats.draw_calls);
         ImGui::Text("Quads: %d", stats.quad_count);
@@ -143,7 +143,7 @@ namespace moon
         ImGui::End();
     }
 
-    void editor_layer::on_event(moon::event& e)
+    void editor_layer::on_event(event& e)
     {
         camera_controller_.on_event(e);
     }

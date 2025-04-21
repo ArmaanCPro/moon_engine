@@ -16,7 +16,7 @@ namespace moon
     class MOON_API application
     {
     public:
-        application();
+        application(std::string_view name = "Moon Engine");
         virtual ~application();
 
         void push_layer(layer* layer);

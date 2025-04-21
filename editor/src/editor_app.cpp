@@ -5,10 +5,12 @@
 
 namespace moon
 {
-    class moon_editor : public moon::application
+    class moon_editor : public application
     {
     public:
         moon_editor()
+            :
+            application("Moon Engine")
         {
             MOON_INFO("editor app created");
             push_layer(new editor_layer());
@@ -18,7 +20,7 @@ namespace moon
 
     };
 
-    moon::application* moon::create_application()
+    application* moon::create_application()
     {
         return new moon_editor();
     }

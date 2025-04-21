@@ -19,14 +19,14 @@ namespace moon
 {
     application* application::s_instance = nullptr;
 
-    application::application()
+    application::application(std::string_view name)
     {
         MOON_PROFILE_FUNCTION();
 
         MOON_CORE_ASSERT(!s_instance, "Application already exists!");
         s_instance = this;
 
-        window_ = std::unique_ptr<window>(window::create());
+        window_ = std::unique_ptr<window>(window::create(window_props(name)));
         window_->set_event_callback([&](event& e) { on_event(e); });
 
         renderer::init();

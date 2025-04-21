@@ -20,7 +20,7 @@ namespace moon
 
     };
 
-    application* moon::create_application()
+    application* create_application()
     {
         return new moon_editor();
     }

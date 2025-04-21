@@ -9,17 +9,17 @@
 
 namespace moon
 {
-    bool input::is_key_pressed(int keycode)
+    bool input::is_key_pressed(KeyCode key)
     {
         auto* window = (GLFWwindow*)application::get().get_window().get_native_window();
-        auto state = glfwGetKey(window, keycode);
+        auto state = glfwGetKey(window, (int32_t)key);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool input::is_mouse_button_pressed(int button)
+    bool input::is_mouse_button_pressed(MouseCode button)
     {
         auto* window = (GLFWwindow*)application::get().get_window().get_native_window();
-        auto state = glfwGetMouseButton(window, button);
+        auto state = glfwGetMouseButton(window, (int32_t)button);
         return state == GLFW_PRESS;
     }
 

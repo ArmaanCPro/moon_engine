@@ -44,7 +44,7 @@ namespace moon
 
         [[nodiscard]] virtual void* get_native_window() const = 0;
 
-        static window* create(const window_props& props = window_props());
+        static scope<window> create(const window_props& props = window_props());
 
     protected:
         graphics_context* context_ = nullptr;

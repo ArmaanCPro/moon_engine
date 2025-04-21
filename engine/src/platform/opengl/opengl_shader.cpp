@@ -72,7 +72,7 @@ namespace moon
         if (in)
         {
             in.seekg(0, std::ios::end);
-            size_t size = (size_t)in.tellg();
+            std::streampos size = in.tellg();
             if (size != -1)
             {
                 result.resize(size);

@@ -50,6 +50,8 @@
 #else // these macros must expand to something, otherwise the variable may be marked as unused and propogate a warning in -Werror mode
     #define MOON_ASSERT(x, ...) do { (void)(x); } while(0)
     #define MOON_CORE_ASSERT(x, ...) do { (void)(x); } while(0)
+    #define MOON_ASSERT(x) do { (void)(x); } while(0)
+    #define MOON_CORE_ASSERT(x) do { (void)(x); } while(0)
 #endif
 
 
@@ -80,7 +82,7 @@ namespace moon
     template<typename T>
     using scope = std::unique_ptr<T>;
     template<typename T, typename ... Args>
-    constexpr ref<T> create_scope(Args&& ... args)
+    constexpr scope<T> create_scope(Args&& ... args)
     {
         return std::make_unique<T>(std::forward<Args>(args)...);
     }

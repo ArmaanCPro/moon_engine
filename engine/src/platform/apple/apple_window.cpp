@@ -20,9 +20,9 @@ namespace moon
         MOON_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    window* window::create(const window_props& props)
+    scope<window> window::create(const window_props& props)
     {
-        return new apple_window(props);
+        return create_scope<apple_window>(props);
     }
 
     apple_window::apple_window(const window_props& props)

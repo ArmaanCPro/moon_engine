@@ -18,6 +18,7 @@
 #include <array>
 
 // our stuff
+#include "moon/core/core.h"
 #include "moon/core/log.h"
 #include "moon/debug/instrumentor.h"
 #include "moon/core/key_codes.h"

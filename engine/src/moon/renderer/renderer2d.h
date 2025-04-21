@@ -27,6 +27,9 @@ namespace moon
         static void draw_quad(const glm::vec2& position, const glm::vec2& size, const ref<subtexture2d>& subtexture, float tiling_factor = 1.0f, const glm::vec4& tint_color = glm::vec4(1.0f));
         static void draw_quad(const glm::vec3& position, const glm::vec2& size, const ref<subtexture2d>& subtexture, float tiling_factor = 1.0f, const glm::vec4& tint_color = glm::vec4(1.0f));
 
+        static void draw_quad(const glm::mat4& transform, const glm::vec4& color);
+        static void draw_quad(const glm::mat4& transform, const ref<texture2d>& texture, float tiling_factor = 1.0f, const glm::vec4& tint_color = glm::vec4(1.0f));
+
         /// Rotation should be passed in as radians
         static void draw_rotated_quad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);
         static void draw_rotated_quad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);

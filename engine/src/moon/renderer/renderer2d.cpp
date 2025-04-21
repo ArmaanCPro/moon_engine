@@ -176,36 +176,11 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (s_data.quad_index_count >= renderer2d_data::max_indices)
-            flush_and_reset();
-
-        constexpr size_t quad_vertex_count = 4;
-        constexpr glm::vec2 texcoords[4] = {
-            {0.0f, 0.0f},
-            {1.0f, 0.0f},
-            {1.0f, 1.0f},
-            {0.0f, 1.0f}
-        };
-        constexpr float texindex = 0.0f;
-
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, position)
             * glm::scale(transform, glm::vec3(size, 1.0f));
 
-        for (size_t i = 0; i < quad_vertex_count; i++)
-        {
-            s_data.quad_vertex_buffer_ptr->position = transform * s_data.quad_vertex_positions[i];
-            s_data.quad_vertex_buffer_ptr->color = color;
-            s_data.quad_vertex_buffer_ptr->tex_coords = texcoords[i];
-            s_data.quad_vertex_buffer_ptr->tex_index = texindex;
-            s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
-            s_data.quad_vertex_buffer_ptr++;
-        }
-
-        // 4 vertices, but a quad has 6 indices
-        s_data.quad_index_count += 6;
-
-        s_data.stats.quad_count++;
+        draw_quad(transform, color);
     }
 
     void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size,
@@ -219,54 +194,11 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (s_data.quad_index_count >= renderer2d_data::max_indices)
-            flush_and_reset();
-
-        constexpr size_t quad_vertex_count = 4;
-        constexpr glm::vec2 texcoords[4] = {
-            {0.0f, 0.0f},
-            {1.0f, 0.0f},
-            {1.0f, 1.0f},
-            {0.0f, 1.0f}
-        };
-        float texindex = 0.0f;
-
-        // find the texture in the array of textures
-        for (uint32_t i = 1; i < s_data.texture_slot_index; ++i)
-        {
-            if (*s_data.texture_slots[i].get() == *texture.get())
-            {
-                texindex = (float)i;
-                break;
-            }
-        }
-
-        // the texture was not in our array of textures
-        if (texindex == 0.0f)
-        {
-            texindex = (float)s_data.texture_slot_index;
-            s_data.texture_slots[s_data.texture_slot_index] = texture;
-            s_data.texture_slot_index++;
-        }
-
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, position)
             * glm::scale(transform, glm::vec3(size, 1.0f));
 
-        for (size_t i = 0; i < quad_vertex_count; i++)
-        {
-            s_data.quad_vertex_buffer_ptr->position = transform * s_data.quad_vertex_positions[i];
-            s_data.quad_vertex_buffer_ptr->color = tint_color;
-            s_data.quad_vertex_buffer_ptr->tex_coords = texcoords[i];
-            s_data.quad_vertex_buffer_ptr->tex_index = texindex;
-            s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
-            s_data.quad_vertex_buffer_ptr++;
-        }
-
-        // 4 vertices, but a quad has 6 indices
-        s_data.quad_index_count += 6;
-
-        s_data.stats.quad_count++;
+        draw_quad(transform, texture, tiling_factor, tint_color);
     }
 
     void renderer2d::draw_quad(const glm::vec2& position, const glm::vec2& size, const ref<subtexture2d>& subtexture,
@@ -309,6 +241,89 @@ namespace moon
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::translate(transform, position)
             * glm::scale(transform, glm::vec3(size, 1.0f));
+
+        for (size_t i = 0; i < quad_vertex_count; i++)
+        {
+            s_data.quad_vertex_buffer_ptr->position = transform * s_data.quad_vertex_positions[i];
+            s_data.quad_vertex_buffer_ptr->color = tint_color;
+            s_data.quad_vertex_buffer_ptr->tex_coords = texture_coords[i];
+            s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+            s_data.quad_vertex_buffer_ptr->tiling_factor = tiling_factor;
+            s_data.quad_vertex_buffer_ptr++;
+        }
+
+        // 4 vertices, but a quad has 6 indices
+        s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
+    }
+
+    void renderer2d::draw_quad(const glm::mat4& transform, const glm::vec4& color)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
+
+        constexpr size_t quad_vertex_count = 4;
+        constexpr glm::vec2 texcoords[4] = {
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f}
+        };
+        constexpr float texindex = 0.0f;
+
+        for (size_t i = 0; i < quad_vertex_count; i++)
+        {
+            s_data.quad_vertex_buffer_ptr->position = transform * s_data.quad_vertex_positions[i];
+            s_data.quad_vertex_buffer_ptr->color = color;
+            s_data.quad_vertex_buffer_ptr->tex_coords = texcoords[i];
+            s_data.quad_vertex_buffer_ptr->tex_index = texindex;
+            s_data.quad_vertex_buffer_ptr->tiling_factor = 1.0f;
+            s_data.quad_vertex_buffer_ptr++;
+        }
+
+        // 4 vertices, but a quad has 6 indices
+        s_data.quad_index_count += 6;
+
+        s_data.stats.quad_count++;
+    }
+
+    void renderer2d::draw_quad(const glm::mat4& transform, const ref<texture2d>& texture, float tiling_factor,
+        const glm::vec4& tint_color)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        if (s_data.quad_index_count >= renderer2d_data::max_indices)
+            flush_and_reset();
+
+        constexpr size_t quad_vertex_count = 4;
+        float texindex = 0.0f;
+        constexpr glm::vec2 texture_coords[4] = {
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f}
+        };
+
+        // find the texture in the array of textures
+        for (uint32_t i = 1; i < s_data.texture_slot_index; ++i)
+        {
+            if (*s_data.texture_slots[i].get() == *texture.get())
+            {
+                texindex = (float)i;
+                break;
+            }
+        }
+
+        // the texture was not in our array of textures
+        if (texindex == 0.0f)
+        {
+            texindex = (float)s_data.texture_slot_index;
+            s_data.texture_slots[s_data.texture_slot_index] = texture;
+            s_data.texture_slot_index++;
+        }
 
         for (size_t i = 0; i < quad_vertex_count; i++)
         {

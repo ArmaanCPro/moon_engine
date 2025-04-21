@@ -26,6 +26,9 @@ namespace moon
         ref<texture2d> m_checkerboard_texture_;
         ref<framebuffer> m_framebuffer_;
 
+        ref<scene> m_active_scene_;
+        entt::entity m_square_entity_;
+
         glm::vec4 m_square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 
         bool m_viewport_focused_ = false, m_viewport_hovered_ = false;

@@ -21,6 +21,14 @@ namespace moon
         fb_spec.width = 1280;
         fb_spec.height = 720;
         m_framebuffer_ = framebuffer::create(fb_spec);
+
+        m_active_scene_ = create_ref<scene>();
+
+        auto square = m_active_scene_->create_entity();
+        m_active_scene_->reg().emplace<transform_component>(square);
+        m_active_scene_->reg().emplace<sprite_renderer_component>(square, glm::vec4{ 0, 1, 0, 1 });
+
+        m_square_entity_ = std::move(square);
     }
 
     void editor_layer::on_detach()
@@ -37,39 +45,18 @@ namespace moon
             m_camera_controller_.on_update(ts);
 
         renderer2d::reset_stats();
-        {
-            MOON_PROFILE_SCOPE("Renderer Prep");
+        m_framebuffer_->bind();
+        render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
+        render_command::clear();
 
-            m_framebuffer_->bind();
-            render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
-            render_command::clear();
-        }
+        renderer2d::begin_scene(m_camera_controller_.get_camera());
 
-        {
-            static float rotation = 0.0f;
-            rotation += ts * 50.0f;
+        // Update Scene
+        m_active_scene_->on_update(ts);
 
-            MOON_PROFILE_SCOPE("Renderer Draw");
-            renderer2d::begin_scene(m_camera_controller_.get_camera());
+        renderer2d::end_scene();
 
-            renderer2d::draw_rotated_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.2f, 0.1f, 0.8f, 1.0f });
-            renderer2d::draw_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
-            renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, m_square_color_);
-            renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec2(20.0f), m_checkerboard_texture_, 10.0f);
-            renderer2d::draw_rotated_quad({ -2.0f, 0.0 }, glm::vec2(1.0f), glm::radians(rotation), m_checkerboard_texture_, 10.0f);
-
-            for (float y = -5.0f; y < 5.0f; y += 0.5f)
-            {
-                for (float x = -5.0f; x < 5.0f; x += 0.5f)
-                {
-                    glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-                    renderer2d::draw_quad({ x, y }, { 0.45f, 0.45f }, color);
-                }
-            }
-
-            renderer2d::end_scene();
-            m_framebuffer_->unbind();
-        }
+        m_framebuffer_->unbind();
     }
 
     void editor_layer::on_imgui_render()
@@ -135,7 +122,10 @@ namespace moon
         ImGui::Text("Quads: %d", stats.quad_count);
         ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
         ImGui::Text("Indices: %d", stats.get_total_index_count());
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(m_square_color_));
+
+        auto& square_color = m_active_scene_->reg().get<sprite_renderer_component>(m_square_entity_).color;
+        ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color));
+
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

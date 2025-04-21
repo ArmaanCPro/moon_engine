@@ -78,6 +78,7 @@ set(ENGINE_HEADERS
         src/moon/renderer/framebuffer.h
         src/platform/opengl/opengl_framebuffer.h
         src/moon/scene/scene.h
+        src/moon/scene/components.h
 )
 
 # platform

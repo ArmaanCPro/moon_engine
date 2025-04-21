@@ -33,6 +33,9 @@
 #include "moon/renderer/subtexture2d.h"
 #include "moon/renderer/orthographic_camera_controller.h"
 
+#include "moon/scene/scene.h"
+#include "moon/scene/components.h"
+
 //#ifndef MOON_IS_MONOLITHIC
 struct ImGuiContext;
 extern "C" MOON_API ImGuiContext* moon_get_imgui_context();

@@ -16,6 +16,11 @@ void sandbox2d_layer::on_attach()
     MOON_PROFILE_FUNCTION();
 
     checkerboard_texture_ = moon::texture2d::create("assets/textures/Checkerboard.png");
+
+    moon::framebuffer_spec fb_spec;
+    fb_spec.width = 1280;
+    fb_spec.height = 720;
+    m_framebuffer_ = moon::framebuffer::create(fb_spec);
 }
 
 void sandbox2d_layer::on_detach()
@@ -34,6 +39,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
     {
         MOON_PROFILE_SCOPE("Renderer Prep");
 
+        m_framebuffer_->bind();
         moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
         moon::render_command::clear();
     }
@@ -61,6 +67,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
         }
 
         moon::renderer2d::end_scene();
+        m_framebuffer_->unbind();
     }
 }
 
@@ -71,72 +78,69 @@ void sandbox2d_layer::on_imgui_render()
     if (!ImGui::GetCurrentContext())
         ImGui::SetCurrentContext(moon_get_imgui_context());
 
-    static constexpr bool docking_enabled = true;
-    if (docking_enabled)
+    static bool dockspace_open = true;
+    static bool opt_fullscreen_persistant = true;
+    bool opt_fullscreen = opt_fullscreen_persistant;
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (opt_fullscreen)
     {
-        static bool dockspace_open = true;
-        static bool opt_fullscreen_persistant = true;
-        bool opt_fullscreen = opt_fullscreen_persistant;
-        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        if (opt_fullscreen)
-        {
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::SetNextWindowSize(viewport->WorkSize);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        }
-
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("DockSpace Demo", &dockspace_open, window_flags);
-        ImGui::PopStyleVar();
-
-        if (opt_fullscreen)
-            ImGui::PopStyleVar(2);
-
-        // DockSpace
-        ImGuiIO& io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-        {
-            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-        }
-
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Exit", "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))
-                    moon::application::get().close();
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMenuBar();
-        }
-
-        ImGui::Begin("Settings");
-
-        auto stats = moon::renderer2d::get_stats();
-        ImGui::Text("Renderer2D Stats:");
-        ImGui::Text("Draw Calls: %d", stats.draw_calls);
-        ImGui::Text("Quads: %d", stats.quad_count);
-        ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
-        ImGui::Text("Indices: %d", stats.get_total_index_count());
-
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
-
-        ImGui::Image(checkerboard_texture_->get_renderer_id(), { 128, 128 }, { 0, 1 }, { 1, 0 });
-        ImGui::End();
-        ImGui::End();
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     }
+
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace Demo", &dockspace_open, window_flags);
+    ImGui::PopStyleVar();
+
+    if (opt_fullscreen)
+        ImGui::PopStyleVar(2);
+
+    // DockSpace
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+    {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Exit", "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))
+                moon::application::get().close();
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+
+    ImGui::Begin("Settings");
+
+    auto stats = moon::renderer2d::get_stats();
+    ImGui::Text("Renderer2D Stats:");
+    ImGui::Text("Draw Calls: %d", stats.draw_calls);
+    ImGui::Text("Quads: %d", stats.quad_count);
+    ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
+    ImGui::Text("Indices: %d", stats.get_total_index_count());
+
+    ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
+
+    const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
+    ImGui::Image(texture_id, { 1280.0f, 720.0f }, { 0, 1 }, { 1, 0 });
+    ImGui::End();
+    ImGui::End();
 }
 
 void sandbox2d_layer::on_event(moon::event& e)

@@ -32,6 +32,8 @@ set(ENGINE_SOURCES
         src/moon/renderer/orthographic_camera_controller.cpp
         src/moon/renderer/renderer2d.cpp
         src/moon/renderer/subtexture2d.cpp
+        src/moon/renderer/framebuffer.cpp
+        src/platform/opengl/opengl_framebuffer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -72,6 +74,8 @@ set(ENGINE_HEADERS
         src/moon/renderer/renderer2d.h
         src/moon/debug/instrumentor.h
         src/moon/renderer/SubTexture2D.h
+        src/moon/renderer/framebuffer.h
+        src/platform/opengl/opengl_framebuffer.h
 )
 
 # platform

@@ -148,7 +148,6 @@ namespace moon
             camera_controller_.on_resize(viewport_panel_size.x, viewport_panel_size.y);
         }
 
-        MOON_WARN("Viewport Panel Size: {0}, {1}", viewport_panel_size.x, viewport_panel_size.y);
         const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
         ImGui::Image(texture_id, { m_viewport_size_.x, m_viewport_size_.y }, { 0, 1 }, { 1, 0 });
         ImGui::End();

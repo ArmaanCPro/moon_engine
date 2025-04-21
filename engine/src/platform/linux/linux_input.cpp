@@ -1,6 +1,6 @@
 #include "moonpch.h"
 
-#include "linux_input.h"
+#include "moon/core/input.h"
 
 #include "linux_window.h"
 #include "core/application.h"
@@ -9,23 +9,21 @@
 
 namespace moon
 {
-    input* input::s_instance = new linux_input();
-
-    bool linux_input::is_key_pressed_impl(int keycode)
+    bool input::is_key_pressed(int keycode)
     {
         auto* window = (GLFWwindow*)application::get().get_window().get_native_window();
         auto state = glfwGetKey(window, keycode);
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool linux_input::is_mouse_button_pressed_impl(int button)
+    bool input::is_mouse_button_pressed(int button)
     {
         auto* window = (GLFWwindow*)application::get().get_window().get_native_window();
         auto state = glfwGetMouseButton(window, button);
         return state == GLFW_PRESS;
     }
 
-    std::pair<float, float> linux_input::get_mouse_position_impl()
+    std::pair<float, float> input::get_mouse_position()
     {
         auto* window = (GLFWwindow*)application::get().get_window().get_native_window();
         double x, y;
@@ -33,15 +31,15 @@ namespace moon
         return { (float)x, (float)y };
     }
 
-    float linux_input::get_mouse_x_impl()
+    float input::get_mouse_x()
     {
-        auto[x, y] = get_mouse_position_impl();
+        auto[x, y] = get_mouse_position();
         return x;
     }
 
-    float linux_input::get_mouse_y_impl()
+    float input::get_mouse_y()
     {
-        auto[x, y] = get_mouse_position_impl();
+        auto[x, y] = get_mouse_position();
         return y;
     }
 }

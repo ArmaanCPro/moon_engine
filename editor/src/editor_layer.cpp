@@ -8,14 +8,14 @@ namespace moon
     editor_layer::editor_layer()
         :
         layer("Moon Engine"),
-        camera_controller_(16.0f / 9.0f, true)
+        m_camera_controller_(16.0f / 9.0f, true)
     {}
 
     void editor_layer::on_attach()
     {
         MOON_PROFILE_FUNCTION();
 
-        checkerboard_texture_ = texture2d::create("assets/textures/Checkerboard.png");
+        m_checkerboard_texture_ = texture2d::create("assets/textures/Checkerboard.png");
 
         framebuffer_spec fb_spec;
         fb_spec.width = 1280;
@@ -33,7 +33,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        camera_controller_.on_update(ts);
+        m_camera_controller_.on_update(ts);
 
         renderer2d::reset_stats();
         {
@@ -49,13 +49,13 @@ namespace moon
             rotation += ts * 50.0f;
 
             MOON_PROFILE_SCOPE("Renderer Draw");
-            renderer2d::begin_scene(camera_controller_.get_camera());
+            renderer2d::begin_scene(m_camera_controller_.get_camera());
 
             renderer2d::draw_rotated_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, glm::radians(45.0f), { 0.2f, 0.1f, 0.8f, 1.0f });
             renderer2d::draw_quad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.1f, 0.8f, 1.0f });
-            renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, square_color_);
-            renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec2(20.0f), checkerboard_texture_, 10.0f);
-            renderer2d::draw_rotated_quad({ -2.0f, 0.0 }, glm::vec2(1.0f), glm::radians(rotation), checkerboard_texture_, 10.0f);
+            renderer2d::draw_quad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, m_square_color_);
+            renderer2d::draw_quad({ 0.0f, 0.0f, -0.1f }, glm::vec2(20.0f), m_checkerboard_texture_, 10.0f);
+            renderer2d::draw_rotated_quad({ -2.0f, 0.0 }, glm::vec2(1.0f), glm::radians(rotation), m_checkerboard_texture_, 10.0f);
 
             for (float y = -5.0f; y < 5.0f; y += 0.5f)
             {
@@ -134,7 +134,7 @@ namespace moon
         ImGui::Text("Quads: %d", stats.quad_count);
         ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
         ImGui::Text("Indices: %d", stats.get_total_index_count());
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
+        ImGui::ColorEdit4("Square Color", glm::value_ptr(m_square_color_));
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -145,7 +145,7 @@ namespace moon
             m_framebuffer_->resize((uint32_t)viewport_panel_size.x, (uint32_t)viewport_panel_size.y);
             m_viewport_size_ = { viewport_panel_size.x, viewport_panel_size.y };
 
-            camera_controller_.on_resize(viewport_panel_size.x, viewport_panel_size.y);
+            m_camera_controller_.on_resize(viewport_panel_size.x, viewport_panel_size.y);
         }
 
         const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
@@ -158,6 +158,6 @@ namespace moon
 
     void editor_layer::on_event(event& e)
     {
-        camera_controller_.on_event(e);
+        m_camera_controller_.on_event(e);
     }
 }

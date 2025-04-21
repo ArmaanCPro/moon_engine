@@ -19,8 +19,7 @@
       ]
     },
     "glm",
-    "stb",
-    "cmakerc"
+    "stb"
   ],
   "builtin-baseline": "bc994510d2eb11aac7b43b03f67a7751d5bfe0e4"
 }

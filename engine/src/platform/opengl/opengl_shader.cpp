@@ -4,12 +4,12 @@
 #include "renderer/camera.h"
 #include "renderer/camera.h"
 
+#include <filesystem>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
-#include <cmrc/cmrc.hpp>
-CMRC_DECLARE(shaders);
+#include <filesystem>
 
 namespace moon
 {
@@ -66,37 +66,29 @@ namespace moon
 
         std::string result;
 
-        try
+        // Fallback to filesystem loading
+        std::ifstream in(std::filesystem::absolute(filepath), std::ios::in | std::ios::binary);
+
+        if (in)
         {
-            auto fs = cmrc::shaders::get_filesystem();
-            if (fs.exists(filepath.data()))
+            in.seekg(0, std::ios::end);
+            size_t size = (size_t)in.tellg();
+            if (size != -1)
             {
-                auto file = fs.open(filepath.data());
-                result.resize(file.size());
-                std::copy(file.begin(), file.end(), result.begin());
-                MOON_CORE_INFO("Loading embedded shader: {0}", filepath);
+                result.resize(size);
+                in.seekg(0, std::ios::beg);
+                in.read(&result[0], result.size());
+                in.close();
+                MOON_CORE_INFO("Loading file: {0}", filepath);
             }
             else
             {
-                // Fallback to filesystem loading
-                std::ifstream in(filepath.data(), std::ios::in | std::ios::binary);
-                in.seekg(0, std::ios::end);
-                result.resize(in.tellg());
-                in.seekg(0, std::ios::beg);
-                in.read(&result[0], result.size());
-                MOON_CORE_INFO("Loading file system shader: {0}", filepath);
+                MOON_CORE_ERROR("Failed to read file: {0}", filepath);
             }
         }
-        catch (const std::exception& e)
+        else
         {
-            // Fallback to filesystem loading
-            MOON_CORE_WARN("Failed to file {0} load from embedded resources: {1}, trying filesystem", filepath, e.what());
-            // Fallback to filesystem loading
-            std::ifstream in(filepath.data(), std::ios::in | std::ios::binary);
-            in.seekg(0, std::ios::end);
-            result.resize(in.tellg());
-            in.seekg(0, std::ios::beg);
-            in.read(&result[0], result.size());
+            MOON_CORE_ERROR("Failed to open file: {0}", std::filesystem::absolute(filepath).string());
         }
 
         return result;

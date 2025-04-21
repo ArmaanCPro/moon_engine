@@ -128,12 +128,8 @@ find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only)
 
-# GLAD has to be public if this is a shared lib, at least while OpenGL Shader is MOON_API
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad)
 
 # stb (image)
 find_package(Stb REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
-
-# cmrc
-target_link_libraries(${PROJECT_NAME} PRIVATE textures::rc shaders::rc)

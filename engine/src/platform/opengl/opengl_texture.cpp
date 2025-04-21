@@ -6,10 +6,6 @@
 
 #include <glad/glad.h>
 
-#include <cmrc/cmrc.hpp>
-
-CMRC_DECLARE(textures);
-
 namespace moon
 {
     opengl_texture2d::opengl_texture2d(uint32_t width, uint32_t height)
@@ -44,33 +40,7 @@ namespace moon
         {
             MOON_PROFILE_SCOPE("stbi_load - opengl_texture2d::opengl_texture2d(std::string_view path)");
 
-            // Try loading from embedded resources first
-            try
-            {
-                auto fs = cmrc::textures::get_filesystem();
-                if (fs.exists(path.data()))
-                {
-                    auto resource = fs.open(path.data());
-                    data = stbi_load_from_memory(
-                        (const stbi_uc*)resource.begin(),
-                        (int)resource.size(),
-                        &width, &height, &channels, 0
-                        );
-                    MOON_CORE_INFO("Loading embedded texture: {0}", path.data());
-                }
-                else
-                {
-                    // Fallback to filesystem loading
-                    data = stbi_load(path.data(), &width, &height, &channels, 0);
-                    MOON_CORE_INFO("Loading file system texture: {0}", path.data());
-                }
-            }
-            catch (const std::exception& e)
-            {
-                // Fallback to filesystem loading
-                MOON_CORE_WARN("Failed to load from embedded resources: {0}, trying filesystem", e.what());
-                data = stbi_load(path.data(), &width, &height, &channels, 0);
-            }
+            data = stbi_load(path.data(), &width, &height, &channels, 0);
         }
         MOON_CORE_ASSERT(data, "Failed to load image!");
 

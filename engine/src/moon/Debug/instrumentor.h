@@ -125,7 +125,7 @@ namespace moon
     };
 }
 
-#define MOON_PROFILE 1
+#define MOON_PROFILE 0
 #if MOON_PROFILE
     #define MOON_PROFILE_BEGIN_SESSION(name, filepath) ::moon::instrumentor::get().begin_session(name, filepath)
     #define MOON_PROFILE_END_SESSION() ::moon::instrumentor::get().end_session()

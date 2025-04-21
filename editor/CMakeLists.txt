@@ -9,7 +9,9 @@ else ()
 endif ()
 
 set(SOURCES
-        "src/editor.cpp"
+        "src/editor_app.cpp"
+        src/editor_layer.cpp
+        src/editor_layer.h
 )
 
 source_group("src" FILES ${SOURCES})
@@ -18,6 +20,12 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_link_libraries(${PROJECT_NAME} PRIVATE moon_engine)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+)
 
 if (NOT IS_MONOLITHIC)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

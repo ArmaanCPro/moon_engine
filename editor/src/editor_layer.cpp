@@ -134,12 +134,26 @@ namespace moon
         ImGui::Text("Quads: %d", stats.quad_count);
         ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
         ImGui::Text("Indices: %d", stats.get_total_index_count());
-
         ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
-
-        const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
-        ImGui::Image(texture_id, { 1280.0f, 720.0f }, { 0, 1 }, { 1, 0 });
         ImGui::End();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("Viewport");
+        ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
+        if (m_viewport_size_ != *((glm::vec2*)&viewport_panel_size))
+        {
+            m_framebuffer_->resize((uint32_t)viewport_panel_size.x, (uint32_t)viewport_panel_size.y);
+            m_viewport_size_ = { viewport_panel_size.x, viewport_panel_size.y };
+
+            camera_controller_.on_resize(viewport_panel_size.x, viewport_panel_size.y);
+        }
+
+        MOON_WARN("Viewport Panel Size: {0}, {1}", viewport_panel_size.x, viewport_panel_size.y);
+        const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
+        ImGui::Image(texture_id, { m_viewport_size_.x, m_viewport_size_.y }, { 0, 1 }, { 1, 0 });
+        ImGui::End();
+        ImGui::PopStyleVar();
+
         ImGui::End();
     }
 

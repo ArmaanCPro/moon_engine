@@ -14,6 +14,7 @@ namespace moon
 
         void bind() override;
         void unbind() override;
+        void resize(uint32_t width, uint32_t height) override;
 
         uint32_t get_color_attachment_renderer_id() const override { return m_color_attachment_; }
         const framebuffer_spec& get_spec() const override { return m_spec_; }

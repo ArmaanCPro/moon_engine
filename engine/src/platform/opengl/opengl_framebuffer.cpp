@@ -14,10 +14,19 @@ namespace moon
     opengl_framebuffer::~opengl_framebuffer()
     {
         glDeleteFramebuffers(1, &m_renderer_id_);
+        glDeleteTextures(1, &m_color_attachment_);
+        glDeleteTextures(1, &m_depth_attachment_);
     }
 
     void opengl_framebuffer::invalidate()
     {
+        if (m_renderer_id_)
+        {
+            glDeleteFramebuffers(1, &m_renderer_id_);
+            glDeleteTextures(1, &m_color_attachment_);
+            glDeleteTextures(1, &m_depth_attachment_);
+        }
+
         glCreateFramebuffers(1, &m_renderer_id_);
         glBindFramebuffer(GL_FRAMEBUFFER, m_renderer_id_);
 
@@ -42,10 +51,18 @@ namespace moon
     void opengl_framebuffer::bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_renderer_id_);
+        glViewport(0, 0, m_spec_.width, m_spec_.height);
     }
 
     void opengl_framebuffer::unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void opengl_framebuffer::resize(uint32_t width, uint32_t height)
+    {
+        m_spec_.width = width;
+        m_spec_.height = height;
+        invalidate();
     }
 }

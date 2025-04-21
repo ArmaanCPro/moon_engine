@@ -28,6 +28,8 @@ namespace moon
 
         glm::vec4 square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 
+        glm::vec2 m_viewport_size_ {0};
+
         orthographic_camera_controller camera_controller_;
     };
 }

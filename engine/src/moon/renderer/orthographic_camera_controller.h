@@ -17,6 +17,8 @@ namespace moon
         void on_update(timestep ts);
         void on_event(event& e);
 
+        void on_resize(float width, float height);
+
         ortho_camera& get_camera() { return camera_; }
         const ortho_camera& get_camera() const { return camera_; }
 

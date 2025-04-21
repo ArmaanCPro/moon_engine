@@ -50,6 +50,14 @@ namespace moon
         camera_translation_speed_ = zoom_level_;
     }
 
+    void orthographic_camera_controller::on_resize(float width, float height)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        aspect_ratio_ = width / height;
+        camera_.set_projection(-aspect_ratio_ * zoom_level_, aspect_ratio_ * zoom_level_, -zoom_level_, zoom_level_);
+    }
+
     void orthographic_camera_controller::on_event(event& e)
     {
         MOON_PROFILE_FUNCTION();
@@ -64,8 +72,7 @@ namespace moon
         });
         dispatcher.dispatch<window_resize_event>([&](window_resize_event& we) -> bool
         {
-            aspect_ratio_ = (float)we.get_width() / (float)we.get_height();
-            camera_.set_projection(-aspect_ratio_ * zoom_level_, aspect_ratio_ * zoom_level_, -zoom_level_, zoom_level_);
+            on_resize((float)we.get_width(), (float)we.get_height());
             return false;
         });
     }

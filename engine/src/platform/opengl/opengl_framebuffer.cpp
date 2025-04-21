@@ -4,6 +4,8 @@
 
 namespace moon
 {
+    static const uint32_t s_max_framebuffer_size = 8192;
+
     opengl_framebuffer::opengl_framebuffer(const framebuffer_spec& spec)
         :
         m_spec_(spec)
@@ -61,6 +63,12 @@ namespace moon
 
     void opengl_framebuffer::resize(uint32_t width, uint32_t height)
     {
+        if (width == 0 || height == 0 || width > s_max_framebuffer_size || height > s_max_framebuffer_size)
+        {
+            MOON_CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
+            return;
+        }
+
         m_spec_.width = width;
         m_spec_.height = height;
         invalidate();

@@ -78,18 +78,18 @@ namespace moon
                     for (layer* l : layer_stack_)
                         l->on_update(ts);
                 }
-            }
 
-            m_imgui_layer_->begin();
-            {
-                MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
-
-                for (layer* l : layer_stack_)
+                m_imgui_layer_->begin();
                 {
-                    l->on_imgui_render();
+                    MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
+
+                    for (layer* l : layer_stack_)
+                    {
+                        l->on_imgui_render();
+                    }
                 }
+                m_imgui_layer_->end();
             }
-            m_imgui_layer_->end();
 
             window_->on_update();
         }
@@ -126,11 +126,9 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // if window is minimized, it should stop running
         if (e.get_width() == 0 || e.get_height() == 0)
         {
             minimized_ = true;
-            running_ = false;
             return false;
         }
 

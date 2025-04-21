@@ -34,6 +34,7 @@ set(ENGINE_SOURCES
         src/moon/renderer/subtexture2d.cpp
         src/moon/renderer/framebuffer.cpp
         src/platform/opengl/opengl_framebuffer.cpp
+        src/moon/scene/scene.cpp
 )
 
 set(ENGINE_HEADERS
@@ -76,6 +77,7 @@ set(ENGINE_HEADERS
         src/moon/renderer/SubTexture2D.h
         src/moon/renderer/framebuffer.h
         src/platform/opengl/opengl_framebuffer.h
+        src/moon/scene/scene.h
 )
 
 # platform
@@ -125,7 +127,8 @@ find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only)
+find_package(EnTT CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad)
 

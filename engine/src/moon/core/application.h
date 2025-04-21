@@ -31,12 +31,14 @@ namespace moon
         inline static application& get() { return *s_instance; }
         inline window& get_window() { return *window_; }
 
+        imgui_layer* get_imgui_layer() { return m_imgui_layer_; }
+
     private:
         bool on_window_close(window_close_event& e);
         bool on_window_resize(window_resize_event& e);
 
         std::unique_ptr<window> window_;
-        imgui_layer* imgui_layer_;
+        imgui_layer* m_imgui_layer_;
         bool running_ = true;
         bool minimized_ = false;
 

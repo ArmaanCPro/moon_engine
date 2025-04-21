@@ -17,6 +17,13 @@ namespace moon
 
         std::vector<layer*>::iterator begin() { return layers_.begin(); }
         std::vector<layer*>::iterator end() { return layers_.end(); }
+        std::vector<layer*>::reverse_iterator rbegin() { return layers_.rbegin(); }
+        std::vector<layer*>::reverse_iterator rend() { return layers_.rend(); }
+
+        std::vector<layer*>::const_iterator begin() const { return layers_.begin(); }
+        std::vector<layer*>::const_iterator end() const { return layers_.end(); }
+        std::vector<layer*>::const_reverse_iterator rbegin() const { return layers_.rbegin(); }
+        std::vector<layer*>::const_reverse_iterator rend() const { return layers_.rend(); }
 
     private:
         std::vector<layer*> layers_;

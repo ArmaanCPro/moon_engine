@@ -33,7 +33,8 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        m_camera_controller_.on_update(ts);
+        if (m_viewport_focused_)
+            m_camera_controller_.on_update(ts);
 
         renderer2d::reset_stats();
         {
@@ -139,6 +140,11 @@ namespace moon
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin("Viewport");
+
+        m_viewport_focused_ = ImGui::IsWindowFocused();
+        m_viewport_hovered_ = ImGui::IsWindowHovered();
+        application::get().get_imgui_layer()->set_block_events(!m_viewport_focused_ || !m_viewport_hovered_);
+
         ImVec2 viewport_panel_size = ImGui::GetContentRegionAvail();
         if (m_viewport_size_ != *((glm::vec2*)&viewport_panel_size))
         {

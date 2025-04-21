@@ -67,6 +67,16 @@ namespace moon
         MOON_CORE_TRACE("ImGui shutdown");
     }
 
+    void imgui_layer::on_event(event& e)
+    {
+        if (m_block_events_)
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            e.handled |= e.is_in_category(EVENT_CATEGORY_MOUSE) && io.WantCaptureMouse;
+            e.handled |= e.is_in_category(EVENT_CATEGORY_KEYBOARD) && io.WantCaptureKeyboard;
+        }
+    }
+
     void imgui_layer::begin()
     {
         MOON_PROFILE_FUNCTION();

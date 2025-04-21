@@ -31,8 +31,8 @@ namespace moon
 
         renderer::init();
 
-        imgui_layer_ = new imgui_layer();
-        push_layer(imgui_layer_);
+        m_imgui_layer_ = new imgui_layer();
+        push_overlay(m_imgui_layer_);
     }
 
     application::~application()
@@ -80,7 +80,7 @@ namespace moon
                 }
             }
 
-            imgui_layer_->begin();
+            m_imgui_layer_->begin();
             {
                 MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
 
@@ -89,7 +89,7 @@ namespace moon
                     l->on_imgui_render();
                 }
             }
-            imgui_layer_->end();
+            m_imgui_layer_->end();
 
             window_->on_update();
         }
@@ -103,11 +103,11 @@ namespace moon
         dispatcher.dispatch<window_close_event>([&](window_close_event& wce) { return on_window_close(wce); });
         dispatcher.dispatch<window_resize_event>([&](window_resize_event& wre) { return on_window_resize(wre); });
 
-        for (auto it = layer_stack_.end(); it != layer_stack_.begin(); )
+        for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it)
         {
-            (*--it)->on_event(e);
             if (e.handled)
                 break;
+            (*it)->on_event(e);
         }
     }
 

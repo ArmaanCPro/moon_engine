@@ -47,7 +47,7 @@ namespace moon
 
         camera_.set_position(camera_position_);
 
-        camera_translation_speed_ = zoom_level_;
+        camera_translation_speed_ = 2 * zoom_level_;
     }
 
     void orthographic_camera_controller::on_resize(float width, float height)

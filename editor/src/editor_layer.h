@@ -28,6 +28,7 @@ namespace moon
 
         glm::vec4 m_square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 
+        bool m_viewport_focused_ = false, m_viewport_hovered_ = false;
         glm::vec2 m_viewport_size_ {0};
 
         orthographic_camera_controller m_camera_controller_;

@@ -2,6 +2,7 @@
 #include "scene.h"
 
 #include "moon/renderer/renderer2d.h"
+#include "entity.h"
 
 #include <glm/glm.hpp>
 
@@ -17,9 +18,12 @@ namespace moon
 
     }
 
-    entt::entity scene::create_entity()
+    entity scene::create_entity(std::string_view name)
     {
-        return m_registry_.create();
+        entity e = { m_registry_.create(), this };
+        e.add_component<transform_component>();
+        e.add_component<tag_component>(name.empty() ? "Entity" : name);
+        return e;
     }
 
     void scene::on_update(timestep ts)

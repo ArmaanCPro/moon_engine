@@ -24,11 +24,8 @@ namespace moon
 
         m_active_scene_ = create_ref<scene>();
 
-        auto square = m_active_scene_->create_entity();
-        m_active_scene_->reg().emplace<transform_component>(square);
-        m_active_scene_->reg().emplace<sprite_renderer_component>(square, glm::vec4{ 0, 1, 0, 1 });
-
-        m_square_entity_ = std::move(square);
+        m_square_entity_ = m_active_scene_->create_entity("Square Entity");
+        m_square_entity_.add_component<sprite_renderer_component>(glm::vec4{ 0, 1, 0, 1 });
     }
 
     void editor_layer::on_detach()
@@ -123,8 +120,15 @@ namespace moon
         ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
         ImGui::Text("Indices: %d", stats.get_total_index_count());
 
-        auto& square_color = m_active_scene_->reg().get<sprite_renderer_component>(m_square_entity_).color;
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color));
+        if (m_square_entity_)
+        {
+            ImGui::Separator();
+            auto& tag = m_square_entity_.get_component<tag_component>().tag;
+            ImGui::Text(tag.c_str());
+            auto& square_color = m_square_entity_.get_component<sprite_renderer_component>().color;
+            ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color));
+            ImGui::Separator();
+        }
 
         ImGui::End();
 

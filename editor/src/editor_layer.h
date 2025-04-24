@@ -27,7 +27,7 @@ namespace moon
         ref<framebuffer> m_framebuffer_;
 
         ref<scene> m_active_scene_;
-        entt::entity m_square_entity_;
+        entity m_square_entity_;
 
         glm::vec4 m_square_color_ { 0.8f, 0.1f, 0.2f, 1.0f };
 

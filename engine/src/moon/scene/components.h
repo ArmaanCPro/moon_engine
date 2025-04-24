@@ -4,6 +4,16 @@
 
 namespace moon
 {
+    struct MOON_API tag_component
+    {
+        std::string tag;
+
+        tag_component() = default;
+        tag_component(const tag_component&) = default;
+        explicit tag_component(std::string_view tag)
+        : tag(tag) {}
+    };
+
     struct MOON_API transform_component
     {
         glm::mat4 transform = glm::mat4{ 1.0f };

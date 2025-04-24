@@ -8,21 +8,21 @@
 
 namespace moon
 {
+    class entity;
+
     class MOON_API scene
     {
     public:
         scene();
         ~scene();
 
-        entt::entity create_entity();
-
-        // temp
-        entt::registry& reg() { return m_registry_; }
+        entity create_entity(std::string_view name = "");
 
         void on_update(timestep ts);
 
     private:
         entt::registry m_registry_;
 
+        friend class entity;
     };
 }

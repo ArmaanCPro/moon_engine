@@ -35,6 +35,7 @@ set(ENGINE_SOURCES
         src/moon/renderer/framebuffer.cpp
         src/platform/opengl/opengl_framebuffer.cpp
         src/moon/scene/scene.cpp
+        src/moon/scene/entity.cpp
 )
 
 set(ENGINE_HEADERS
@@ -79,6 +80,7 @@ set(ENGINE_HEADERS
         src/platform/opengl/opengl_framebuffer.h
         src/moon/scene/scene.h
         src/moon/scene/components.h
+        src/moon/scene/entity.h
 )
 
 # platform

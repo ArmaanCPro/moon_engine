@@ -34,6 +34,7 @@
 #include "moon/renderer/orthographic_camera_controller.h"
 
 #include "moon/scene/scene.h"
+#include "moon/scene/entity.h"
 #include "moon/scene/components.h"
 
 //#ifndef MOON_IS_MONOLITHIC

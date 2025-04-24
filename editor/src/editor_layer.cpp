@@ -26,6 +26,9 @@ namespace moon
 
         m_square_entity_ = m_active_scene_->create_entity("Square Entity");
         m_square_entity_.add_component<sprite_renderer_component>(glm::vec4{ 0, 1, 0, 1 });
+
+        m_camera_entity_ = m_active_scene_->create_entity("Camera");
+        m_camera_entity_.add_component<camera_component>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
     }
 
     void editor_layer::on_detach()
@@ -46,12 +49,8 @@ namespace moon
         render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
         render_command::clear();
 
-        renderer2d::begin_scene(m_camera_controller_.get_camera());
-
         // Update Scene
         m_active_scene_->on_update(ts);
-
-        renderer2d::end_scene();
 
         m_framebuffer_->unbind();
     }

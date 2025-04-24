@@ -1,5 +1,7 @@
 #pragma once
 
+#include "renderer/camera.h"
+
 #include <glm/glm.hpp>
 
 namespace moon
@@ -32,8 +34,21 @@ namespace moon
         glm::vec4 color = glm::vec4{ 1.0f };
 
         sprite_renderer_component() = default;
-        sprite_renderer_component(const sprite_renderer_component& other) = default;
+        sprite_renderer_component(const sprite_renderer_component&) = default;
         explicit sprite_renderer_component(const glm::vec4& color)
         : color(color) {}
+    };
+
+    struct MOON_API camera_component
+    {
+        camera camera;
+        bool primary = true; // consider moving this to a seperately controlled system, possibly managed by scene
+
+        camera_component() = default;
+        camera_component(const camera_component&) = default;
+        explicit camera_component(const glm::mat4& projection)
+            :
+            camera(projection)
+        {}
     };
 }

@@ -7,6 +7,20 @@
 
 namespace moon
 {
+    // this is a camera that belongs to an ECS component, unlike ortho_camera, which is an engine system
+    class MOON_API camera
+    {
+    public:
+        camera() = default;
+        explicit camera(const glm::mat4& projection)
+            :   m_projection_(projection)
+            {}
+
+        const glm::mat4& get_projection() const { return m_projection_; }
+    private:
+        glm::mat4 m_projection_;
+    };
+
     class MOON_API ortho_camera
     {
     public:

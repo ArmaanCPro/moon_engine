@@ -33,6 +33,7 @@ namespace moon
         {
             MOON_CORE_ASSERT(!has_component<T>(), "Entity already has component!");
 
+            // could also use emplace_or_replace and skip the assertion
             return m_scene_->m_registry_.emplace<T>(m_entity_handle_, std::forward<Args>(args)...);
         }
 

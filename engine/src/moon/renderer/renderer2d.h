@@ -15,7 +15,8 @@ namespace moon
         static void init();
         static void shutdown();
 
-        static void begin_scene(const ortho_camera& camera);
+        static void begin_scene(const camera& camera, const glm::mat4& transform);
+        static void begin_scene(const ortho_camera& camera); // todo: remove
         static void end_scene();
         static void flush();
 

@@ -28,13 +28,36 @@ namespace moon
 
     void scene::on_update(timestep ts)
     {
-        auto group = m_registry_.group<transform_component>(entt::get<sprite_renderer_component>);
-        for (auto entity : group)
+        // Render 2D
+        const camera* main_camera = nullptr;
+        const glm::mat4* camera_transform = nullptr;
         {
-            auto [transform, sprite] = group.get<transform_component, sprite_renderer_component>(entity);
-            //sprite.color = glm::sin(ts) * glm::vec4(1.0f);
+            auto group = m_registry_.group<camera_component>(entt::get<transform_component>);
+            for (auto entity : group)
+            {
+                auto [camera, transform] = group.get<camera_component, transform_component>(entity);
+                if (camera.primary)
+                {
+                    main_camera = &camera.camera;
+                    camera_transform = &transform.transform;
+                }
+            }
+        }
 
-            renderer2d::draw_quad(transform, sprite.color);
+        if (main_camera && camera_transform)
+        {
+            renderer2d::begin_scene(*main_camera, *camera_transform);
+
+            auto group = m_registry_.group<transform_component>(entt::get<sprite_renderer_component>);
+            for (auto entity : group)
+            {
+                auto [transform, sprite] = group.get<transform_component, sprite_renderer_component>(entity);
+                //sprite.color = glm::sin(ts) * glm::vec4(1.0f);
+
+                renderer2d::draw_quad(transform, sprite.color);
+            }
+
+            renderer2d::end_scene();
         }
     }
 }

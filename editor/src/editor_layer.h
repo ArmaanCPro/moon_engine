@@ -35,5 +35,7 @@ namespace moon
         glm::vec2 m_viewport_size_ {0};
 
         orthographic_camera_controller m_camera_controller_;
+
+        entity m_camera_entity_;
     };
 }

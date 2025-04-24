@@ -120,6 +120,21 @@ namespace moon
 
     }
 
+    void renderer2d::begin_scene(const camera& camera, const glm::mat4& transform)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        glm::mat4 view_proj = camera.get_projection() * glm::inverse(transform);
+
+        s_data.texture_shader->bind();
+        s_data.texture_shader->set_mat4("u_VP", view_proj);
+
+        s_data.quad_index_count = 0;
+        s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
+
+        s_data.texture_slot_index = 1;
+    }
+
     void renderer2d::begin_scene(const ortho_camera& camera)
     {
         MOON_PROFILE_FUNCTION();

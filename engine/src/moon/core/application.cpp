@@ -26,13 +26,13 @@ namespace moon
         MOON_CORE_ASSERT(!s_instance, "Application already exists!");
         s_instance = this;
 
-        window_ = std::unique_ptr<window>(window::create(window_props(name)));
+        window_ = window::create(window_props(name));
         window_->set_event_callback([&](event& e) { on_event(e); });
 
         renderer::init();
 
         m_imgui_layer_ = new imgui_layer();
-        push_overlay(m_imgui_layer_);
+        //push_overlay(m_imgui_layer_);
     }
 
     application::~application()
@@ -79,7 +79,7 @@ namespace moon
                         l->on_update(ts);
                 }
 
-                m_imgui_layer_->begin();
+                //m_imgui_layer_->begin();
                 {
                     MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
 
@@ -88,7 +88,7 @@ namespace moon
                         l->on_imgui_render();
                     }
                 }
-                m_imgui_layer_->end();
+                //m_imgui_layer_->end();
             }
 
             window_->on_update();

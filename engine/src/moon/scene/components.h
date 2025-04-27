@@ -43,6 +43,7 @@ namespace moon
     {
         camera camera;
         bool primary = true; // consider moving this to a seperately controlled system, possibly managed by scene
+        bool fixed_aspect_ratio = false;
 
         camera_component() = default;
         camera_component(const camera_component&) = default;

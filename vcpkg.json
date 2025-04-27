@@ -15,12 +15,15 @@
       "features": [
         "docking-experimental",
         "glfw-binding",
-        "opengl3-binding"
+        "opengl3-binding",
+        "dx12-binding",
+        "win32-binding"
       ]
     },
     "glm",
     "stb",
-    "entt"
+    "entt",
+    "directx-headers"
   ],
   "builtin-baseline": "bc994510d2eb11aac7b43b03f67a7751d5bfe0e4"
 }

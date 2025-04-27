@@ -12,10 +12,14 @@ namespace moon
     public:
         entity() = default;
         entity(entt::entity handle, scene* scene);
-        entity(entity& other) noexcept = default;
+        entity(const entity& other) noexcept = default;
+        entity(entity&& other) noexcept = default;
+        entity& operator=(const entity& other) noexcept = default;
+        entity& operator=(entity&& other) noexcept = default;
+        ~entity() = default;
 
         template <typename T>
-        bool has_component() const
+        [[nodiscard]] bool has_component() const
         {
             return m_scene_->m_registry_.any_of<T>(m_entity_handle_);
         }
@@ -45,7 +49,7 @@ namespace moon
             m_scene_->m_registry_.remove<T>(m_entity_handle_);
         }
 
-        operator bool() const { return m_entity_handle_ != entt::null; }
+        explicit operator bool() const { return m_entity_handle_ != entt::null; }
 
     private:
         entt::entity m_entity_handle_ {entt::null};

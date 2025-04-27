@@ -60,4 +60,21 @@ namespace moon
             renderer2d::end_scene();
         }
     }
+
+    void scene::on_viewport_resize(uint32_t width, uint32_t height)
+    {
+        m_viewport_width_ = width;
+        m_viewport_height_ = height;
+
+        // resize non-fixed aspect ratio cameras
+        auto view = m_registry_.view<camera_component>();
+        for (auto entity : view)
+        {
+            auto& camera_comp = view.get<camera_component>(entity);
+            if (!camera_comp.fixed_aspect_ratio)
+            {
+                //camera_comp.camera.set_viewport(0, 0, width, height);
+            }
+        }
+    }
 }

@@ -41,6 +41,17 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        if (framebuffer_spec spec = m_framebuffer_->get_spec();
+            m_viewport_size_.x > 0.0f && m_viewport_size_.y > 0.0f && // zero sized framebuffer is invalid
+            (spec.width != m_viewport_size_.x || spec.height != m_viewport_size_.y))
+        {
+            m_framebuffer_->resize((uint32_t)m_viewport_size_.x, (uint32_t)m_viewport_size_.y);
+            m_camera_controller_.on_resize(m_viewport_size_.x, m_viewport_size_.y);
+
+            m_active_scene_->on_viewport_resize((uint32_t)m_viewport_size_.x, (uint32_t)m_viewport_size_.y);
+            m_viewport_size_ = { m_framebuffer_->get_spec().width, m_framebuffer_->get_spec().height };
+        }
+
         if (m_viewport_focused_)
             m_camera_controller_.on_update(ts);
 

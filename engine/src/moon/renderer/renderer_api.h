@@ -15,7 +15,8 @@ namespace moon
         enum class API
         {
             None = 0,
-            OpenGL = 1
+            OpenGL = 1,
+            DirectX = 2
         };
 
         virtual void init() = 0;

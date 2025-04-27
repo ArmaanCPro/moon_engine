@@ -6,6 +6,21 @@
 
 extern moon::application* moon::create_application();
 
+
+#ifdef _WIN32
+
+#include "windows.h"
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    moon::log::init();
+
+    auto app = moon::create_application();
+    app->run();
+    delete app;
+}
+
+#else
+
 int main()
 {
     moon::log::init();
@@ -24,4 +39,4 @@ int main()
     return 0;
 }
 
-//#endif
+#endif

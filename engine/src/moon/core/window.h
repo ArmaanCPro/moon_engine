@@ -42,7 +42,12 @@ namespace moon
         virtual void set_vsync(bool enabled) = 0;
         [[nodiscard]] virtual bool is_vsync() const = 0;
 
+        virtual void set_fullscreen(bool enabled) = 0;
+        [[nodiscard]] virtual bool is_fullscreen() const = 0;
+
         [[nodiscard]] virtual void* get_native_window() const = 0;
+
+        graphics_context* get_context() { return context_; }
 
         static scope<window> create(const window_props& props = window_props());
 

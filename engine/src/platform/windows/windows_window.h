@@ -2,7 +2,9 @@
 
 #include "moon/core/window.h"
 
-struct GLFWwindow;
+#include "platform/directx12/directx.h"
+
+#include <glm/glm.hpp>
 
 namespace moon
 {
@@ -22,13 +24,22 @@ namespace moon
         void set_vsync(bool enabled) override;
         [[nodiscard]] bool is_vsync() const override { return data_.vsync; }
 
-        inline void* get_native_window() const override { return window_; }
+        inline void* get_native_window() const override { return m_window_; }
+
+        void set_fullscreen(bool enabled) override;
+        [[nodiscard]] bool is_fullscreen() const override { return data_.fullscreen; }
 
     private:
         void init(const window_props& props);
         void shutdown();
+
+        // winapi specific
+        void resize();
+
+        static LRESULT CALLBACK on_window_message(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     private:
-        GLFWwindow* window_ = nullptr;
+        ATOM m_window_class_ = 0;
+        HWND m_window_ = nullptr;
 
         struct window_data
         {
@@ -36,6 +47,8 @@ namespace moon
             uint32_t width;
             uint32_t height;
             bool vsync;
+            bool fullscreen;
+            bool should_resize = false;
 
             event_callback_fn event_callback;
         };

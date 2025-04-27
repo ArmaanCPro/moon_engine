@@ -36,6 +36,8 @@ set(ENGINE_SOURCES
         src/platform/opengl/opengl_framebuffer.cpp
         src/moon/scene/scene.cpp
         src/moon/scene/entity.cpp
+        src/platform/directx12/directx_context.cpp
+        src/platform/directx12/directx_renderer_api.cpp
 )
 
 set(ENGINE_HEADERS
@@ -81,6 +83,9 @@ set(ENGINE_HEADERS
         src/moon/scene/scene.h
         src/moon/scene/components.h
         src/moon/scene/entity.h
+        src/platform/directx12/directx_context.h
+        src/platform/directx12/directx_renderer_api.h
+        src/platform/directx12/directx.h
 )
 
 # platform
@@ -131,10 +136,15 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+find_package(directx-headers CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad Microsoft::DirectX-Headers)
 
 # stb (image)
 find_package(Stb REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE d3d12 dxgi d3dcompiler dxguid)
+endif ()

@@ -11,5 +11,7 @@ namespace moon
 
         virtual void init() = 0;
         virtual void swap_buffers() = 0;
+
+        virtual void flush([[maybe_unused]] size_t count) {};
     };
 }

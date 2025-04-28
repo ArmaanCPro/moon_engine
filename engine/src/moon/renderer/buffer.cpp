@@ -3,6 +3,7 @@
 #include "buffer.h"
 #include "renderer.h"
 #include "platform/opengl/opengl_buffer.h"
+#include "platform/directx12/directx_buffer.h"
 
 namespace moon
 {
@@ -14,7 +15,9 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return std::make_shared<opengl_vertex_buffer>(size);
+            return create_ref<opengl_vertex_buffer>(size);
+        case renderer_api::API::DirectX:
+            return create_ref<directx_vertex_buffer>(size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -29,7 +32,9 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return std::make_shared<opengl_vertex_buffer>(vertices, size);
+            return create_ref<opengl_vertex_buffer>(vertices, size);
+        case renderer_api::API::DirectX:
+            return create_ref<directx_vertex_buffer>(vertices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -44,7 +49,9 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return std::make_shared<opengl_index_buffer>(indices, size);
+            return create_ref<opengl_index_buffer>(indices, size);
+        case renderer_api::API::DirectX:
+            return create_ref<directx_index_buffer>(indices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

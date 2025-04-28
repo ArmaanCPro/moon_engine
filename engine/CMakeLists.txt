@@ -38,6 +38,7 @@ set(ENGINE_SOURCES
         src/moon/scene/entity.cpp
         src/platform/directx12/directx_context.cpp
         src/platform/directx12/directx_renderer_api.cpp
+        src/platform/directx12/directx_vertex_array.cpp
 )
 
 set(ENGINE_HEADERS
@@ -86,6 +87,9 @@ set(ENGINE_HEADERS
         src/platform/directx12/directx_context.h
         src/platform/directx12/directx_renderer_api.h
         src/platform/directx12/directx.h
+        src/platform/directx12/directx_buffer.h
+        src/platform/directx12/directx_buffer.cpp
+        src/platform/directx12/directx_vertex_array.h
 )
 
 # platform

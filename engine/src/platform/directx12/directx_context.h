@@ -30,6 +30,9 @@ namespace moon
         inline ComPtr<ID3D12Device14>& get_device() { return m_device_; }
         inline ComPtr<ID3D12CommandQueue>& get_command_queue() { return m_command_queue_; }
 
+        // TEMP
+        inline ComPtr<ID3D12GraphicsCommandList10>& get_command_list() { return m_command_list_; }
+
         void signal_and_wait();
         ID3D12GraphicsCommandList10* init_command_list();
         void execute_command_list();

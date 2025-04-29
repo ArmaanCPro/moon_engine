@@ -18,8 +18,6 @@ moon::directx_texture2d::directx_texture2d(uint32_t width, uint32_t height)
     // Default heap properties
     D3D12_HEAP_PROPERTIES hp_default = {};
     hp_default.Type = D3D12_HEAP_TYPE_DEFAULT;
-    hp_default.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-    hp_default.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
     hp_default.CreationNodeMask = 0;
     hp_default.VisibleNodeMask = 0;
 
@@ -75,27 +73,13 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     // TODO: Consider replacing stb_image for WIC
     int width, height, channels;
     stbi_set_flip_vertically_on_load(1);
-    unsigned char* data = stbi_load(path.data(), &width, &height, &channels, 0);
+    unsigned char* data = stbi_load(path.data(), &width, &height, &channels, 4); // force 4 channels
     MOON_CORE_ASSERT(data, "Failed to load image!");
 
     m_width = (uint32_t)width;
     m_height = (uint32_t)height;
-
-    // Determine DXGI_FORMAT based on channel count
-    if (channels == 4)
-    {
-        m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM; // RGBA
-    }
-    else if (channels == 3)
-    {
-        m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM; // Convert RGB to RGBA
-    }
-    else
-    {
-        MOON_CORE_ASSERT(false, "Unsupported texture format!");
-        stbi_image_free(data);
-        return;
-    }
+    m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    channels = 4;
 
     m_context = (directx_context*)application::get().get_window().get_context();
 
@@ -109,7 +93,7 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     texture_desc.Width = m_width;
     texture_desc.Height = m_height;
     texture_desc.DepthOrArraySize = 1;
-    texture_desc.MipLevels = 1; // No mipmaps for simplicity
+    texture_desc.MipLevels = 1;
     texture_desc.Format = m_dxgi_format;
     texture_desc.SampleDesc.Count = 1;
     texture_desc.SampleDesc.Quality = 0;
@@ -137,22 +121,24 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
 
     D3D12_RESOURCE_DESC upload_buffer_desc = {};
     upload_buffer_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    upload_buffer_desc.Alignment = 0;
     upload_buffer_desc.Width = required_buffer_size;
     upload_buffer_desc.Height = 1;
     upload_buffer_desc.DepthOrArraySize = 1;
     upload_buffer_desc.MipLevels = 1;
     upload_buffer_desc.Format = DXGI_FORMAT_UNKNOWN;
     upload_buffer_desc.SampleDesc.Count = 1;
+    upload_buffer_desc.SampleDesc.Quality = 0;
     upload_buffer_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    upload_buffer_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-    ComPtr<ID3D12Resource> upload_buffer;
     if (FAILED(m_context->get_device()->CreateCommittedResource(
         &upload_heap_properties,
         D3D12_HEAP_FLAG_NONE,
         &upload_buffer_desc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&upload_buffer))))
+        IID_PPV_ARGS(&m_upload_buffer))))
     {
         MOON_CORE_ERROR("Failed to create upload buffer!");
         stbi_image_free(data);
@@ -166,7 +152,7 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     texture_data.SlicePitch = texture_data.RowPitch * m_height;
 
     ID3D12GraphicsCommandList* command_list = m_context->get_command_list().Get();
-    UpdateSubresources(command_list, m_texture_resource.Get(), upload_buffer.Get(), 0, 0, 1, &texture_data);
+    UpdateSubresources(command_list, m_texture_resource.Get(), m_upload_buffer.Get(), 0, 0, 1, &texture_data);
 
     // Transition the texture to a shader-readable state
     D3D12_RESOURCE_BARRIER barrier = {};
@@ -177,6 +163,8 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
     command_list->ResourceBarrier(1, &barrier);
+
+    m_context->execute_command_list();
 
     // Create a shader resource view (SRV) for the texture
     D3D12_DESCRIPTOR_HEAP_DESC srv_heap_desc = {};
@@ -196,12 +184,14 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Texture2D.MipLevels = 1;
+    srv_desc.Texture2D.MostDetailedMip = 0;
+    srv_desc.Texture2D.PlaneSlice = 0;
+    srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
 
     m_context->get_device()->CreateShaderResourceView(m_texture_resource.Get(), &srv_desc, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 
     // Clean up
     stbi_image_free(data); // Free raw image data
-    m_context->execute_command_list(); // Execute the command list to upload data
 }
 
 void moon::directx_texture2d::set_data(void* data, uint32_t size)
@@ -224,15 +214,13 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     // upload heap
     D3D12_HEAP_PROPERTIES hp_upload = {};
     hp_upload.Type = D3D12_HEAP_TYPE_UPLOAD;
-    hp_upload.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-    hp_upload.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
     hp_upload.CreationNodeMask = 0;
     hp_upload.VisibleNodeMask = 0;
 
     // resource descriptor
     D3D12_RESOURCE_DESC rd = {};
     rd.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-    rd.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+    rd.Alignment = 0;
     rd.Width = required_buffer_size;
     rd.Height = 1;
     rd.DepthOrArraySize = 1;
@@ -243,19 +231,24 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     rd.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
     rd.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+    // Create upload buffer for this update
+    ComPtr<ID3D12Resource2> temp_upload_buffer;
     if (FAILED(m_context->get_device()->CreateCommittedResource(
         &hp_upload,
-        D3D12_HEAP_FLAG_NONE, &rd, D3D12_RESOURCE_STATE_GENERIC_READ,
+        D3D12_HEAP_FLAG_NONE,
+        &rd,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&m_upload_buffer)
+        IID_PPV_ARGS(&temp_upload_buffer)
     )))
     {
         MOON_CORE_ERROR("Failed to create upload buffer!");
         return;
     }
 
-    ID3D12GraphicsCommandList10* command_list = m_context->get_command_list().Get();
+    ID3D12GraphicsCommandList10* command_list = m_context->init_command_list();
 
+    /*
     // prepare gpu texture for copying
     D3D12_RESOURCE_BARRIER barrier = {};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -264,17 +257,23 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
     barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     command_list->ResourceBarrier(1, &barrier);
+    */
 
     // copy data into texture subresource
-    UpdateSubresources(command_list, m_texture_resource.Get(), m_upload_buffer.Get(), 0, 0, 1, &subresource_data);
+    UpdateSubresources(command_list, m_texture_resource.Get(), temp_upload_buffer.Get(), 0, 0, 1, &subresource_data);
 
     // transition texture resource to a shader-visible state
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_SOURCE;
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Transition.pResource = m_texture_resource.Get();
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     command_list->ResourceBarrier(1, &barrier);
 
-    // execute command list
     m_context->execute_command_list();
+
+    m_upload_buffer = temp_upload_buffer;
 }
 
 void moon::directx_texture2d::bind(uint32_t slot) const

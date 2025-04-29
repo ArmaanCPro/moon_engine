@@ -48,6 +48,8 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        init_command_list();
+
         // Get the current back buffer index
         m_current_buffer_index_ = m_swap_chain_->GetCurrentBackBufferIndex();
 
@@ -79,6 +81,8 @@ namespace moon
         barr.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
         m_command_list_->ResourceBarrier(1, &barr);
+
+        execute_command_list();
     }
 
     void directx_context::set_clear_color(const glm::vec4& color)
@@ -129,8 +133,12 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        m_command_allocator_->Reset();
-        m_command_list_->Reset(m_command_allocator_.Get(), nullptr);
+        if (!m_command_list_is_open)
+        {
+            m_command_allocator_->Reset();
+            m_command_list_->Reset(m_command_allocator_.Get(), nullptr);
+            m_command_list_is_open = true;
+        }
         return m_command_list_.Get();
     }
 
@@ -138,11 +146,14 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (SUCCEEDED(m_command_list_->Close()))
+        if (m_command_list_is_open)
         {
-            ID3D12CommandList* lists[] = { m_command_list_.Get() };
-            m_command_queue_->ExecuteCommandLists(1, lists);
-            signal_and_wait();
+            if (SUCCEEDED(m_command_list_->Close()))
+            {
+                ID3D12CommandList* lists[] = { m_command_list_.Get() };
+                m_command_queue_->ExecuteCommandLists(1, lists);
+                signal_and_wait();
+            }
         }
     }
 
@@ -150,7 +161,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // not sure if flushing is necessary
         flush(s_frames_in_flight);
         release_buffers();
 

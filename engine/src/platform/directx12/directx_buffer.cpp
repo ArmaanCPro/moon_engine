@@ -14,15 +14,13 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         directx_context* context = (directx_context*)application::get().get_window().get_context();
-        m_command_list = context->init_command_list();
+        m_command_list = context->get_command_list().Get();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
 
         // GPU (DEFAULT) heap vertex buffer
         D3D12_HEAP_PROPERTIES default_heap_properties = {};
         default_heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT;
-        default_heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-        default_heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
         default_heap_properties.CreationNodeMask = 0;
         default_heap_properties.VisibleNodeMask = 0;
 
@@ -43,7 +41,7 @@ namespace moon
             &default_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &resource_desc,
-            D3D12_RESOURCE_STATE_COPY_DEST, // Initial state must allow copying from an upload heap
+            D3D12_RESOURCE_STATE_COMMON,
             nullptr,
             IID_PPV_ARGS(&m_buffer) // buffer located in GPU memory
         )))
@@ -78,15 +76,13 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         directx_context* context = (directx_context*)application::get().get_window().get_context();
-        m_command_list = context->init_command_list();
+        m_command_list = context->get_command_list().Get();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
 
         // GPU (default) heap
         D3D12_HEAP_PROPERTIES gpu_heap_properties = {};
         gpu_heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT;
-        gpu_heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-        gpu_heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
         gpu_heap_properties.CreationNodeMask = 0;
         gpu_heap_properties.VisibleNodeMask = 0;
 
@@ -198,13 +194,13 @@ namespace moon
         m_buffer->Unmap(0, nullptr);
 
         // Copy data from the upload buffer to the GPU buffer
-        m_command_list->CopyResource(m_buffer.Get(), m_buffer.Get());
+        //m_command_list->CopyResource(m_buffer.Get(), m_buffer.Get());
 
         // Optional: Add a resource barrier to transition the GPU buffer to GENERIC_READ state (if needed)
         D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Transition.pResource = m_buffer.Get();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         m_command_list->ResourceBarrier(1, &barrier);
@@ -220,14 +216,12 @@ namespace moon
         uint32_t size = count * sizeof(uint32_t);
 
         directx_context* context = (directx_context*)application::get().get_window().get_context();
-        m_command_list = context->init_command_list();
+        m_command_list = context->get_command_list().Get();
         ID3D12Device14* device = context->get_device().Get();
 
         // create buffer in gpu memory
         D3D12_HEAP_PROPERTIES heap_properties = {};
         heap_properties.Type = D3D12_HEAP_TYPE_UPLOAD;
-        heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-        heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
         heap_properties.CreationNodeMask = 0;
         heap_properties.VisibleNodeMask = 0;
 

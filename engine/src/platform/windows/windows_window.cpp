@@ -40,7 +40,6 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         context_->swap_buffers();
-        ((directx_context*)context_)->execute_command_list();
 
         if (data_.should_resize)
             resize();

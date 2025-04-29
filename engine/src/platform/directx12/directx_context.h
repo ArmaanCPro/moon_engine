@@ -55,6 +55,7 @@ namespace moon
 
         ComPtr<ID3D12CommandAllocator> m_command_allocator_;
         ComPtr<ID3D12GraphicsCommandList10> m_command_list_;
+        bool m_command_list_is_open = false;
 
         ComPtr<ID3D12Fence1> m_fence_;
         UINT64 m_fence_value_ = 0;

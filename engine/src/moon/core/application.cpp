@@ -133,9 +133,7 @@ namespace moon
             MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            // TODO: add opengl imgui layer
-            MOON_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported");
-            return nullptr;
+            return new imgui_layer();
         case renderer_api::API::DirectX:
             return new directx_imgui_layer();
         }

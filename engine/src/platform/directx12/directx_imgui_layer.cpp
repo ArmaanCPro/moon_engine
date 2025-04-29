@@ -149,13 +149,16 @@ namespace moon
 
     void directx_imgui_layer::on_imgui_render()
     {
-        MOON_PROFILE_FUNCTION();
-        // Empty implementation - UI is rendered elsewhere
+        imgui_layer::on_imgui_render();
     }
 
     void directx_imgui_layer::on_event(event& e)
     {
-        // Process events if needed
-        // For example, you might pass Win32 messages to ImGui
+        if (m_block_events_)
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            e.handled |= e.is_in_category(EVENT_CATEGORY_MOUSE) && io.WantCaptureMouse;
+            e.handled |= e.is_in_category(EVENT_CATEGORY_KEYBOARD) && io.WantCaptureKeyboard;
+        }
     }
 }

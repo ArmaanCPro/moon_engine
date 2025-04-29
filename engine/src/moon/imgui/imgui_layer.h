@@ -19,7 +19,6 @@ namespace moon
         void set_block_events(bool block) { m_block_events_ = block; }
     protected:
         float time_ = 0.0f;
-    private:
         bool m_block_events_ = false;
     };
 }

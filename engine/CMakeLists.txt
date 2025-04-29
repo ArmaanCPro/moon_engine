@@ -44,6 +44,7 @@ set(ENGINE_SOURCES
         src/platform/directx12/directx_shader.cpp
         src/platform/directx12/directx_texture.cpp
         src/platform/directx12/directx_imgui_layer.cpp
+        src/platform/opengl/opengl_imgui_layer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -100,6 +101,7 @@ set(ENGINE_HEADERS
         src/platform/directx12/directx_shader.h
         src/platform/directx12/directx_texture.h
         src/platform/directx12/directx_imgui_layer.h
+        src/platform/opengl/opengl_imgui_layer.h
 )
 
 # platform

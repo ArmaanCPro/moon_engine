@@ -15,13 +15,15 @@
 
 namespace moon
 {
-    // NOTE temporarily MOON_API; normally it isn't exported into DLL but since we have some jank code in sandbox it is necessary
-    class MOON_API opengl_shader : public shader
+    class opengl_shader : public shader
     {
     public:
-        explicit opengl_shader(std::string_view filepath);
+        explicit opengl_shader(ShaderType type, std::string_view filepath);
         opengl_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
         ~opengl_shader() override;
+
+        std::string_view get_data() override { return m_data; }
+        std::string_view get_name() override { return name_; }
 
         void bind() const override;
         void unbind() const override;
@@ -33,8 +35,6 @@ namespace moon
         void set_float3(::std::string_view name, const glm::vec3& value) override;
         void set_float4(::std::string_view name, const glm::vec4& value) override;
         void set_mat4(::std::string_view name, const glm::mat4& value) override;
-
-        std::string_view get_name() override { return name_; }
 
         void upload_uniform_int(std::string_view name, int value);
         void upload_uniform_int_array(std::string_view name, int* values, uint32_t count);
@@ -52,5 +52,6 @@ namespace moon
     private:
         uint32_t renderer_id_{0};
         std::string name_;
+        std::string m_data;
     };
 }

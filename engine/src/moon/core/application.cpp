@@ -10,6 +10,7 @@
 
 #include "moon/renderer/renderer.h"
 #include "moon/renderer/render_command.h"
+#include "platform/directx12/directx_imgui_layer.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -31,8 +32,8 @@ namespace moon
 
         renderer::init();
 
-        m_imgui_layer_ = new imgui_layer();
-        //push_overlay(m_imgui_layer_);
+        m_imgui_layer_ = create_imgui_layer();
+        push_overlay(m_imgui_layer_);
     }
 
     application::~application()
@@ -66,9 +67,14 @@ namespace moon
         {
             MOON_PROFILE_SCOPE("Run Loop");
 
-            const auto time = (float)glfwGetTime(); // Should be Platform::GetTime
+            //const auto time = (float)glfwGetTime(); // Should be Platform::GetTime
+            SYSTEMTIME st;
+            GetSystemTime(&st);
+            const auto time = st.wMilliseconds * 1000.0f;
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
+
+            window_->get_context()->begin_frame();
 
             if (!minimized_)
             {
@@ -79,7 +85,7 @@ namespace moon
                         l->on_update(ts);
                 }
 
-                //m_imgui_layer_->begin();
+                m_imgui_layer_->begin();
                 {
                     MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
 
@@ -88,9 +94,10 @@ namespace moon
                         l->on_imgui_render();
                     }
                 }
-                //m_imgui_layer_->end();
+                m_imgui_layer_->end();
             }
 
+            window_->get_context()->end_frame();
             window_->on_update();
         }
     }
@@ -114,6 +121,26 @@ namespace moon
     void application::close()
     {
         running_ = false;
+    }
+
+    imgui_layer* application::create_imgui_layer()
+    {
+        MOON_PROFILE_FUNCTION();
+
+        switch (renderer::get_api())
+        {
+        case renderer_api::API::None:
+            MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            return nullptr;
+        case renderer_api::API::OpenGL:
+            // TODO: add opengl imgui layer
+            MOON_CORE_ASSERT(false, "RendererAPI::OpenGL is not supported");
+            return nullptr;
+        case renderer_api::API::DirectX:
+            return new directx_imgui_layer();
+        }
+        MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
     }
 
     bool application::on_window_close(window_close_event&)

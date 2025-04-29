@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <ranges>
 
 namespace moon
 {
@@ -24,13 +25,17 @@ namespace moon
         return 0;
     }
 
-    opengl_shader::opengl_shader(std::string_view filepath)
+    opengl_shader::opengl_shader(ShaderType type, std::string_view filepath)
     {
         MOON_PROFILE_FUNCTION();
 
-        std::string shader_source = read_file(filepath);
-        auto shader_sources = preprocess(shader_source);
-        compile(shader_sources);
+        //std::string shader_source = read_file(filepath);
+        // TODO: will do this in the pipeline
+        // auto shader_sources = preprocess(shader_source);
+        // compile(shader_sources);
+
+        m_type = type;
+        m_data = read_file(filepath);
 
         // Extract the name from the filepath
         auto last_slash = filepath.find_last_of("/\\");
@@ -50,7 +55,16 @@ namespace moon
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = std::string(vertex_src);
         sources[GL_FRAGMENT_SHADER] = std::string(fragment_src);
-        compile(sources);
+
+        m_type = ShaderType::VertexAndFragment;
+
+        for (const auto& source : sources | std::views::values)
+        {
+            m_data += source;
+        }
+
+        // done in pipeline
+        // compile(sources);
     }
 
     opengl_shader::~opengl_shader()

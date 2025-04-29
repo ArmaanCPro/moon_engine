@@ -4,22 +4,22 @@
 
 namespace moon
 {
-    class imgui_layer final : public layer
+    class imgui_layer : public layer
     {
     public:
-        imgui_layer();
-        ~imgui_layer() override = default;
+        virtual ~imgui_layer() override = default;
 
-        void on_attach() override;
-        void on_detach() override;
-        void on_event(event&) override;
+        virtual void on_attach() override {};
+        virtual void on_detach() override {};
+        virtual void on_event(event&) override {};
 
-        void begin();
-        void end();
+        virtual void begin() {};
+        virtual void end() {};
 
         void set_block_events(bool block) { m_block_events_ = block; }
+    protected:
+        float time_ = 0.0f;
     private:
         bool m_block_events_ = false;
-        float time_ = 0.0f;
     };
 }

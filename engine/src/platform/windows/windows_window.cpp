@@ -39,9 +39,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        ((directx_context*)context_)->begin_frame();
-        ((directx_context*)context_)->end_frame();
-
         context_->swap_buffers();
         ((directx_context*)context_)->execute_command_list();
 

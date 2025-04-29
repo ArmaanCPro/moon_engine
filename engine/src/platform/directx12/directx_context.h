@@ -16,8 +16,8 @@ namespace moon
         void init() override;
         void shutdown();
 
-        void begin_frame();
-        void end_frame();
+        void begin_frame() override;
+        void end_frame() override;
         void set_clear_color(const glm::vec4& color);
         void clear();
         void swap_buffers() override;
@@ -29,9 +29,11 @@ namespace moon
         inline ComPtr<IDXGIFactory7>& get_dxgi_factory() { return m_dxgi_factory_; }
         inline ComPtr<ID3D12Device14>& get_device() { return m_device_; }
         inline ComPtr<ID3D12CommandQueue>& get_command_queue() { return m_command_queue_; }
+        inline ComPtr<ID3D12DescriptorHeap>& get_rtv_heap() { return m_rtv_heap_; }
 
         // TEMP
         inline ComPtr<ID3D12GraphicsCommandList10>& get_command_list() { return m_command_list_; }
+        static constexpr int s_frames_in_flight = 2;
 
         void signal_and_wait();
         ID3D12GraphicsCommandList10* init_command_list();
@@ -57,8 +59,6 @@ namespace moon
         ComPtr<ID3D12Fence1> m_fence_;
         UINT64 m_fence_value_ = 0;
         HANDLE m_fence_event_ = nullptr;
-
-        static constexpr int s_frames_in_flight = 2;
 
         ComPtr<IDXGISwapChain3> m_swap_chain_;
         ComPtr<ID3D12Resource> m_buffers[s_frames_in_flight];

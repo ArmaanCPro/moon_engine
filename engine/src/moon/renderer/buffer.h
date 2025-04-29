@@ -44,6 +44,11 @@ namespace moon
             type(type), name(name), size(shader_data_type_size(type)), normalized(normalized)
         {}
 
+        bool operator==(const buffer_element& other) const
+        {
+            return type == other.type && name == other.name && size == other.size && offset == other.offset && normalized == other.normalized;
+        }
+
         uint32_t get_component_count() const
         {
             switch (type)
@@ -82,6 +87,11 @@ namespace moon
         std::vector<buffer_element>::iterator end() { return elements_.end(); }
         std::vector<buffer_element>::const_iterator begin() const { return elements_.begin(); }
         std::vector<buffer_element>::const_iterator end() const { return elements_.end(); }
+
+        bool operator==(const buffer_layout& other) const
+        {
+            return elements_ == other.elements_ && stride_ == other.stride_;
+        }
 
     private:
         void calc_offsets_and_stride()

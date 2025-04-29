@@ -100,7 +100,7 @@ namespace moon
         }
 
         // create our texture shader
-        s_data.texture_shader = shader::create("assets/shaders/texture.glsl");
+        s_data.texture_shader = shader::create(ShaderType::VertexAndFragment, "assets/shaders/texture.glsl");
         s_data.texture_shader->bind();
         s_data.texture_shader->set_int_array("u_Textures", samplers, s_data.max_texture_slots);
 

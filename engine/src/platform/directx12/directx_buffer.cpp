@@ -18,15 +18,13 @@ namespace moon
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
 
-        // GPU (DEFAULT) heap vertex buffer
-        D3D12_HEAP_PROPERTIES default_heap_properties = {};
-        default_heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT;
-        default_heap_properties.CreationNodeMask = 0;
-        default_heap_properties.VisibleNodeMask = 0;
+        // Using UPLOAD heap directly
+        D3D12_HEAP_PROPERTIES upload_heap_properties = {};
+        upload_heap_properties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
         D3D12_RESOURCE_DESC resource_desc = {};
         resource_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-        resource_desc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+        resource_desc.Alignment = 0;
         resource_desc.Width = size;
         resource_desc.Height = 1;
         resource_desc.DepthOrArraySize = 1;
@@ -38,37 +36,21 @@ namespace moon
         resource_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
         if (FAILED(device->CreateCommittedResource(
-            &default_heap_properties,
-            D3D12_HEAP_FLAG_NONE,
-            &resource_desc,
-            D3D12_RESOURCE_STATE_COMMON,
-            nullptr,
-            IID_PPV_ARGS(&m_buffer) // buffer located in GPU memory
-        )))
-        {
-            MOON_CORE_ERROR("Failed to create vertex buffer in DEFAULT heap!");
-        }
-
-        // Create the intermediate UPLOAD heap buffer for staging updates
-        D3D12_HEAP_PROPERTIES upload_heap_properties = {};
-        upload_heap_properties.Type = D3D12_HEAP_TYPE_UPLOAD;
-
-        if (FAILED(device->CreateCommittedResource(
             &upload_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &resource_desc,
-            D3D12_RESOURCE_STATE_GENERIC_READ, // Always in GENERIC_READ for UPLOAD resources
+            D3D12_RESOURCE_STATE_GENERIC_READ, // UPLOAD heap is always in GENERIC_READ
             nullptr,
-            IID_PPV_ARGS(&m_buffer) // This is the buffer located in system memory
+            IID_PPV_ARGS(&m_buffer)
         )))
         {
-            MOON_CORE_ERROR("Failed to create vertex buffer in UPLOAD heap!");
+            MOON_CORE_ERROR("Failed to create vertex buffer!");
         }
 
-        // Set the vertex buffer view (for the GPU buffer)
+        // Set the vertex buffer view
         m_view.BufferLocation = m_buffer->GetGPUVirtualAddress();
         m_view.SizeInBytes = size;
-        m_view.StrideInBytes = sizeof(float) * 5; // For now, this is 5 floats per vertex
+        m_view.StrideInBytes = sizeof(float) * 5;
     }
 
     directx_vertex_buffer::directx_vertex_buffer(const float* vertices, uint32_t size)
@@ -171,39 +153,29 @@ namespace moon
 
     void directx_vertex_buffer::set_data(const void* data, uint32_t size)
     {
+        MOON_PROFILE_FUNCTION();
+
         // Validate buffer sizes
         if (!m_buffer || size > m_view.SizeInBytes)
         {
-            MOON_CORE_ERROR("Invalid size or uninitialized buffer in set_data!");
+            MOON_CORE_ASSERT(false, "Invalid size or uninitialized buffer in set_data!");
             return;
         }
 
         // Map the upload buffer and copy data into it
         void* mapped_data = nullptr;
-        D3D12_RANGE write_range = {};
-        write_range.Begin = 0;
-        write_range.End = size;
+        D3D12_RANGE read_range = {};
 
-        if (FAILED(m_buffer->Map(0, &write_range, &mapped_data)))
+        // Map with a null read range as we're only writing
+        if (FAILED(m_buffer->Map(0, &read_range, &mapped_data)))
         {
             MOON_CORE_ERROR("Failed to map upload buffer!");
             return;
         }
 
         memcpy(mapped_data, data, size);
-        m_buffer->Unmap(0, nullptr);
-
-        // Copy data from the upload buffer to the GPU buffer
-        //m_command_list->CopyResource(m_buffer.Get(), m_buffer.Get());
-
-        // Optional: Add a resource barrier to transition the GPU buffer to GENERIC_READ state (if needed)
-        D3D12_RESOURCE_BARRIER barrier = {};
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Transition.pResource = m_buffer.Get();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-        m_command_list->ResourceBarrier(1, &barrier);
+        D3D12_RANGE written_range = { 0, size };
+        m_buffer->Unmap(0, &written_range);
     }
 
     // ////////////////////////////////////////////////

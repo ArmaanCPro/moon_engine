@@ -48,9 +48,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (m_command_list_is_open)
-            execute_command_list();
-
         init_command_list();
 
         // Get the current back buffer index
@@ -74,9 +71,6 @@ namespace moon
     void directx_context::end_frame()
     {
         MOON_PROFILE_FUNCTION();
-
-        if (!m_command_list_is_open)
-            init_command_list();
 
         D3D12_RESOURCE_BARRIER barr;
         barr.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -139,25 +133,12 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        HRESULT hr = m_command_allocator_->Reset();
-        if (FAILED(hr))
+        if (!m_command_list_is_open)
         {
-            MOON_CORE_ERROR("Failed to reset command allocator! HRESULT: 0x{0:08X}",
-                (unsigned int)hr);
-            MOON_CORE_ASSERT(false, "");
-            return nullptr;
+            m_command_allocator_->Reset();
+            m_command_list_->Reset(m_command_allocator_.Get(), nullptr);
+            m_command_list_is_open = true;
         }
-
-        hr = m_command_list_->Reset(m_command_allocator_.Get(), nullptr);
-        if (FAILED(hr))
-        {
-            MOON_CORE_ERROR("Failed to reset command list! HRESULT: 0x{0:08X}",
-                (unsigned int)hr);
-            MOON_CORE_ASSERT(false, "");
-            return nullptr;
-        }
-
-        m_command_list_is_open = true;
         return m_command_list_.Get();
     }
 
@@ -167,19 +148,11 @@ namespace moon
 
         if (m_command_list_is_open)
         {
-            HRESULT hr = m_command_list_->Close();
-            if (SUCCEEDED(hr))
+            if (SUCCEEDED(m_command_list_->Close()))
             {
                 ID3D12CommandList* lists[] = { m_command_list_.Get() };
                 m_command_queue_->ExecuteCommandLists(1, lists);
                 signal_and_wait();
-                m_command_list_is_open = false;
-            }
-            else
-            {
-                MOON_CORE_ERROR("Failed to close command list! HRESULT: 0x{0:08X}",
-                    (unsigned int)hr);
-                MOON_CORE_ASSERT(false, "");
             }
         }
     }
@@ -188,43 +161,16 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (width == 0 || height == 0)
-        {
-            MOON_CORE_WARN("Skipping resize to {0}x{1}", width, height);
-            return;
-        }
-
         flush(s_frames_in_flight);
-
-        if (m_command_list_is_open)
-        {
-            execute_command_list();
-        }
-
         release_buffers();
 
-        DXGI_SWAP_CHAIN_DESC desc = {};
-        m_swap_chain_->GetDesc(&desc);
-
-        HRESULT hr = m_swap_chain_->ResizeBuffers(
-            s_frames_in_flight,
-            width,
-            height,
-            DXGI_FORMAT_R8G8B8A8_UNORM,
-            desc.Flags
-        );
-
-        if (FAILED(hr))
+        if (FAILED(m_swap_chain_->ResizeBuffers(s_frames_in_flight, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0)))
         {
-            MOON_CORE_ERROR("Failed to resize swap chain buffers. HRESULT: 0x{0:08X}",
-                (unsigned int)hr);
-            MOON_CORE_ASSERT(false, "");
+            MOON_CORE_ERROR("Failed to resize swap chain buffers.");
             return;
         }
 
         fetch_buffers();
-
-        init_command_list();
     }
 
     void directx_context::fetch_buffers()

@@ -30,6 +30,11 @@ namespace moon
         window_ = window::create(window_props(name));
         window_->set_event_callback([&](event& e) { on_event(e); });
 
+        m_context = graphics_context::create(window_->get_native_handle());
+        m_context->init();
+
+        window_->set_vsync(true);
+
         renderer::init();
 
         m_imgui_layer_ = create_imgui_layer();
@@ -41,6 +46,8 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         renderer::shutdown();
+        delete m_context;
+        m_context = nullptr;
     }
 
     void application::push_layer(layer* layer)
@@ -74,7 +81,7 @@ namespace moon
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
 
-            window_->get_context()->begin_frame();
+            m_context->begin_frame();
 
             if (!minimized_)
             {
@@ -97,7 +104,7 @@ namespace moon
                 //m_imgui_layer_->end();
             }
 
-            window_->get_context()->end_frame();
+            m_context->end_frame();
             window_->on_update();
         }
     }

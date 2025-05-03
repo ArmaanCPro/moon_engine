@@ -15,7 +15,7 @@ namespace moon
 
     void directx_renderer_api::init()
     {
-        s_data.context = (directx_context*)application::get().get_window().get_context();
+        s_data.context = (directx_context*)application::get().get_context();
     }
 
     void directx_renderer_api::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

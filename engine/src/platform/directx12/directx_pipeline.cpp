@@ -85,7 +85,7 @@ namespace moon
             MOON_CORE_ASSERT(false, "Root signature is empty!");
         }
 
-        directx_context* context = (directx_context*)application::get().get_window().get_context();
+        directx_context* context = (directx_context*)application::get().get_context();
 
         ComPtr<ID3D12RootSignature> root_signature;
         context->get_device()->CreateRootSignature(0, root_sig_data.data(), root_sig_data.size(), IID_PPV_ARGS(&root_signature));
@@ -182,7 +182,7 @@ namespace moon
 
     void directx_pipeline::bind()
     {
-        directx_context* context = (directx_context*)application::get().get_window().get_context();
+        directx_context* context = (directx_context*)application::get().get_context();
         context->get_command_list()->SetPipelineState(m_pipeline_state.Get());
     }
 }

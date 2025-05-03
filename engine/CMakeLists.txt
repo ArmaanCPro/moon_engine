@@ -45,6 +45,7 @@ set(ENGINE_SOURCES
         src/platform/directx12/directx_texture.cpp
         src/platform/directx12/directx_imgui_layer.cpp
         src/platform/opengl/opengl_imgui_layer.cpp
+        src/moon/renderer/graphics_context.cpp
 )
 
 set(ENGINE_HEADERS

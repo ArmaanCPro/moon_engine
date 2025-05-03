@@ -2,6 +2,7 @@
 
 #include "windows_window.h"
 
+#include "core/application.h"
 #include "moon/core/log.h"
 #include "moon/events/application_event.h"
 #include "moon/events/mouse_event.h"
@@ -39,7 +40,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        context_->swap_buffers();
+        application::get().get_context()->swap_buffers();
 
         if (data_.should_resize)
             resize();
@@ -61,7 +62,7 @@ namespace moon
     void windows_window::set_vsync(bool enabled)
     {
         data_.vsync = enabled;
-        ((directx_context*)context_)->set_vsync(enabled);
+        ((directx_context*)application::get().get_context())->set_vsync(enabled);
     }
 
     void windows_window::set_fullscreen(bool enabled)
@@ -157,11 +158,6 @@ namespace moon
 
             ++s_window_count;
         }
-
-        context_ = new directx_context(m_window_);
-        context_->init();
-
-        set_vsync(true);
     }
 
     void windows_window::shutdown()
@@ -169,7 +165,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         // same count as we pass in for sync interval (frames in flight)
-        context_->flush(2);
+        application::get().get_context()->flush(2);
 
         if (m_window_class_)
         {
@@ -184,7 +180,7 @@ namespace moon
         }
 
         // TODO: Consider making shutdown a virtual func of graphics_context
-        ((directx_context*)context_)->shutdown();
+        ((directx_context*)application::get().get_context())->shutdown();
     }
 
     void windows_window::resize()
@@ -195,7 +191,7 @@ namespace moon
             data_.width = cr.right - cr.left;
             data_.height = cr.bottom - cr.top;
 
-            ((directx_context*)context_)->on_resize(data_.width, data_.height);
+            ((directx_context*)application::get().get_context())->on_resize(data_.width, data_.height);
         }
     }
 

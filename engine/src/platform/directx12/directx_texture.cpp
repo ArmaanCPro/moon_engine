@@ -11,7 +11,7 @@ moon::directx_texture2d::directx_texture2d(uint32_t width, uint32_t height)
 {
     MOON_PROFILE_FUNCTION();
 
-    m_context = (directx_context*)application::get().get_window().get_context();
+    m_context = (directx_context*)application::get().get_context();
 
     m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -81,7 +81,7 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
     channels = 4;
 
-    m_context = (directx_context*)application::get().get_window().get_context();
+    m_context = (directx_context*)application::get().get_context();
 
     // Create default heap for the texture resource
     D3D12_HEAP_PROPERTIES default_heap_properties = {};

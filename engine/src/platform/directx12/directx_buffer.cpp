@@ -13,7 +13,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        directx_context* context = (directx_context*)application::get().get_window().get_context();
+        directx_context* context = (directx_context*)application::get().get_context();
         m_command_list = context->get_command_list();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
@@ -57,7 +57,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        directx_context* context = (directx_context*)application::get().get_window().get_context();
+        directx_context* context = (directx_context*)application::get().get_context();
         m_command_list = context->get_command_list();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
@@ -230,7 +230,7 @@ namespace moon
             uploadBuffer->Unmap(0, nullptr);
 
             // Need a fresh command list for this operation
-            auto* context = (directx_context*)application::get().get_window().get_context();
+            auto* context = (directx_context*)application::get().get_context();
             ID3D12GraphicsCommandList10* cmdList = context->begin_resource_upload();
 
             cmdList->CopyBufferRegion(m_buffer.Get(), 0, uploadBuffer.Get(), 0, size);
@@ -286,7 +286,7 @@ namespace moon
     {
         uint32_t size = count * sizeof(uint32_t);
 
-        directx_context* context = (directx_context*)application::get().get_window().get_context();
+        directx_context* context = (directx_context*)application::get().get_context();
         m_command_list = context->get_command_list();
         ID3D12Device14* device = context->get_device().Get();
 

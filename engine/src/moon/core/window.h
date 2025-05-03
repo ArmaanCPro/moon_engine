@@ -25,12 +25,7 @@ namespace moon
     public:
         using event_callback_fn = std::function<void(event&)>;
 
-        virtual ~window()
-        {
-            MOON_CORE_ASSERT(context_, "Window context is null!");
-            delete context_;
-            context_ = nullptr;
-        }
+        virtual ~window() = default;
 
         virtual void on_update() = 0;
 
@@ -45,13 +40,8 @@ namespace moon
         virtual void set_fullscreen(bool enabled) = 0;
         [[nodiscard]] virtual bool is_fullscreen() const = 0;
 
-        [[nodiscard]] virtual void* get_native_window() const = 0;
-
-        graphics_context* get_context() { return context_; }
+        [[nodiscard]] virtual void* get_native_handle() const = 0;
 
         static scope<window> create(const window_props& props = window_props());
-
-    protected:
-        graphics_context* context_ = nullptr;
     };
 }

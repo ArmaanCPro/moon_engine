@@ -24,7 +24,7 @@ namespace moon
         void set_vsync(bool enabled) override;
         [[nodiscard]] bool is_vsync() const override { return data_.vsync; }
 
-        inline void* get_native_window() const override { return m_window_; }
+        inline void* get_native_handle() const override { return m_window_; }
 
         void set_fullscreen(bool enabled) override;
         [[nodiscard]] bool is_fullscreen() const override { return data_.fullscreen; }

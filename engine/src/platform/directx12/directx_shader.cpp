@@ -64,7 +64,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        auto* context = (directx_context*)application::get().get_window().get_context();
+        auto* context = (directx_context*)application::get().get_context();
         ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
 
         cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
@@ -99,7 +99,7 @@ namespace moon
 
         MOON_CORE_ASSERT(count <= 32, "DirectX does not support int arrays!");
 
-        auto* context = (directx_context*)application::get().get_window().get_context();
+        auto* context = (directx_context*)application::get().get_context();
 
         ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
 
@@ -144,7 +144,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        auto* context = (directx_context*)application::get().get_window().get_context();
+        auto* context = (directx_context*)application::get().get_context();
         ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
 
         glm::mat4 transposed = glm::transpose(value);

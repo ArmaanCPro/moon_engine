@@ -42,7 +42,7 @@ namespace moon
 
         // Get DirectX context
         auto& app = application::get();
-        auto* dx_context = static_cast<directx_context*>(app.get_window().get_context());
+        auto* dx_context = static_cast<directx_context*>(app.get_context());
         
         // Create descriptor heap for ImGui
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
@@ -60,7 +60,7 @@ namespace moon
         s_allocator.current_offset = 0;
         
         // Setup Win32 backend
-        HWND hwnd = static_cast<HWND>(app.get_window().get_native_window());
+        HWND hwnd = static_cast<HWND>(app.get_window().get_native_handle());
         ImGui_ImplWin32_Init(hwnd);
         
         // Setup DirectX backend
@@ -127,7 +127,7 @@ namespace moon
         
         // Get context
         auto& app = application::get();
-        auto* dx_context = dynamic_cast<directx_context*>(app.get_window().get_context());
+        auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
         
         ComPtr<ID3D12GraphicsCommandList> command_list = dx_context->get_command_list();
         

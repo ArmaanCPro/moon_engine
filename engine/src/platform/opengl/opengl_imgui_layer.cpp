@@ -40,7 +40,7 @@ namespace moon
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)(application::get().get_window().get_native_window()), true);
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)(application::get().get_window().get_native_handle()), true);
         ImGui_ImplOpenGL3_Init("#version 460");
         MOON_CORE_TRACE("ImGui initialized");
     }
@@ -75,7 +75,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (glfwGetWindowAttrib((GLFWwindow*)application::get().get_window().get_native_window(), GLFW_ICONIFIED) != 0)
+        if (glfwGetWindowAttrib((GLFWwindow*)application::get().get_window().get_native_handle(), GLFW_ICONIFIED) != 0)
         {
             ImGui_ImplGlfw_Sleep(10);
         }

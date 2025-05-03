@@ -15,6 +15,8 @@ namespace moon
         virtual void begin_frame() {};
         virtual void end_frame() {};
 
-    virtual void flush([[maybe_unused]] size_t count) {};
+        virtual void flush([[maybe_unused]] size_t count) {};
+
+        static graphics_context* create(void* window_handle);
     };
 }

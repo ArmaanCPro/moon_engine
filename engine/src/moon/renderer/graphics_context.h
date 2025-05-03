@@ -1,5 +1,6 @@
 #pragma once
 
+#include "command_list.h"
 #include "moon/core/core.h"
 
 namespace moon
@@ -16,6 +17,8 @@ namespace moon
         virtual void end_frame() {};
 
         virtual void flush([[maybe_unused]] size_t count) {};
+
+        virtual command_list* get_command_list(uint32_t frame_index) = 0;
 
         static graphics_context* create(void* window_handle);
     };

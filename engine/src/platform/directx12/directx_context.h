@@ -44,6 +44,12 @@ namespace moon
 
         void on_resize(uint32_t width, uint32_t height);
 
+        command_list* get_command_list(uint32_t frame_index) override
+        {
+            // temp
+            return nullptr;
+        }
+
     private:
         void fetch_buffers();
         void release_buffers();

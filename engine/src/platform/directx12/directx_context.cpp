@@ -35,14 +35,11 @@ namespace moon
         for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
             m_buffers[i].Reset();
-            m_command_allocators[i].Reset();
-            m_command_lists[i].Reset();
+            m_frames[i].allocator.Reset();
+            m_frames[i].fence.Reset();
+            m_frames[i].fence_event = nullptr;
         }
 
-        if (m_fence_event_)
-            CloseHandle(m_fence_event_);
-
-        m_fence_.Reset();
         m_command_queue_.Reset();
         m_device_.Reset();
         m_dxgi_factory_.Reset();
@@ -55,38 +52,34 @@ namespace moon
         // Get the current back buffer index
         m_current_buffer_index_ = m_swap_chain_->GetCurrentBackBufferIndex();
 
-        init_command_lists();
+        command_list* cmd = m_frames[m_current_buffer_index_].command_list.get();
+        // cmd->reset();
+        cmd->begin();
 
-        // Transition the back buffer from PRESENT to RENDER_TARGET
-        D3D12_RESOURCE_BARRIER barrier = {};
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource = m_buffers[m_current_buffer_index_].Get();
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-        m_command_lists[m_current_buffer_index_]->ResourceBarrier(1, &barrier);
+        m_frames[m_current_buffer_index_].command_list->transition_resource(
+            m_buffers[m_current_buffer_index_].Get(),
+            ResourceState::Present,
+            ResourceState::RenderTarget
+        );
 
         // Set the render target for this frame but do not clear it here
-        m_command_lists[m_current_buffer_index_]->OMSetRenderTargets(1, &m_rtv_handles[m_current_buffer_index_], FALSE, nullptr);
+        cmd->set_render_target(&m_rtv_handles[m_current_buffer_index_]);
     }
 
     void directx_context::end_frame()
     {
         MOON_PROFILE_FUNCTION();
 
-        D3D12_RESOURCE_BARRIER barr;
-        barr.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barr.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;    // consider floating barriers
-        barr.Transition.pResource = m_buffers[m_current_buffer_index_].Get();
-        barr.Transition.Subresource = 0;
-        barr.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        barr.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+        m_frames[m_current_buffer_index_].command_list->transition_resource(
+            m_buffers[m_current_buffer_index_].Get(),
+            ResourceState::RenderTarget,
+            ResourceState::Present
+        );
 
-        m_command_lists[m_current_buffer_index_]->ResourceBarrier(1, &barr);
-
-        execute_command_lists();
+        m_frames[m_current_buffer_index_].command_list->end();
+        m_frames[m_current_buffer_index_].command_list->submit();
+        signal_and_wait();
+        //execute_command_lists();
     }
 
     void directx_context::set_clear_color(const glm::vec4& color)
@@ -98,8 +91,9 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        auto* cmd = (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
         const float clear_color[] = { m_clear_color_.r, m_clear_color_.g, m_clear_color_.b, m_clear_color_.a };
-        m_command_lists[m_current_buffer_index_]->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
+        cmd->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
     }
 
     void directx_context::swap_buffers()
@@ -116,12 +110,16 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        m_command_queue_->Signal(m_fence_.Get(), ++m_fence_value_);
-        if (SUCCEEDED(m_fence_->SetEventOnCompletion(m_fence_value_, m_fence_event_)))
+        auto& fence = m_frames[m_current_buffer_index_].fence;
+        auto& fence_event = m_frames[m_current_buffer_index_].fence_event;
+        auto& fence_value = m_frames[m_current_buffer_index_].fence_value;
+
+        m_command_queue_->Signal(fence.Get(), ++fence_value);
+        if (SUCCEEDED(fence->SetEventOnCompletion(fence_value, fence_event)))
         {
-            if (SUCCEEDED(m_fence_->SetEventOnCompletion(m_fence_value_, m_fence_event_)))
+            if (SUCCEEDED(fence->SetEventOnCompletion(fence_value, fence_event)))
             {
-                if (WaitForSingleObject(m_fence_event_, 20000) != WAIT_OBJECT_0)
+                if (WaitForSingleObject(fence_event, 20000) != WAIT_OBJECT_0)
                 {
                     MOON_CORE_ERROR("Failed to wait for fence event!");
                 }
@@ -133,109 +131,27 @@ namespace moon
         }
     }
 
-    ID3D12GraphicsCommandList10* directx_context::init_command_lists()
+    ID3D12GraphicsCommandList* directx_context::init_command_lists()
     {
         MOON_PROFILE_FUNCTION();
 
-        m_command_allocators[m_current_buffer_index_]->Reset();
-        m_command_lists[m_current_buffer_index_]->Reset(m_command_allocators[m_current_buffer_index_].Get(), nullptr);
-        return m_command_lists[m_current_buffer_index_].Get();
+        m_frames[m_current_buffer_index_].command_list.reset();
+        return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 
-    ID3D12GraphicsCommandList10* directx_context::get_command_list() const
+    ID3D12GraphicsCommandList* directx_context::get_command_list() const
     {
         MOON_PROFILE_FUNCTION();
 
-        if (!m_command_lists[m_current_buffer_index_])
-        {
-            MOON_CORE_ASSERT(false, "Command list is NULL! Has init_command_lists() been called?");
-            return nullptr;
-        }
-
-        return m_command_lists[m_current_buffer_index_].Get();
+        return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 
     void directx_context::execute_command_lists()
     {
         MOON_PROFILE_FUNCTION();
 
-        ID3D12GraphicsCommandList10* command_list = m_command_lists[m_current_buffer_index_].Get();
-        if (!command_list)
-        {
-            MOON_CORE_ASSERT(false, "Command list is NULL!");
-            return;
-        }
-
-        if (SUCCEEDED(command_list->Close()))
-        {
-            ID3D12CommandList* command_lists[] = { command_list };
-            m_command_queue_->ExecuteCommandLists(1, command_lists);
-            signal_and_wait();
-
-            m_command_allocators[m_current_buffer_index_]->Reset();
-            m_command_lists[m_current_buffer_index_]->Reset(m_command_allocators[m_current_buffer_index_].Get(), nullptr);
-        }
-        else
-        {
-            // MOON_CORE_ASSERT(false, "Failed to close command list!");
-        }
-    }
-
-    ID3D12GraphicsCommandList10* directx_context::begin_resource_upload()
-    {
-        MOON_PROFILE_FUNCTION();
-
-        ComPtr<ID3D12CommandAllocator> upload_allocator;
-        ComPtr<ID3D12GraphicsCommandList10> upload_cmd_list;
-
-        if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&upload_allocator))))
-        {
-            MOON_CORE_ASSERT(false, "Failed to reset command allocator!");
-            return nullptr;
-        }
-
-        if (FAILED(m_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, upload_allocator.Get(),
-                                       nullptr, IID_PPV_ARGS(&upload_cmd_list))))
-        {
-            MOON_CORE_ERROR("Failed to create upload command list!");
-            return nullptr;
-        }
-
-        m_temp_allocator = upload_allocator;
-        m_temp_list = upload_cmd_list;
-
-        return upload_cmd_list.Get();
-    }
-
-    void directx_context::end_resource_upload()
-    {
-        MOON_PROFILE_FUNCTION();
-
-        if (!m_temp_allocator || !m_temp_list)
-        {
-            MOON_CORE_ASSERT(false, "No temporary allocator or list!");
-            return;
-        }
-
-        // Close the command list
-        HRESULT hr = m_temp_list->Close();
-        if (SUCCEEDED(hr))
-        {
-            // Execute it
-            ID3D12CommandList* cmd_lists[] = { m_temp_list.Get() };
-            m_command_queue_->ExecuteCommandLists(1, cmd_lists);
-
-            // Wait for completion
-            signal_and_wait();
-
-            // Release temporary resources
-            m_temp_list.Reset();
-            m_temp_allocator.Reset();
-        }
-        else
-        {
-            MOON_CORE_ERROR("Failed to close upload command list!");
-        }
+        m_frames[m_current_buffer_index_].command_list.reset();
+        m_frames[m_current_buffer_index_].command_list->submit();
     }
 
     void directx_context::on_resize(uint32_t width, uint32_t height)
@@ -321,30 +237,26 @@ namespace moon
             MOON_CORE_ERROR("Failed to create command queue!");
         }
 
-        if (FAILED(m_device_->CreateFence(m_fence_value_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence_))))
-        {
-            MOON_CORE_ERROR("Failed to create fence!");
-        }
 
-        m_fence_event_ = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-        if (!m_fence_event_)
-        {
-            MOON_CORE_ERROR("Failed to create fence event!");
-        }
-
-        m_command_allocators.fill(nullptr);
-        m_command_lists.fill(nullptr);
 
         for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
-            if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocators[i]))))
+            if (FAILED(m_device_->CreateFence(m_frames[i].fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frames[i].fence))))
+            {
+                MOON_CORE_ERROR("Failed to create fence!");
+            }
+
+            m_frames[i].fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+            if (!m_frames[i].fence_event)
+            {
+                MOON_CORE_ERROR("Failed to create fence event!");
+            }
+            if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_frames[i].allocator))))
             {
                 MOON_CORE_ASSERT(false, "Failed to create command allocator!");
             }
-            if (FAILED(m_device_->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&m_command_lists[i]))))
-            {
-                MOON_CORE_ASSERT(false, "Failed to create command list!");
-            }
+
+            m_frames[i].command_list = create_scope<directx_command_list>(m_device_.Get(), m_frames[i].allocator.Get(), m_command_queue_.Get());
         }
 
         // === Swapchain ===

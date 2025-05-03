@@ -5,6 +5,17 @@
 
 namespace moon
 {
+    enum class ResourceState
+    {
+        Undefined = 0,
+        RenderTarget,
+        Present,
+        CopySource,
+        CopyDest,
+        FragmentShaderResource,
+        ShaderResource
+    };
+
     class MOON_API command_list
     {
     public:
@@ -17,6 +28,9 @@ namespace moon
 
         virtual void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count = 0) = 0;
         virtual void dispatch() = 0;
+
+        virtual void transition_resource(void* resource, ResourceState before, ResourceState after) = 0;
+        virtual void set_render_target(void* target_descriptor, void* depth_stencil_desc = nullptr) = 0;
 
         // TEMP
         virtual void* get_native_handle() = 0;

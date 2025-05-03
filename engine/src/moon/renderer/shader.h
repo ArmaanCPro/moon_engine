@@ -38,6 +38,7 @@ namespace moon
         virtual void set_mat4(std::string_view name, const glm::mat4& value) = 0;
 
         static ref<shader> create(ShaderType type, std::string_view file_path);
+        static ref<shader> create(std::string_view vertex_path, std::string_view fragment_path);
         static ref<shader> create(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
 
     protected:

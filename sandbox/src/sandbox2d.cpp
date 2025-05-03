@@ -34,7 +34,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
     {
         MOON_PROFILE_SCOPE("Renderer Prep");
 
-        moon::render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
+        moon::render_command::set_clear_color({0.8f, 0.0f, 0.8f, 1.0f } );
         moon::render_command::clear();
     }
 
@@ -71,6 +71,7 @@ void sandbox2d_layer::on_imgui_render()
     if (!ImGui::GetCurrentContext())
         ImGui::SetCurrentContext(moon_get_imgui_context());
 
+    /*
     ImGui::Begin("Settings");
 
     auto stats = moon::renderer2d::get_stats();
@@ -82,6 +83,7 @@ void sandbox2d_layer::on_imgui_render()
 
     ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
     ImGui::End();
+    */
 }
 
 void sandbox2d_layer::on_event(moon::event& e)

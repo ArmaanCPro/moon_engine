@@ -46,6 +46,22 @@ namespace moon
         name_ = filepath.substr(last_slash, count);
     }
 
+    opengl_shader::opengl_shader(std::string_view vertex_path, std::string_view fragment_path)
+    {
+        MOON_PROFILE_FUNCTION();
+
+        m_type = ShaderType::VertexAndFragment;
+        m_data = read_file(vertex_path) + read_file(fragment_path);
+
+        // Extract the name from the filepath
+        auto last_slash = vertex_path.find_last_of("/\\");
+        last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
+        auto last_dot = vertex_path.rfind('.');
+
+        auto count = last_dot == std::string::npos ? vertex_path.size() - last_slash : last_dot - last_slash;
+        name_ = vertex_path.substr(last_slash, count);
+    }
+
     opengl_shader::opengl_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
         :
         name_(name)

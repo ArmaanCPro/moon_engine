@@ -9,7 +9,7 @@ namespace moon
     {
     public:
         directx_pipeline(const pipeline_spec& spec);
-        ~directx_pipeline() override = default;
+        ~directx_pipeline() override;
 
         void bind() override;
         void unbind() override {}

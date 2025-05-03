@@ -33,7 +33,7 @@ namespace moon
         renderer::init();
 
         m_imgui_layer_ = create_imgui_layer();
-        push_overlay(m_imgui_layer_);
+        //push_overlay(m_imgui_layer_);
     }
 
     application::~application()
@@ -85,7 +85,7 @@ namespace moon
                         l->on_update(ts);
                 }
 
-                m_imgui_layer_->begin();
+                //m_imgui_layer_->begin();
                 {
                     MOON_PROFILE_SCOPE("layer_stack on_imgui_render");
 
@@ -94,7 +94,7 @@ namespace moon
                         l->on_imgui_render();
                     }
                 }
-                m_imgui_layer_->end();
+                //m_imgui_layer_->end();
             }
 
             window_->get_context()->end_frame();

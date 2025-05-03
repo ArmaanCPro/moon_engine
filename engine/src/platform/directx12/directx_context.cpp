@@ -32,8 +32,12 @@ namespace moon
 
         m_swap_chain_.Reset();
 
-        m_command_list_.Reset();
-        m_command_allocator_.Reset();
+        for (size_t i = 0; i < s_frames_in_flight; ++i)
+        {
+            m_buffers[i].Reset();
+            m_command_allocators[i].Reset();
+            m_command_lists[i].Reset();
+        }
 
         if (m_fence_event_)
             CloseHandle(m_fence_event_);
@@ -48,10 +52,10 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        init_command_list();
-
         // Get the current back buffer index
         m_current_buffer_index_ = m_swap_chain_->GetCurrentBackBufferIndex();
+
+        init_command_lists();
 
         // Transition the back buffer from PRESENT to RENDER_TARGET
         D3D12_RESOURCE_BARRIER barrier = {};
@@ -62,10 +66,10 @@ namespace moon
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-        m_command_list_->ResourceBarrier(1, &barrier);
+        m_command_lists[m_current_buffer_index_]->ResourceBarrier(1, &barrier);
 
         // Set the render target for this frame but do not clear it here
-        m_command_list_->OMSetRenderTargets(1, &m_rtv_handles[m_current_buffer_index_], FALSE, nullptr);
+        m_command_lists[m_current_buffer_index_]->OMSetRenderTargets(1, &m_rtv_handles[m_current_buffer_index_], FALSE, nullptr);
     }
 
     void directx_context::end_frame()
@@ -80,9 +84,9 @@ namespace moon
         barr.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         barr.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
-        m_command_list_->ResourceBarrier(1, &barr);
+        m_command_lists[m_current_buffer_index_]->ResourceBarrier(1, &barr);
 
-        execute_command_list();
+        execute_command_lists();
     }
 
     void directx_context::set_clear_color(const glm::vec4& color)
@@ -90,12 +94,12 @@ namespace moon
         m_clear_color_ = color;
     }
 
-    void directx_context::clear()
+    void directx_context::clear() const
     {
         MOON_PROFILE_FUNCTION();
 
         const float clear_color[] = { m_clear_color_.r, m_clear_color_.g, m_clear_color_.b, m_clear_color_.a };
-        m_command_list_->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
+        m_command_lists[m_current_buffer_index_]->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
     }
 
     void directx_context::swap_buffers()
@@ -129,31 +133,108 @@ namespace moon
         }
     }
 
-    ID3D12GraphicsCommandList10* directx_context::init_command_list()
+    ID3D12GraphicsCommandList10* directx_context::init_command_lists()
     {
         MOON_PROFILE_FUNCTION();
 
-        if (!m_command_list_is_open)
-        {
-            m_command_allocator_->Reset();
-            m_command_list_->Reset(m_command_allocator_.Get(), nullptr);
-            m_command_list_is_open = true;
-        }
-        return m_command_list_.Get();
+        m_command_allocators[m_current_buffer_index_]->Reset();
+        m_command_lists[m_current_buffer_index_]->Reset(m_command_allocators[m_current_buffer_index_].Get(), nullptr);
+        return m_command_lists[m_current_buffer_index_].Get();
     }
 
-    void directx_context::execute_command_list()
+    ID3D12GraphicsCommandList10* directx_context::get_command_list() const
     {
         MOON_PROFILE_FUNCTION();
 
-        if (m_command_list_is_open)
+        if (!m_command_lists[m_current_buffer_index_])
         {
-            if (SUCCEEDED(m_command_list_->Close()))
-            {
-                ID3D12CommandList* lists[] = { m_command_list_.Get() };
-                m_command_queue_->ExecuteCommandLists(1, lists);
-                signal_and_wait();
-            }
+            MOON_CORE_ASSERT(false, "Command list is NULL! Has init_command_lists() been called?");
+            return nullptr;
+        }
+
+        return m_command_lists[m_current_buffer_index_].Get();
+    }
+
+    void directx_context::execute_command_lists()
+    {
+        MOON_PROFILE_FUNCTION();
+
+        ID3D12GraphicsCommandList10* command_list = m_command_lists[m_current_buffer_index_].Get();
+        if (!command_list)
+        {
+            MOON_CORE_ASSERT(false, "Command list is NULL!");
+            return;
+        }
+
+        if (SUCCEEDED(command_list->Close()))
+        {
+            ID3D12CommandList* command_lists[] = { command_list };
+            m_command_queue_->ExecuteCommandLists(1, command_lists);
+            signal_and_wait();
+
+            m_command_allocators[m_current_buffer_index_]->Reset();
+            m_command_lists[m_current_buffer_index_]->Reset(m_command_allocators[m_current_buffer_index_].Get(), nullptr);
+        }
+        else
+        {
+            // MOON_CORE_ASSERT(false, "Failed to close command list!");
+        }
+    }
+
+    ID3D12GraphicsCommandList10* directx_context::begin_resource_upload()
+    {
+        MOON_PROFILE_FUNCTION();
+
+        ComPtr<ID3D12CommandAllocator> upload_allocator;
+        ComPtr<ID3D12GraphicsCommandList10> upload_cmd_list;
+
+        if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&upload_allocator))))
+        {
+            MOON_CORE_ASSERT(false, "Failed to reset command allocator!");
+            return nullptr;
+        }
+
+        if (FAILED(m_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, upload_allocator.Get(),
+                                       nullptr, IID_PPV_ARGS(&upload_cmd_list))))
+        {
+            MOON_CORE_ERROR("Failed to create upload command list!");
+            return nullptr;
+        }
+
+        m_temp_allocator = upload_allocator;
+        m_temp_list = upload_cmd_list;
+
+        return upload_cmd_list.Get();
+    }
+
+    void directx_context::end_resource_upload()
+    {
+        MOON_PROFILE_FUNCTION();
+
+        if (!m_temp_allocator || !m_temp_list)
+        {
+            MOON_CORE_ASSERT(false, "No temporary allocator or list!");
+            return;
+        }
+
+        // Close the command list
+        HRESULT hr = m_temp_list->Close();
+        if (SUCCEEDED(hr))
+        {
+            // Execute it
+            ID3D12CommandList* cmd_lists[] = { m_temp_list.Get() };
+            m_command_queue_->ExecuteCommandLists(1, cmd_lists);
+
+            // Wait for completion
+            signal_and_wait();
+
+            // Release temporary resources
+            m_temp_list.Reset();
+            m_temp_allocator.Reset();
+        }
+        else
+        {
+            MOON_CORE_ERROR("Failed to close upload command list!");
         }
     }
 
@@ -225,7 +306,7 @@ namespace moon
             MOON_CORE_ERROR("Failed to create DXGI factory!");
         }
         
-        if (FAILED(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device_))))
+        if (FAILED(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&m_device_))))
         {
             MOON_CORE_ERROR("Failed to create D3D12 device!");
         }
@@ -251,14 +332,19 @@ namespace moon
             MOON_CORE_ERROR("Failed to create fence event!");
         }
 
-        if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocator_))))
-        {
-            MOON_CORE_ERROR("Failed to create command allocator!");
-        }
+        m_command_allocators.fill(nullptr);
+        m_command_lists.fill(nullptr);
 
-        if (FAILED(m_device_->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&m_command_list_))))
+        for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
-            MOON_CORE_ERROR("Failed to create command list!");
+            if (FAILED(m_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_command_allocators[i]))))
+            {
+                MOON_CORE_ASSERT(false, "Failed to create command allocator!");
+            }
+            if (FAILED(m_device_->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&m_command_lists[i]))))
+            {
+                MOON_CORE_ASSERT(false, "Failed to create command list!");
+            }
         }
 
         // === Swapchain ===

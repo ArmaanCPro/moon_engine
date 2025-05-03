@@ -54,5 +54,4 @@ namespace moon
 
         static DescriptorAllocator s_allocator;
     };
-
 };

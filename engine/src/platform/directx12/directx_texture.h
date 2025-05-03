@@ -11,7 +11,7 @@ namespace moon
     public:
         directx_texture2d(uint32_t width, uint32_t height);
         explicit directx_texture2d(std::string_view path);
-        ~directx_texture2d() override {}
+        ~directx_texture2d() override;
 
         uint32_t get_width() const override { return m_width; }
         uint32_t get_height() const override { return m_height; }

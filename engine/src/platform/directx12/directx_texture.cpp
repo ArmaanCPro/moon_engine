@@ -151,8 +151,8 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     texture_data.RowPitch = m_width * channels; // Assuming tightly packed data
     texture_data.SlicePitch = texture_data.RowPitch * m_height;
 
-    ID3D12GraphicsCommandList* command_list = m_context->get_command_list().Get();
-    UpdateSubresources(command_list, m_texture_resource.Get(), m_upload_buffer.Get(), 0, 0, 1, &texture_data);
+    ID3D12GraphicsCommandList10* command_list = m_context->get_command_list();
+    // UpdateSubresources(command_list, m_texture_resource.Get(), m_upload_buffer.Get(), 0, 0, 1, &texture_data);
 
     // Transition the texture to a shader-readable state
     D3D12_RESOURCE_BARRIER barrier = {};
@@ -164,7 +164,7 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
 
     command_list->ResourceBarrier(1, &barrier);
 
-    m_context->execute_command_list();
+    // m_context->execute_command_lists();
 
     // Create a shader resource view (SRV) for the texture
     D3D12_DESCRIPTOR_HEAP_DESC srv_heap_desc = {};
@@ -194,6 +194,14 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     stbi_image_free(data); // Free raw image data
 }
 
+moon::directx_texture2d::~directx_texture2d()
+{
+    m_texture_resource.Reset();
+    m_upload_buffer.Reset();
+    m_descriptor_heap.Reset();
+    m_context = nullptr;
+}
+
 void moon::directx_texture2d::set_data(void* data, uint32_t size)
 {
     MOON_PROFILE_FUNCTION();
@@ -202,22 +210,33 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     uint32_t bpp = m_dxgi_format == DXGI_FORMAT_R8G8B8A8_UNORM ? 4 : 3;
     MOON_CORE_ASSERT(size == m_width * m_height * bpp, "Data must be entire texture!");
 
-    // sub resource data
-    D3D12_SUBRESOURCE_DATA subresource_data = {};
-    subresource_data.pData = data;
-    subresource_data.RowPitch = m_width * bpp;
-    subresource_data.SlicePitch = subresource_data.RowPitch * m_height;
+    // Get command list
+    ID3D12GraphicsCommandList10* command_list = m_context->begin_resource_upload();
+    if (!command_list)
+    {
+        MOON_CORE_ERROR("Failed to get command list in set_data!");
+        return;
+    }
 
-    // intermediate upload buffer
+    // Transition to COPY_DEST state first (if it was in PIXEL_SHADER_RESOURCE state)
+    D3D12_RESOURCE_BARRIER barrier_to_copy = {};
+    barrier_to_copy.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier_to_copy.Transition.pResource = m_texture_resource.Get();
+    barrier_to_copy.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+    barrier_to_copy.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+    barrier_to_copy.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    command_list->ResourceBarrier(1, &barrier_to_copy);
+
+    // Create the upload buffer with proper size
     uint64_t required_buffer_size = GetRequiredIntermediateSize(m_texture_resource.Get(), 0, 1);
 
-    // upload heap
+    // Upload heap properties
     D3D12_HEAP_PROPERTIES hp_upload = {};
     hp_upload.Type = D3D12_HEAP_TYPE_UPLOAD;
     hp_upload.CreationNodeMask = 0;
     hp_upload.VisibleNodeMask = 0;
 
-    // resource descriptor
+    // Upload buffer description
     D3D12_RESOURCE_DESC rd = {};
     rd.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
     rd.Alignment = 0;
@@ -231,7 +250,7 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     rd.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
     rd.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-    // Create upload buffer for this update
+    // Create upload buffer
     ComPtr<ID3D12Resource2> temp_upload_buffer;
     if (FAILED(m_context->get_device()->CreateCommittedResource(
         &hp_upload,
@@ -246,32 +265,37 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
         return;
     }
 
-    ID3D12GraphicsCommandList10* command_list = m_context->init_command_list();
+    // Prepare subresource data
+    D3D12_SUBRESOURCE_DATA subresource_data = {};
+    subresource_data.pData = data;
+    subresource_data.RowPitch = m_width * bpp;
+    subresource_data.SlicePitch = subresource_data.RowPitch * m_height;
 
-    /*
-    // prepare gpu texture for copying
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource = m_texture_resource.Get();
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    command_list->ResourceBarrier(1, &barrier);
-    */
+    // Use UpdateSubresources to handle the upload
+    UINT64 result = UpdateSubresources<1>(
+        command_list,
+        m_texture_resource.Get(),
+        temp_upload_buffer.Get(),
+        0, 0, 1,
+        &subresource_data
+    );
 
-    // copy data into texture subresource
-    UpdateSubresources(command_list, m_texture_resource.Get(), temp_upload_buffer.Get(), 0, 0, 1, &subresource_data);
+    if (result == 0)
+    {
+        MOON_CORE_ERROR("UpdateSubresources failed!");
+        return;
+    }
 
-    // transition texture resource to a shader-visible state
-    D3D12_RESOURCE_BARRIER barrier = {};
-    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier.Transition.pResource = m_texture_resource.Get();
-    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    command_list->ResourceBarrier(1, &barrier);
+    // Transition texture to shader resource state
+    D3D12_RESOURCE_BARRIER barrier_to_shader = {};
+    barrier_to_shader.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier_to_shader.Transition.pResource = m_texture_resource.Get();
+    barrier_to_shader.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+    barrier_to_shader.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+    barrier_to_shader.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    command_list->ResourceBarrier(1, &barrier_to_shader);
 
-    m_context->execute_command_list();
+    m_context->end_resource_upload();
 
     m_upload_buffer = temp_upload_buffer;
 }
@@ -280,12 +304,17 @@ void moon::directx_texture2d::bind(uint32_t slot) const
 {
     MOON_PROFILE_FUNCTION();
 
-    // Ensure the SRV descriptor heap is bound to the pipeline
-    ID3D12GraphicsCommandList* command_list = m_context->get_command_list().Get();
+    ID3D12GraphicsCommandList10* command_list = m_context->get_command_list();
+
     ID3D12DescriptorHeap* descriptor_heaps[] = { m_descriptor_heap.Get() };
+    if (!m_descriptor_heap)
+    {
+        MOON_CORE_ASSERT(false, "Descriptor heap is null in texture bind!");
+        return;
+    }
 
     // Set the descriptor heap
-    command_list->SetDescriptorHeaps(1, descriptor_heaps);
+    command_list->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
 
     // Get the GPU descriptor handle for the SRV
     D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle = m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();

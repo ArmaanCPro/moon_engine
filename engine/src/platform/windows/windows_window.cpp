@@ -261,7 +261,7 @@ namespace moon
             // don't resize on minimize/reopen
             if (lParam && (HIWORD(lParam) != data->height || HIWORD(lParam) != data->width))
             {
-                data->should_resize = true;
+                return 0;
             }
             data->width = LOWORD(lParam);
             data->height = HIWORD(lParam);

@@ -10,6 +10,7 @@ namespace moon
     public:
         directx_vertex_buffer(uint32_t size);
         directx_vertex_buffer(const float* vertices, uint32_t size);
+        ~directx_vertex_buffer() override;
 
         void bind() const override;
         void unbind() const override {}
@@ -32,6 +33,7 @@ namespace moon
     {
     public:
         directx_index_buffer(const uint32_t* indices, uint32_t count);
+        ~directx_index_buffer() override;
 
         inline uint32_t get_count() const override { return m_count; }
 

@@ -88,7 +88,6 @@ namespace moon
         directx_context* context = (directx_context*)application::get().get_window().get_context();
 
         ComPtr<ID3D12RootSignature> root_signature;
-        // maybe size() isn't the right function
         context->get_device()->CreateRootSignature(0, root_sig_data.data(), root_sig_data.size(), IID_PPV_ARGS(&root_signature));
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psod = {};
@@ -176,9 +175,14 @@ namespace moon
         context->get_device()->CreateGraphicsPipelineState(&psod, IID_PPV_ARGS(&m_pipeline_state));
     }
 
+    directx_pipeline::~directx_pipeline()
+    {
+        m_pipeline_state.Reset();
+    }
+
     void directx_pipeline::bind()
     {
         directx_context* context = (directx_context*)application::get().get_window().get_context();
-        context->init_command_list()->SetPipelineState(m_pipeline_state.Get());
+        context->get_command_list()->SetPipelineState(m_pipeline_state.Get());
     }
 }

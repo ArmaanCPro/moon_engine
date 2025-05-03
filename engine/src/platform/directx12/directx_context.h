@@ -19,7 +19,7 @@ namespace moon
         void begin_frame() override;
         void end_frame() override;
         void set_clear_color(const glm::vec4& color);
-        void clear();
+        void clear() const;
         void swap_buffers() override;
 
         void set_vsync(bool value) { vsync = value; }
@@ -32,12 +32,15 @@ namespace moon
         inline ComPtr<ID3D12DescriptorHeap>& get_rtv_heap() { return m_rtv_heap_; }
 
         // TEMP
-        inline ComPtr<ID3D12GraphicsCommandList10>& get_command_list() { return m_command_list_; }
         static constexpr int s_frames_in_flight = 2;
 
         void signal_and_wait();
-        ID3D12GraphicsCommandList10* init_command_list();
-        void execute_command_list();
+        ID3D12GraphicsCommandList10* init_command_lists();
+        ID3D12GraphicsCommandList10* get_command_list() const;
+        void execute_command_lists();
+
+        ID3D12GraphicsCommandList10* begin_resource_upload();
+        void end_resource_upload();
 
         void on_resize(uint32_t width, uint32_t height);
 
@@ -53,9 +56,11 @@ namespace moon
         ComPtr<ID3D12Device14> m_device_;
         ComPtr<ID3D12CommandQueue> m_command_queue_;
 
-        ComPtr<ID3D12CommandAllocator> m_command_allocator_;
-        ComPtr<ID3D12GraphicsCommandList10> m_command_list_;
-        bool m_command_list_is_open = false;
+        std::array<ComPtr<ID3D12CommandAllocator>, s_frames_in_flight> m_command_allocators;
+        std::array<ComPtr<ID3D12GraphicsCommandList10>, s_frames_in_flight> m_command_lists;
+
+        ComPtr<ID3D12CommandAllocator> m_temp_allocator;
+        ComPtr<ID3D12GraphicsCommandList10> m_temp_list;
 
         ComPtr<ID3D12Fence1> m_fence_;
         UINT64 m_fence_value_ = 0;
@@ -66,11 +71,11 @@ namespace moon
         size_t m_current_buffer_index_ = 0; // index to back buffer
 
         ComPtr<ID3D12DescriptorHeap> m_rtv_heap_;
-        D3D12_CPU_DESCRIPTOR_HANDLE m_rtv_handles[s_frames_in_flight];
+        D3D12_CPU_DESCRIPTOR_HANDLE m_rtv_handles[s_frames_in_flight] {};
 
         bool vsync = true;
 
-        glm::vec4 m_clear_color_;
+        glm::vec4 m_clear_color_ { 0.0f };
 
         // Debug Layer
 #ifdef _DEBUG

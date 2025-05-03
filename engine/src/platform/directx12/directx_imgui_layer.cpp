@@ -127,9 +127,8 @@ namespace moon
         
         // Get context
         auto& app = application::get();
-        auto* dx_context = static_cast<directx_context*>(app.get_window().get_context());
+        auto* dx_context = dynamic_cast<directx_context*>(app.get_window().get_context());
         
-        // This command list should be OPEN - make sure it's not being closed elsewhere
         ComPtr<ID3D12GraphicsCommandList> command_list = dx_context->get_command_list();
         
         // IMPORTANT: Set descriptor heaps BEFORE rendering ImGui

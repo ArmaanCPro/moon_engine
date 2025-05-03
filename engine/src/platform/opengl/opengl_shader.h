@@ -19,6 +19,7 @@ namespace moon
     {
     public:
         explicit opengl_shader(ShaderType type, std::string_view filepath);
+        opengl_shader(std::string_view vertex_path, std::string_view fragment_path);
         opengl_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
         ~opengl_shader() override;
 

@@ -22,8 +22,11 @@ namespace moon
         void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count) override;
         void dispatch() override;
 
-        void transition_resource(void* resource, ResourceState before, ResourceState after) override;
+        void upload_data(const void* data, size_t size, void* gpu_buffer, size_t dest_offset, size_t src_offset) override;
+        void transition_resource(void* resource, ResourceState before, ResourceState after, size_t num_barriers = 1) override;
         void set_render_target(void* target_descriptor, void* depth_stencil_desc = nullptr) override;
+
+        void bind_vertex_buffer(void* vbuf_view, size_t num_views, size_t start_slot = 0) override;
 
         void* get_native_handle() override { return m_command_list.Get(); }
 

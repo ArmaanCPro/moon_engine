@@ -37,7 +37,6 @@ namespace moon
 
         // DX specific resources
         ComPtr<ID3D12DescriptorHeap> m_srv_descriptor_heap;
-        ComPtr<ID3D12RootSignature> m_root_signature;
 
         ComPtr<ID3D12DescriptorHeap> m_cbv_descriptor_heap;
         std::vector<ComPtr<ID3D12Resource2>> m_constant_buffers;

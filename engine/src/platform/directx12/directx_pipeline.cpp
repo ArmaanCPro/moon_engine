@@ -188,6 +188,6 @@ namespace moon
     void directx_pipeline::bind()
     {
         directx_context* context = (directx_context*)application::get().get_context();
-        context->get_command_list()->SetPipelineState(m_pipeline_state.Get());
+        context->get_native_command_list()->SetPipelineState(m_pipeline_state.Get());
     }
 }

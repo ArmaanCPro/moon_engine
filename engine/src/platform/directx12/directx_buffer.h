@@ -21,12 +21,12 @@ namespace moon
         void set_layout(const buffer_layout& layout) override { m_layout = layout; }
 
     private:
+        // GPU buffer
         ComPtr<ID3D12Resource> m_buffer;
         D3D12_VERTEX_BUFFER_VIEW m_view;
         buffer_layout m_layout;
 
         ID3D12Device14* m_device;
-        ID3D12GraphicsCommandList10* m_command_list;
     };
 
     class directx_index_buffer : public index_buffer
@@ -42,7 +42,6 @@ namespace moon
 
     private:
         ComPtr<ID3D12Resource> m_buffer;
-        ID3D12GraphicsCommandList10* m_command_list;
         D3D12_INDEX_BUFFER_VIEW m_view;
         uint32_t m_count;
     };

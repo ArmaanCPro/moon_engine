@@ -129,7 +129,7 @@ namespace moon
         auto& app = application::get();
         auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
         
-        ComPtr<ID3D12GraphicsCommandList> command_list = dx_context->get_command_list();
+        ComPtr<ID3D12GraphicsCommandList> command_list = dx_context->get_native_command_list();
         
         // IMPORTANT: Set descriptor heaps BEFORE rendering ImGui
         ID3D12DescriptorHeap* heaps[] = { m_srv_heap.Get() };

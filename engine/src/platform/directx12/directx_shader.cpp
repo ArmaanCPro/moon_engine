@@ -57,7 +57,6 @@ namespace moon
         m_constant_buffers.clear();
         m_cbv_descriptor_heap.Reset();
         m_srv_descriptor_heap.Reset();
-        m_root_signature.Reset();
     }
 
     void directx_shader::bind() const
@@ -65,9 +64,13 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         auto* context = (directx_context*)application::get().get_context();
-        ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
+        ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
-        cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
+        if (m_type == ShaderType::RootSignature)
+        {
+
+            cmd_list->SetGraphicsRootSignature(m_data);
+        }
 
         if (m_cbv_descriptor_heap)
         {
@@ -101,7 +104,7 @@ namespace moon
 
         auto* context = (directx_context*)application::get().get_context();
 
-        ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
+        ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
         if (!m_srv_descriptor_heap)
         {
@@ -145,7 +148,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         auto* context = (directx_context*)application::get().get_context();
-        ID3D12GraphicsCommandList* cmd_list = context->get_command_list();
+        ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
         glm::mat4 transposed = glm::transpose(value);
 

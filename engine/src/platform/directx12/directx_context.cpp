@@ -139,7 +139,7 @@ namespace moon
         return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 
-    ID3D12GraphicsCommandList* directx_context::get_command_list() const
+    ID3D12GraphicsCommandList* directx_context::get_native_command_list() const
     {
         MOON_PROFILE_FUNCTION();
 
@@ -237,8 +237,6 @@ namespace moon
             MOON_CORE_ERROR("Failed to create command queue!");
         }
 
-
-
         for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
             if (FAILED(m_device_->CreateFence(m_frames[i].fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frames[i].fence))))
@@ -256,7 +254,7 @@ namespace moon
                 MOON_CORE_ASSERT(false, "Failed to create command allocator!");
             }
 
-            m_frames[i].command_list = create_scope<directx_command_list>(m_device_.Get(), m_frames[i].allocator.Get(), m_command_queue_.Get());
+            m_frames[i].command_list = create_scope<directx_command_list>(m_device_.Get(), m_frames[i].allocator.Get());
         }
 
         // === Swapchain ===

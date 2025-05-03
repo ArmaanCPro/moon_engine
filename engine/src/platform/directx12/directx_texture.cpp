@@ -151,7 +151,7 @@ moon::directx_texture2d::directx_texture2d(std::string_view path)
     texture_data.RowPitch = m_width * channels; // Assuming tightly packed data
     texture_data.SlicePitch = texture_data.RowPitch * m_height;
 
-    ID3D12GraphicsCommandList10* command_list = m_context->get_command_list();
+    ID3D12GraphicsCommandList* command_list = m_context->get_native_command_list();
     // UpdateSubresources(command_list, m_texture_resource.Get(), m_upload_buffer.Get(), 0, 0, 1, &texture_data);
 
     // Transition the texture to a shader-readable state
@@ -210,8 +210,9 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     uint32_t bpp = m_dxgi_format == DXGI_FORMAT_R8G8B8A8_UNORM ? 4 : 3;
     MOON_CORE_ASSERT(size == m_width * m_height * bpp, "Data must be entire texture!");
 
+    command_list* command_list = m_context->get_command_list(m_context->get_current_buffer_index());
+
     // Get command list
-    ID3D12GraphicsCommandList10* command_list = m_context->begin_resource_upload();
     if (!command_list)
     {
         MOON_CORE_ERROR("Failed to get command list in set_data!");
@@ -219,13 +220,7 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     }
 
     // Transition to COPY_DEST state first (if it was in PIXEL_SHADER_RESOURCE state)
-    D3D12_RESOURCE_BARRIER barrier_to_copy = {};
-    barrier_to_copy.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier_to_copy.Transition.pResource = m_texture_resource.Get();
-    barrier_to_copy.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-    barrier_to_copy.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
-    barrier_to_copy.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    command_list->ResourceBarrier(1, &barrier_to_copy);
+    command_list->transition_resource(m_texture_resource.Get(), ResourceState::FragmentShaderResource, ResourceState::CopyDest);
 
     // Create the upload buffer with proper size
     uint64_t required_buffer_size = GetRequiredIntermediateSize(m_texture_resource.Get(), 0, 1);
@@ -273,7 +268,7 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
 
     // Use UpdateSubresources to handle the upload
     UINT64 result = UpdateSubresources<1>(
-        command_list,
+        (ID3D12GraphicsCommandList*)command_list->get_native_handle(),
         m_texture_resource.Get(),
         temp_upload_buffer.Get(),
         0, 0, 1,
@@ -287,15 +282,7 @@ void moon::directx_texture2d::set_data(void* data, uint32_t size)
     }
 
     // Transition texture to shader resource state
-    D3D12_RESOURCE_BARRIER barrier_to_shader = {};
-    barrier_to_shader.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-    barrier_to_shader.Transition.pResource = m_texture_resource.Get();
-    barrier_to_shader.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-    barrier_to_shader.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-    barrier_to_shader.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-    command_list->ResourceBarrier(1, &barrier_to_shader);
-
-    m_context->end_resource_upload();
+    command_list->transition_resource(m_texture_resource.Get(), ResourceState::CopyDest, ResourceState::FragmentShaderResource);
 
     m_upload_buffer = temp_upload_buffer;
 }
@@ -304,17 +291,12 @@ void moon::directx_texture2d::bind(uint32_t slot) const
 {
     MOON_PROFILE_FUNCTION();
 
-    ID3D12GraphicsCommandList10* command_list = m_context->get_command_list();
+    ID3D12GraphicsCommandList* command_list = m_context->get_native_command_list();
 
-    ID3D12DescriptorHeap* descriptor_heaps[] = { m_descriptor_heap.Get() };
-    if (!m_descriptor_heap)
-    {
-        MOON_CORE_ASSERT(false, "Descriptor heap is null in texture bind!");
-        return;
-    }
+    std::array<ID3D12DescriptorHeap*, 1> descriptor_heaps = { m_descriptor_heap.Get() };
 
     // Set the descriptor heap
-    command_list->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
+    command_list->SetDescriptorHeaps((UINT)descriptor_heaps.size(), descriptor_heaps.data());
 
     // Get the GPU descriptor handle for the SRV
     D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle = m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();

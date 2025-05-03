@@ -12,6 +12,7 @@ namespace moon
         Present,
         CopySource,
         CopyDest,
+        GenericRead,
         FragmentShaderResource,
         ShaderResource
     };
@@ -29,8 +30,11 @@ namespace moon
         virtual void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count = 0) = 0;
         virtual void dispatch() = 0;
 
-        virtual void transition_resource(void* resource, ResourceState before, ResourceState after) = 0;
+        virtual void upload_data(const void* data, size_t size, void* gpu_buffer, size_t dest_offset = 0, size_t src_offset = 0) = 0;
+        virtual void transition_resource(void* resource, ResourceState before, ResourceState after, size_t num_barriers = 1) = 0;
         virtual void set_render_target(void* target_descriptor, void* depth_stencil_desc = nullptr) = 0;
+
+        virtual void bind_vertex_buffer(void* vbuf_view, size_t num_views = 1, size_t start_slot = 0) = 0;
 
         // TEMP
         virtual void* get_native_handle() = 0;

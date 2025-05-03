@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 # option determining static linking (on if is monolithic is on)
-option(IS_MONOLITHIC "Is Monolithic" OFF)
+option(IS_MONOLITHIC "Is Monolithic" ON)
 
 
 set(VCPKG_CRT_LINKAGE "static" CACHE STRING "")

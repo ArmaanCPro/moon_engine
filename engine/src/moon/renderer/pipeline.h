@@ -11,8 +11,9 @@ namespace moon
 {
     struct pipeline_spec
     {
-        // TODO: shaders already hold a ShaderType, maybe reconsider this in future?
-        std::unordered_map<ShaderType, shader*> shaders;
+        shader* vertex_shader = nullptr;
+        shader* fragment_shader = nullptr;
+        shader* rootsig_shader = nullptr;
         std::vector<texture*> textures;
 
         // TODO: consider removing vertex arrays entirely

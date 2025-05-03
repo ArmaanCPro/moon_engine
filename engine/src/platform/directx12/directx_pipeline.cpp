@@ -74,21 +74,19 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        std::string_view root_sig_data;
-        for (const auto& [type, shader] : spec.shaders)
+        if (spec.rootsig_shader)
         {
-            if (type == ShaderType::RootSignature)
-                root_sig_data = shader->get_data();
-        }
-        if (root_sig_data.empty())
-        {
-            MOON_CORE_ASSERT(false, "Root signature is empty!");
+            MOON_CORE_ASSERT(false, "Root signature shader is null!");
         }
 
         directx_context* context = (directx_context*)application::get().get_context();
 
         ComPtr<ID3D12RootSignature> root_signature;
-        context->get_device()->CreateRootSignature(0, root_sig_data.data(), root_sig_data.size(), IID_PPV_ARGS(&root_signature));
+        if (spec.rootsig_shader)
+        {
+            std::string_view rootsig_data = spec.rootsig_shader->get_data();
+            context->get_device()->CreateRootSignature(0, rootsig_data.data(), rootsig_data.size(), IID_PPV_ARGS(&root_signature));
+        }
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psod = {};
         psod.pRootSignature = root_signature.Get();
@@ -101,10 +99,17 @@ namespace moon
 
         psod.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 
-        psod.VS.pShaderBytecode = spec.shaders.find(ShaderType::Vertex)->second->get_data().data();
-        psod.VS.BytecodeLength = spec.shaders.find(ShaderType::Vertex)->second->get_data().size();
-        psod.PS.pShaderBytecode = spec.shaders.find(ShaderType::Fragment)->second->get_data().data();
-        psod.PS.BytecodeLength = spec.shaders.find(ShaderType::Fragment)->second->get_data().size();
+        if (spec.vertex_shader && spec.fragment_shader)
+        {
+            psod.VS.pShaderBytecode = spec.vertex_shader->get_data().data();
+            psod.VS.BytecodeLength = spec.vertex_shader->get_data().size();
+            psod.PS.pShaderBytecode = spec.fragment_shader->get_data().data();
+            psod.PS.BytecodeLength = spec.fragment_shader->get_data().size();
+        }
+        else
+        {
+            MOON_CORE_ERROR("Vertex or Fragment shader is null!");
+        }
 
         // TODO: rest of these shaders
         psod.DS.pShaderBytecode = nullptr;

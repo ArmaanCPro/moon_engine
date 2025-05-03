@@ -11,16 +11,15 @@
  *   -> s0       Sampler for "Textures"
  */
 
-
 #define ROOTSIG \
 "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT)," \
 "DescriptorTable(" \
     "CBV(b0)," \
     "SRV(t0, numDescriptors = 32)" \
-"), " \
+")," \
 "StaticSampler(s0)"
 
-#if defined(COMPILE_ROOTSIG)
+#ifdef COMPILE_ROOTSIG
 RootSignature( ROOTSIG );
 #endif
 

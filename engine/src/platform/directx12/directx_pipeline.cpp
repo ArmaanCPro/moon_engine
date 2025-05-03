@@ -2,6 +2,7 @@
 #include "directx_pipeline.h"
 
 #include "directx_context.h"
+#include "directx_shader.h"
 #include "core/application.h"
 
 namespace moon
@@ -86,6 +87,11 @@ namespace moon
         {
             std::string_view rootsig_data = spec.rootsig_shader->get_data();
             context->get_device()->CreateRootSignature(0, rootsig_data.data(), rootsig_data.size(), IID_PPV_ARGS(&root_signature));
+        }
+        else // embedded root signature
+        {
+            auto* dx_vs = (directx_shader*)spec.vertex_shader;
+            root_signature = dx_vs->get_root_signature();
         }
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psod = {};

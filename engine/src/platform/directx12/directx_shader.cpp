@@ -4,6 +4,10 @@
 #include "directx_context.h"
 #include "core/application.h"
 
+#include "directx.h"
+#include <d3d12shader.h>
+#include <d3dcompiler.h>
+
 namespace moon
 {
     directx_shader::directx_shader(ShaderType type, std::string_view filepath)
@@ -22,6 +26,27 @@ namespace moon
 
         auto count = last_dot == std::string::npos ? filepath.size() - last_slash : last_dot - last_slash;
         m_name = filepath.substr(last_slash, count);
+
+        // ROOT SIG (we only need to do this to extract an embedded root sig, otherwise m_data is the rootsig)
+        if (m_type != ShaderType::RootSignature)
+        {
+            ComPtr<ID3DBlob> blob = create_blob();
+            ComPtr<ID3DBlob> rootsig_blob;
+
+            HRESULT hr = D3DGetBlobPart(
+                blob->GetBufferPointer(),
+                blob->GetBufferSize(),
+                D3D_BLOB_ROOT_SIGNATURE,
+                0,
+                &rootsig_blob
+            );
+            MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to get root signature blob!");
+
+            auto* context = (directx_context*)(application::get().get_context());
+            auto* device = context->get_device().Get();
+
+            device->CreateRootSignature(0, rootsig_blob->GetBufferPointer(), rootsig_blob->GetBufferSize(), IID_PPV_ARGS(&m_root_signature));
+        }
     }
 
     directx_shader::directx_shader(std::string_view vertex_path, std::string_view fragment_path)
@@ -40,6 +65,74 @@ namespace moon
 
         auto count = last_dot == std::string::npos ? vertex_path.size() - last_slash : last_dot - last_slash;
         m_name = vertex_path.substr(last_slash, count);
+
+        // ROOT SIG (we only need to do this to extract an embedded root sig, otherwise m_data is the rootsig)
+        if (m_type != ShaderType::RootSignature)
+        {
+            ComPtr<ID3DBlob> blob = create_blob();
+            ComPtr<ID3DBlob> rootsig_blob;
+            ComPtr<ID3DBlob> error_blob;
+
+            HRESULT hr = D3DGetBlobPart(
+                blob->GetBufferPointer(),
+                blob->GetBufferSize(),
+                D3D_BLOB_ROOT_SIGNATURE,
+                0,
+                &rootsig_blob
+            );
+
+            if (FAILED(hr))
+            {
+                // If extracting failed, create a default root signature instead
+                MOON_CORE_WARN("Failed to extract root signature from shader, creating default one instead");
+
+                // Create a default root signature programmatically
+                CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+                CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+
+                // CBV for matrix
+                ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+                // SRV for textures
+                ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 32, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+
+                rootParameters[0].InitAsDescriptorTable(2, ranges);
+
+                D3D12_STATIC_SAMPLER_DESC sampler = {};
+                sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+                sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+                sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+                sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+                sampler.MipLODBias = 0;
+                sampler.MaxAnisotropy = 0;
+                sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+                sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+                sampler.MinLOD = 0.0f;
+                sampler.MaxLOD = D3D12_FLOAT32_MAX;
+                sampler.ShaderRegister = 0;
+                sampler.RegisterSpace = 0;
+                sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+                CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+                rootSignatureDesc.Init_1_1(1, rootParameters, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+                hr = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_1, &rootsig_blob, &error_blob);
+
+                if (FAILED(hr))
+                {
+                    if (error_blob)
+                    {
+                        MOON_CORE_ERROR("Root signature serialization error: {0}", (char*)error_blob->GetBufferPointer());
+                    }
+                    MOON_CORE_ASSERT(false, "Failed to serialize root signature!");
+                }
+            }
+
+            auto* context = (directx_context*)(application::get().get_context());
+            auto* device = context->get_device().Get();
+
+            hr = device->CreateRootSignature(0, rootsig_blob->GetBufferPointer(), rootsig_blob->GetBufferSize(), IID_PPV_ARGS(&m_root_signature));
+            MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create root signature!");
+        }
     }
 
     directx_shader::directx_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
@@ -59,6 +152,17 @@ namespace moon
         m_srv_descriptor_heap.Reset();
     }
 
+    ComPtr<ID3DBlob> directx_shader::create_blob() const
+    {
+        MOON_PROFILE_FUNCTION();
+
+        ComPtr<ID3DBlob> blob;
+        HRESULT hr = D3DCreateBlob(m_data.size(), &blob);
+        MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create blob!");
+        memcpy(blob->GetBufferPointer(), m_data.data(), m_data.size());
+        return blob;
+    }
+
     void directx_shader::bind() const
     {
         MOON_PROFILE_FUNCTION();
@@ -66,11 +170,8 @@ namespace moon
         auto* context = (directx_context*)application::get().get_context();
         ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
-        if (m_type == ShaderType::RootSignature)
-        {
-
-            cmd_list->SetGraphicsRootSignature(m_data);
-        }
+        auto* native_cmd = (ID3D12GraphicsCommandList*)context->get_command_list(context->get_current_buffer_index())->get_native_handle();
+        native_cmd->SetGraphicsRootSignature(m_root_signature.Get());
 
         if (m_cbv_descriptor_heap)
         {
@@ -78,9 +179,10 @@ namespace moon
             cmd_list->SetDescriptorHeaps(_countof(heaps), heaps);
 
             // Bind any persistent constant buffers if needed
-            for (const auto& buffer : m_constant_buffers)
+            for ([[maybe_unused]] const auto& buffer : m_constant_buffers)
             {
-                cmd_list->SetGraphicsRootConstantBufferView(0, buffer->GetGPUVirtualAddress());
+                // UINT descriptorSize = context->get_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
             }
         }
 
@@ -182,7 +284,7 @@ namespace moon
         {
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            desc.NumDescriptors = 1;
+            desc.NumDescriptors = 33; // CBV & SRV
             desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
             desc.NodeMask = 0;
 
@@ -199,9 +301,7 @@ namespace moon
         ID3D12DescriptorHeap* heaps[] =  { m_cbv_descriptor_heap.Get() };
         cmd_list->SetDescriptorHeaps(_countof(heaps), heaps);
 
-        UINT root_parameter_index = 0;
-
-        cmd_list->SetGraphicsRootDescriptorTable(root_parameter_index, m_cbv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+        cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
 
         m_constant_buffers.push_back(constant_buffer);
     }
@@ -209,6 +309,7 @@ namespace moon
     std::string directx_shader::read_file(std::string_view filepath)
     {
         MOON_PROFILE_FUNCTION();
+
 
         std::string result;
 

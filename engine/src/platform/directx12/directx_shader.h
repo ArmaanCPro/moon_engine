@@ -17,6 +17,8 @@ namespace moon
         std::string_view get_name() override { return m_name; }
         const ComPtr<ID3D12RootSignature>& get_root_signature() const { return m_root_signature; }
 
+        ComPtr<ID3DBlob> create_blob() const;
+
         void bind() const override;
         void unbind() const override;
 
@@ -34,6 +36,8 @@ namespace moon
     private:
         std::string m_name;
         std::string m_data;
+        // embedded rootsig
+        ComPtr<ID3D12RootSignature> m_root_signature;
 
         // DX specific resources
         ComPtr<ID3D12DescriptorHeap> m_srv_descriptor_heap;

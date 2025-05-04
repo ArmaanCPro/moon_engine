@@ -33,6 +33,10 @@ namespace moon
     private:
         std::string read_file(std::string_view filepath);
 
+        void init_root_signature();
+        void init_constant_buffers();
+        void init_shader_resource_views();
+
     private:
         std::string m_name;
         std::string m_data;
@@ -41,8 +45,12 @@ namespace moon
 
         // DX specific resources
         ComPtr<ID3D12DescriptorHeap> m_srv_descriptor_heap;
+        ComPtr<ID3D12Resource2> m_null_texture; // null srv resource for initialization purposes
 
         ComPtr<ID3D12DescriptorHeap> m_cbv_descriptor_heap;
         std::vector<ComPtr<ID3D12Resource2>> m_constant_buffers;
+
+        // Persistent mapping for the CBV's mat4
+        UINT8* m_cbv_mapped_data = nullptr;
     };
 }

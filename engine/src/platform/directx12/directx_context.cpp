@@ -18,6 +18,9 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        // make sure CPU and GPU are synced before final releasing objects
+        signal_and_wait();
+
         // Debug layer
 #ifdef _DEBUG
         if (m_dxgi_debug)

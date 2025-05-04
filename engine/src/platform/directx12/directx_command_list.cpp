@@ -16,6 +16,7 @@ namespace moon
         HRESULT hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, nullptr, IID_PPV_ARGS(&m_command_list));
         MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create command list");
 
+
         m_command_list->Close();
         m_allocator->Reset();
         m_command_list->Reset(m_allocator, nullptr);
@@ -25,9 +26,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        m_allocator = nullptr;
-        m_device = nullptr;
-        m_command_list.Reset();
     }
 
     void directx_command_list::reset()

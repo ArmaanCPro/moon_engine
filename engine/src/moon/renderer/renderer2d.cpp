@@ -103,7 +103,7 @@ namespace moon
         // s_data.texture_shader = shader::create(ShaderType::VertexAndFragment, "assets/shaders/texture.glsl");
         s_data.texture_shader = shader::create("assets/shaders/hlsl/texture.vert.cso", "assets/shaders/hlsl/texture.frag.cso");
         s_data.texture_shader->bind();
-        s_data.texture_shader->set_int_array("u_Textures", samplers, s_data.max_texture_slots);
+        s_data.texture_shader->set_int_array("u_Textures", samplers, renderer2d_data::max_texture_slots);
 
         // set index 0 to white texture
         s_data.texture_slots[0] = s_data.white_texture;

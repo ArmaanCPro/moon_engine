@@ -164,18 +164,7 @@ namespace moon
     }
 
     void directx_imgui_layer::on_imgui_render()
-    {
-        static bool open = true;
-        ImGui::ShowDemoWindow(&open);
-
-        ImGui::Begin("ImGui Testing");
-
-        ImGui::Text("Is Window Hovered %d", ImGui::IsWindowHovered());
-        ImGui::Text("Is Window Active %d", ImGui::IsWindowFocused());
-        ImGui::Text("Want Capture Mouse %d", ImGui::GetIO().WantCaptureMouse);
-
-        ImGui::End();
-    }
+    {}
 
     void directx_imgui_layer::on_event(event& e)
     {

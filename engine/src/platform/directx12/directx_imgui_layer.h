@@ -23,14 +23,17 @@ namespace moon
         ComPtr<ID3D12DescriptorHeap> m_srv_heap;
 
         // Descriptor tracking helper
-        struct DescriptorAllocator {
+        struct DescriptorAllocator
+        {
             ID3D12DescriptorHeap* heap = nullptr;
             UINT descriptor_size = 0;
             UINT capacity = 0;
             UINT current_offset = 0;
 
-            void Alloc(ID3D12Device* device, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu) {
-                if (current_offset >= capacity) {
+            void Alloc(ID3D12Device* device, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu)
+            {
+                if (current_offset >= capacity)
+                {
                     MOON_CORE_ASSERT(false, "Descriptor heap is full!");
                     return;
                 }
@@ -47,7 +50,8 @@ namespace moon
                 current_offset++;
             }
 
-            void Reset() {
+            void Reset()
+            {
                 current_offset = 0;
             }
         };

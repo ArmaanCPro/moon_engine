@@ -74,7 +74,6 @@ namespace moon
         m_frames[m_current_buffer_index_].command_list->end();
         m_frames[m_current_buffer_index_].command_list->submit();
         signal_and_wait(m_current_buffer_index_);
-        //execute_command_lists();
     }
 
     void directx_context::set_clear_color(const glm::vec4& color)

@@ -11,6 +11,8 @@ namespace moon
     class windows_window : public window
     {
     public:
+        using wnd_proc_callback_fn = std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)>;
+
         explicit windows_window(const window_props& props);
         ~windows_window() override;
 
@@ -28,6 +30,9 @@ namespace moon
 
         void set_fullscreen(bool enabled) override;
         [[nodiscard]] bool is_fullscreen() const override { return data_.fullscreen; }
+
+        // set a custom callback for proc events that take priority over normal events
+        void set_wnd_proc_callback(const wnd_proc_callback_fn& callback) { data_.wnd_proc_callback = callback; }
 
     private:
         void init(const window_props& props);
@@ -51,6 +56,7 @@ namespace moon
             bool should_resize = false;
 
             event_callback_fn event_callback;
+            wnd_proc_callback_fn wnd_proc_callback;
         };
         window_data data_;
     };

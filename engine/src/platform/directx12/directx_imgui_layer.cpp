@@ -7,8 +7,11 @@
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx12.h>
 
+#include "moon/events/application_event.h"
+#include "platform/windows/windows_window.h"
+
 // Forward declare ImGui Win32 handler from imgui_impl_win32.cpp
-// extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace moon
 {
@@ -43,11 +46,19 @@ namespace moon
         // Get DirectX context
         auto& app = application::get();
         auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
+
+        windows_window& window = static_cast<windows_window&>(app.get_window());
+        window.set_wnd_proc_callback([](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+        {
+            if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+                return 0;
+            return 0;
+        });
         
         // Create descriptor heap for ImGui
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 128; // Adjust this as needed for your app
+        desc.NumDescriptors = 128;
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         
         HRESULT hr = dx_context->get_device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_srv_heap));
@@ -69,9 +80,10 @@ namespace moon
         init_info.CommandQueue = dx_context->get_command_queue().Get();
         init_info.NumFramesInFlight = directx_context::s_frames_in_flight;
         init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-        init_info.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+        init_info.DSVFormat = DXGI_FORMAT_UNKNOWN;
         init_info.SrvDescriptorHeap = m_srv_heap.Get();
-        init_info.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu) {
+        init_info.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu)
+        {
             s_allocator.Alloc(info->Device, out_cpu, out_gpu);
         };
         init_info.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpu, D3D12_GPU_DESCRIPTOR_HANDLE gpu)
@@ -97,8 +109,7 @@ namespace moon
         // Release resources
         if (m_srv_heap)
         {
-            m_srv_heap->Release();
-            m_srv_heap = nullptr;
+            m_srv_heap.Reset();
         }
         
         m_initialized = false;
@@ -129,26 +140,27 @@ namespace moon
         auto& app = application::get();
         auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
         
-        ComPtr<ID3D12GraphicsCommandList> command_list = dx_context->get_native_command_list();
+        ID3D12GraphicsCommandList* command_list = dx_context->get_native_command_list();
         
         // IMPORTANT: Set descriptor heaps BEFORE rendering ImGui
         ID3D12DescriptorHeap* heaps[] = { m_srv_heap.Get() };
         command_list->SetDescriptorHeaps(1, heaps);
         
         // Render ImGui
-        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list);
         
         // Update viewports (if enabled)
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
             ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault(nullptr, (void*)command_list.Get());
+            ImGui::RenderPlatformWindowsDefault(nullptr, (void*)command_list);
         }
     }
 
     void directx_imgui_layer::on_imgui_render()
     {
-        imgui_layer::on_imgui_render();
+        static bool open = true;
+        ImGui::ShowDemoWindow(&open);
     }
 
     void directx_imgui_layer::on_event(event& e)
@@ -159,5 +171,12 @@ namespace moon
             e.handled |= e.is_in_category(EVENT_CATEGORY_MOUSE) && io.WantCaptureMouse;
             e.handled |= e.is_in_category(EVENT_CATEGORY_KEYBOARD) && io.WantCaptureKeyboard;
         }
+
+        event_dispatcher dispatcher(e);
+        dispatcher.dispatch<window_resize_event>([&](window_resize_event& event)
+        {
+            ImGui::GetIO().DisplaySize = ImVec2((float)event.get_width(), (float)event.get_height());
+            return false;
+        });
     }
 }

@@ -20,7 +20,7 @@ namespace moon
 
     void directx_renderer_api::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
     {
-
+        ((directx_context*)application::get().get_context())->on_resize(width, height);
     }
 
     void directx_renderer_api::set_clear_color(const glm::vec4& color)

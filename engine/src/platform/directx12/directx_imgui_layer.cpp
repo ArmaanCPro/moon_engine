@@ -104,6 +104,7 @@ namespace moon
         // Shutdown backends
         ImGui_ImplDX12_Shutdown();
         ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyPlatformWindows();
         ImGui::DestroyContext();
         
         // Release resources
@@ -133,11 +134,14 @@ namespace moon
 
         MOON_CORE_ASSERT(m_initialized, "ImGui layer is not initialized!");
 
+        ImGuiIO& io = ImGui::GetIO();
+        auto& app = application::get();
+        io.DisplaySize = ImVec2((float)app.get_window().get_width(), (float)app.get_window().get_height());
+
         // Finalize frame
         ImGui::Render();
         
         // Get context
-        auto& app = application::get();
         auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
         
         ID3D12GraphicsCommandList* command_list = dx_context->get_native_command_list();
@@ -150,8 +154,8 @@ namespace moon
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list);
         
         // Update viewports (if enabled)
-        ImGuiIO& io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault(nullptr, (void*)command_list);
         }
@@ -161,6 +165,14 @@ namespace moon
     {
         static bool open = true;
         ImGui::ShowDemoWindow(&open);
+
+        ImGui::Begin("ImGui Testing");
+
+        ImGui::Text("Is Window Hovered %d", ImGui::IsWindowHovered());
+        ImGui::Text("Is Window Active %d", ImGui::IsWindowFocused());
+        ImGui::Text("Want Capture Mouse %d", ImGui::GetIO().WantCaptureMouse);
+
+        ImGui::End();
     }
 
     void directx_imgui_layer::on_event(event& e)
@@ -171,12 +183,5 @@ namespace moon
             e.handled |= e.is_in_category(EVENT_CATEGORY_MOUSE) && io.WantCaptureMouse;
             e.handled |= e.is_in_category(EVENT_CATEGORY_KEYBOARD) && io.WantCaptureKeyboard;
         }
-
-        event_dispatcher dispatcher(e);
-        dispatcher.dispatch<window_resize_event>([&](window_resize_event& event)
-        {
-            ImGui::GetIO().DisplaySize = ImVec2((float)event.get_width(), (float)event.get_height());
-            return false;
-        });
     }
 }

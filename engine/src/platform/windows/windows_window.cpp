@@ -11,6 +11,7 @@
 #include "platform/opengl/opengl_context.h"
 
 #include <windows.h>
+#include <windowsx.h>
 #include <directx/d3dx12.h>
 
 namespace moon
@@ -184,14 +185,26 @@ namespace moon
         {
             data_.width = cr.right - cr.left;
             data_.height = cr.bottom - cr.top;
-
-            ((directx_context*)application::get().get_context())->on_resize(data_.width, data_.height);
         }
     }
 
-    static KeyCode win_to_moon_key_code(uint16_t win32KeyCode)
+    static KeyCode win_to_moon_key_code(uint16_t win32KeyCode, bool isChar = false)
     {
+        if (isChar)
+        {
+            win32KeyCode = VkKeyScanEx((CHAR)win32KeyCode, nullptr) & 0xFF; // High byte contains shift state info
+        }
+
         static const std::unordered_map<uint16_t, KeyCode> win32ToMoonMap = {
+            {8, KeyCode::Backspace},
+            {9, KeyCode::Tab},
+            {0x0D, KeyCode::Enter},
+            {0x10, KeyCode::LeftShift},
+            {0x11, KeyCode::LeftControl},
+            {0x12, KeyCode::LeftAlt},
+            {0x13, KeyCode::Pause},
+            {0x14, KeyCode::CapsLock},
+            {0x1B, KeyCode::Escape},
             {32,  KeyCode::Space},
             {39,  KeyCode::Apostrophe},
             {44,  KeyCode::Comma},
@@ -326,14 +339,10 @@ namespace moon
     {
         // Map Win32 mouse button codes to moon MouseCode
         static const std::unordered_map<uint16_t, MouseCode> win32ToMoonMouseMap = {
-            {0, MouseCode::Button0},
-            {1, MouseCode::Button1},
-            {2, MouseCode::Button2},
-            {3, MouseCode::Button3},
-            {4, MouseCode::Button4},
-            {5, MouseCode::Button5},
-            {6, MouseCode::Button6},
-            {7, MouseCode::Button7}
+            // {0, MouseCode::Button0},
+            {VK_LBUTTON, MouseCode::ButtonLeft},
+            {VK_RBUTTON, MouseCode::ButtonRight},
+            {VK_MBUTTON, MouseCode::ButtonMiddle},
         };
 
         auto it = win32ToMoonMouseMap.find(win32MouseCode);
@@ -389,20 +398,22 @@ namespace moon
         }
         case WM_MOUSEMOVE:
         {
-            mouse_moved_event me((float)lParam, (float)wParam);
+            int xPos = GET_X_LPARAM(lParam);
+            int yPos = GET_Y_LPARAM(lParam);
+            mouse_moved_event me((float)xPos, (float)yPos);
             data->event_callback(me);
-            return 0;
-        }
-        case WM_CHAR:
-        {
-            key_typed_event kte(win_to_moon_key_code((uint16_t)wParam));
-            data->event_callback(kte);
             return 0;
         }
         case WM_KEYDOWN:
         {
             key_pressed_event kpe(win_to_moon_key_code((uint16_t)wParam), (int)lParam & 0xFFFF);
             data->event_callback(kpe);
+            return 0;
+        }
+        case WM_CHAR:
+        {
+            key_typed_event kte(win_to_moon_key_code((uint16_t)wParam, true));
+            data->event_callback(kte);
             return 0;
         }
         case WM_KEYUP:
@@ -413,11 +424,6 @@ namespace moon
         }
         case WM_SIZE:
         {
-            // don't resize on minimize/reopen
-            if (lParam && (HIWORD(lParam) != data->height || HIWORD(lParam) != data->width))
-            {
-                return 0;
-            }
             data->width = LOWORD(lParam);
             data->height = HIWORD(lParam);
             data->should_resize = true;
@@ -437,15 +443,39 @@ namespace moon
             data->event_callback(msve);
             return 0;
         }
+        case WM_LBUTTONDOWN:
+        {
+            mouse_pressed_event mpe(MouseCode::ButtonLeft);
+            data->event_callback(mpe);
+            return 0;
+        }
+        case WM_LBUTTONUP:
+        {
+            mouse_released_event mre(MouseCode::ButtonLeft);
+            data->event_callback(mre);
+            return 0;
+        }
+        case WM_RBUTTONDOWN:
+        {
+            mouse_pressed_event mre(MouseCode::ButtonRight);
+            data->event_callback(mre);
+            return 0;
+        }
+        case WM_RBUTTONUP:
+        {
+            mouse_released_event mre(MouseCode::ButtonRight);
+            data->event_callback(mre);
+            return 0;
+        }
         case WM_MBUTTONDOWN:
         {
-            mouse_pressed_event mmpe(win_to_moon_mouse_code((uint16_t)wParam));
+            mouse_pressed_event mmpe(MouseCode::ButtonMiddle);
             data->event_callback(mmpe);
             return 0;
         }
         case WM_MBUTTONUP:
         {
-            mouse_released_event mmre(win_to_moon_mouse_code((uint16_t)wParam));
+            mouse_released_event mmre(MouseCode::ButtonMiddle);
             data->event_callback(mmre);
             return 0;
         }

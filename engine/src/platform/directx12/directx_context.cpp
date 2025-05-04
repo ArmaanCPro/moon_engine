@@ -257,7 +257,7 @@ namespace moon
         DXGI_SWAP_CHAIN_FULLSCREEN_DESC sfd = {};
 
         RECT rect;
-        GetWindowRect(m_window_handle_, &rect); // TODO: make sure this is right and not GetClientRect
+        GetClientRect(m_window_handle_, &rect);
         swd.Width = rect.right - rect.left;
         swd.Height = rect.bottom - rect.top;
         swd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

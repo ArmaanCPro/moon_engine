@@ -71,7 +71,7 @@ void sandbox2d_layer::on_imgui_render()
     if (!ImGui::GetCurrentContext())
         ImGui::SetCurrentContext(moon_get_imgui_context());
 
-    /*
+
     ImGui::Begin("Settings");
 
     auto stats = moon::renderer2d::get_stats();
@@ -83,7 +83,6 @@ void sandbox2d_layer::on_imgui_render()
 
     ImGui::ColorEdit4("Square Color", glm::value_ptr(square_color_));
     ImGui::End();
-    */
 }
 
 void sandbox2d_layer::on_event(moon::event& e)

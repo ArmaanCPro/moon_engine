@@ -19,6 +19,8 @@ namespace moon
         void on_imgui_render() override;
         void on_event(event& e) override;
 
+        ID3D12DescriptorHeap* get_srv_heap() const { return m_srv_heap.Get(); }
+
     private:
         bool m_initialized = false;
         ComPtr<ID3D12DescriptorHeap> m_srv_heap;

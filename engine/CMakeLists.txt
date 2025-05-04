@@ -47,6 +47,7 @@ set(ENGINE_SOURCES
         src/platform/opengl/opengl_imgui_layer.cpp
         src/moon/renderer/graphics_context.cpp
         src/platform/directx12/directx_command_list.cpp
+        src/platform/directx12/directx_framebuffer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -107,6 +108,7 @@ set(ENGINE_HEADERS
         src/moon/renderer/command_list.h
         src/platform/directx12/directx_command_list.h
         src/platform/opengl/opengl_command_list.h
+        src/platform/directx12/directx_framebuffer.h
 )
 
 # platform

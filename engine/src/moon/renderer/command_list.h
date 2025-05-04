@@ -8,6 +8,7 @@ namespace moon
     enum class ResourceState
     {
         Undefined = 0,
+        Common,
         RenderTarget,
         Present,
         CopySource,

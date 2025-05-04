@@ -50,8 +50,6 @@
 #else // these macros must expand to something, otherwise the variable may be marked as unused and propogate a warning in -Werror mode
     #define MOON_ASSERT(x, ...) do { (void)(x); } while(0)
     #define MOON_CORE_ASSERT(x, ...) do { (void)(x); } while(0)
-    #define MOON_ASSERT(x) do { (void)(x); } while(0)
-    #define MOON_CORE_ASSERT(x) do { (void)(x); } while(0)
 #endif
 
 

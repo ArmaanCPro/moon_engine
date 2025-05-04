@@ -16,10 +16,10 @@ namespace moon
         HRESULT hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, nullptr, IID_PPV_ARGS(&m_command_list));
         MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create command list");
 
-
         m_command_list->Close();
         m_allocator->Reset();
         m_command_list->Reset(m_allocator, nullptr);
+        m_open = true;
     }
 
     directx_command_list::~directx_command_list()
@@ -58,7 +58,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // MOON_CORE_ASSERT(m_open, "Command list is not open!");
+        MOON_CORE_ASSERT(m_open, "Command list not is open!");
 
         HRESULT hr = m_command_list->Close();
         MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to close command list");
@@ -70,7 +70,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // MOON_CORE_ASSERT(m_open, "Command list is not open!");
+        MOON_CORE_ASSERT(!m_open, "Command list is open!");
 
         auto* context = (directx_context*)application::get().get_context();
         auto* dx_queue = context->get_command_queue().Get();
@@ -87,6 +87,8 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        MOON_CORE_ASSERT(m_open, "Command list is not open!");
+
         vertex_array->bind();
 
         m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -102,6 +104,8 @@ namespace moon
         size_t src_offset)
     {
         MOON_PROFILE_FUNCTION();
+
+        MOON_CORE_ASSERT(m_open, "Command list is not open!");
 
         ComPtr<ID3D12Resource2> upload_buffer;
         CD3DX12_HEAP_PROPERTIES heap_props(D3D12_HEAP_TYPE_UPLOAD);
@@ -132,24 +136,20 @@ namespace moon
         );
     }
 
-    static D3D12_RESOURCE_STATES to_d3d_state(ResourceState state)
-    {
-        switch (state)
-        {
-        case ResourceState::RenderTarget:                 return D3D12_RESOURCE_STATE_RENDER_TARGET;
-        case ResourceState::Present:                      return D3D12_RESOURCE_STATE_PRESENT;
-        case ResourceState::CopySource:                   return D3D12_RESOURCE_STATE_COPY_SOURCE;
-        case ResourceState::CopyDest:                     return D3D12_RESOURCE_STATE_COPY_DEST;
-        case ResourceState::GenericRead:                  return D3D12_RESOURCE_STATE_GENERIC_READ;
-        case ResourceState::FragmentShaderResource:       return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-        case ResourceState::ShaderResource:               return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-        default:                                          return D3D12_RESOURCE_STATE_COMMON;
-        }
-    }
-
     void directx_command_list::transition_resource(void* resource, ResourceState before, ResourceState after, size_t num_barriers)
     {
         MOON_PROFILE_FUNCTION();
+
+        MOON_CORE_ASSERT(m_open, "Command list is not open!");
+
+        if (!resource)
+        {
+            MOON_CORE_ERROR("Attempted to transition a null resource!");
+            return;
+        }
+
+        if (before == after)
+            return;
 
         CD3DX12_RESOURCE_BARRIER barrier =
             CD3DX12_RESOURCE_BARRIER::Transition((ID3D12Resource*)resource, to_d3d_state(before), to_d3d_state(after));
@@ -161,6 +161,8 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        MOON_CORE_ASSERT(m_open, "Command list is not open!");
+
         auto* target = (D3D12_CPU_DESCRIPTOR_HANDLE*)target_descriptor;
         auto* depth_stencil = (D3D12_CPU_DESCRIPTOR_HANDLE*)depth_stencil_desc;
         m_command_list->OMSetRenderTargets(1, target, FALSE, depth_stencil);
@@ -169,6 +171,8 @@ namespace moon
     void directx_command_list::bind_vertex_buffer(void* vbuf_view, size_t num_views, size_t start_slot)
     {
         MOON_PROFILE_FUNCTION();
+
+        MOON_CORE_ASSERT(m_open, "Command list is not open!");
 
         auto* vbuf_view_ptr = (D3D12_VERTEX_BUFFER_VIEW*)vbuf_view;
         m_command_list->IASetVertexBuffers((UINT)start_slot, (UINT)num_views, vbuf_view_ptr);

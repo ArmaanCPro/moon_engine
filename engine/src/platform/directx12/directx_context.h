@@ -34,6 +34,8 @@ namespace moon
         inline ComPtr<ID3D12Fence1>& get_fence() { return m_frames[m_current_buffer_index_].fence; }
         inline UINT& get_fence_value() { return m_frames[m_current_buffer_index_].fence_value; }
         inline uint32_t get_current_buffer_index() const { return m_current_buffer_index_; }
+        inline ComPtr<ID3D12Resource>& get_buffer(uint32_t index) { return m_buffers[index]; }
+        inline D3D12_CPU_DESCRIPTOR_HANDLE& get_rtv_handle(uint32_t index) { return m_rtv_handles[index]; }
 
         // TEMP - Move into application
         static constexpr int s_frames_in_flight = 2;

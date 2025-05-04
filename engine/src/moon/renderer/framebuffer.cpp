@@ -2,6 +2,7 @@
 
 #include "renderer.h"
 #include "renderer_api.h"
+#include "platform/directx12/directx_framebuffer.h"
 #include "platform/opengl/opengl_framebuffer.h"
 
 namespace moon
@@ -15,6 +16,8 @@ namespace moon
             return nullptr;
         case renderer_api::API::OpenGL:
             return create_ref<opengl_framebuffer>(spec);
+        case renderer_api::API::DirectX:
+            return create_ref<directx_framebuffer>(spec);
         }
 
         return nullptr;

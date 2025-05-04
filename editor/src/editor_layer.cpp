@@ -159,6 +159,7 @@ namespace moon
         }
 
         const uint32_t texture_id = m_framebuffer_->get_color_attachment_renderer_id();
+
         ImGui::Image(texture_id, { m_viewport_size_.x, m_viewport_size_.y }, { 0, 1 }, { 1, 0 });
         ImGui::End();
         ImGui::PopStyleVar();

@@ -155,7 +155,7 @@ namespace moon
         flush(s_frames_in_flight);
         release_buffers();
 
-        if (FAILED(m_swap_chain_->ResizeBuffers(s_frames_in_flight, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0)))
+        if (FAILED(m_swap_chain_->ResizeBuffers(s_frames_in_flight, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING)))
         {
             MOON_CORE_ERROR("Failed to resize swap chain buffers.");
             return;

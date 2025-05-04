@@ -22,7 +22,8 @@ namespace moon
 
         IMGUI_CHECKVERSION();
         ImGuiContext* context = ImGui::CreateContext();
-        if (!context) {
+        if (!context)
+        {
             MOON_CORE_ERROR("Failed to create ImGui context!");
         }
         ImGuiIO& io = ImGui::GetIO(); (void)io;

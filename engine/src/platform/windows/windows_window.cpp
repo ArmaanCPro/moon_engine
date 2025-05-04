@@ -189,6 +189,162 @@ namespace moon
         }
     }
 
+    static KeyCode win_to_moon_key_code(uint16_t win32KeyCode)
+    {
+        static const std::unordered_map<uint16_t, KeyCode> win32ToMoonMap = {
+            {32, KeyCode::Space},
+            {39, KeyCode::Apostrophe},
+            {44, KeyCode::Comma},
+            {45, KeyCode::Minus},
+            {46, KeyCode::Period},
+            {47, KeyCode::Slash},
+            {48, KeyCode::D0},
+            {49, KeyCode::D1},
+            {50, KeyCode::D2},
+            {51, KeyCode::D3},
+            {52, KeyCode::D4},
+            {53, KeyCode::D5},
+            {54, KeyCode::D6},
+            {55, KeyCode::D7},
+            {56, KeyCode::D8},
+            {57, KeyCode::D9},
+            {59, KeyCode::Semicolon},
+            {61, KeyCode::Equal},
+            {65, KeyCode::A},
+            {66, KeyCode::B},
+            {67, KeyCode::C},
+            {68, KeyCode::D},
+            {69, KeyCode::E},
+            {70, KeyCode::F},
+            {71, KeyCode::G},
+            {72, KeyCode::H},
+            {73, KeyCode::I},
+            {74, KeyCode::J},
+            {75, KeyCode::K},
+            {76, KeyCode::L},
+            {77, KeyCode::M},
+            {78, KeyCode::N},
+            {79, KeyCode::O},
+            {80, KeyCode::P},
+            {81, KeyCode::Q},
+            {82, KeyCode::R},
+            {83, KeyCode::S},
+            {84, KeyCode::T},
+            {85, KeyCode::U},
+            {86, KeyCode::V},
+            {87, KeyCode::W},
+            {88, KeyCode::X},
+            {89, KeyCode::Y},
+            {90, KeyCode::Z},
+            {91, KeyCode::LeftBracket},
+            {92, KeyCode::Backslash},
+            {93, KeyCode::RightBracket},
+            {96, KeyCode::GraveAccent},
+            {256,KeyCode::Escape},
+            {257,KeyCode::Enter},
+            {258,KeyCode::Tab},
+            {259,KeyCode::Backspace},
+            {260,KeyCode::Insert},
+            {261,KeyCode::Delete},
+            {262,KeyCode::Right},
+            {263,KeyCode::Left},
+            {264,KeyCode::Down},
+            {265,KeyCode::Up},
+            {266,KeyCode::PageUp},
+            {267,KeyCode::PageDown},
+            {268,KeyCode::Home},
+            {269,KeyCode::End},
+            {280,KeyCode::CapsLock},
+            {281,KeyCode::ScrollLock},
+            {282,KeyCode::NumLock},
+            {283,KeyCode::PrintScreen},
+            {284,KeyCode::Pause},
+            {290,KeyCode::F1},
+            {291,KeyCode::F2},
+            {292,KeyCode::F3},
+            {293,KeyCode::F4},
+            {294,KeyCode::F5},
+            {295,KeyCode::F6},
+            {296,KeyCode::F7},
+            {297,KeyCode::F8},
+            {298,KeyCode::F9},
+            {299,KeyCode::F10},
+            {300,KeyCode::F11},
+            {301,KeyCode::F12},
+            {302,KeyCode::F13},
+            {303,KeyCode::F14},
+            {304,KeyCode::F15},
+            {305,KeyCode::F16},
+            {306,KeyCode::F17},
+            {307,KeyCode::F18},
+            {308,KeyCode::F19},
+            {309,KeyCode::F20},
+            {310,KeyCode::F21},
+            {311,KeyCode::F22},
+            {312,KeyCode::F23},
+            {313,KeyCode::F24},
+            {314,KeyCode::F25},
+            {320,KeyCode::KP0},
+            {321,KeyCode::KP1},
+            {322,KeyCode::KP2},
+            {323,KeyCode::KP3},
+            {324,KeyCode::KP4},
+            {325,KeyCode::KP5},
+            {326,KeyCode::KP6},
+            {327,KeyCode::KP7},
+            {328,KeyCode::KP8},
+            {329,KeyCode::KP9},
+            {330,KeyCode::KPDecimal},
+            {331,KeyCode::KPDivide},
+            {332,KeyCode::KPMultiply},
+            {333,KeyCode::KPSubtract},
+            {334,KeyCode::KPAdd},
+            {335,KeyCode::KPEnter},
+            {336,KeyCode::KPEqual},
+            {340,KeyCode::LeftShift},
+            {341,KeyCode::LeftControl},
+            {342,KeyCode::LeftAlt},
+            {343,KeyCode::LeftSuper},
+            {344,KeyCode::RightShift},
+            {345,KeyCode::RightControl},
+            {346,KeyCode::RightAlt},
+            {347,KeyCode::RightSuper},
+            {348,KeyCode::Menu}
+        };
+
+        auto it = win32ToMoonMap.find(win32KeyCode);
+        if (it != win32ToMoonMap.end())
+        {
+            return it->second;
+        }
+
+        MOON_CORE_ASSERT(false, "Unknown KeyCode!");
+        return KeyCode::A;
+    }
+
+    static MouseCode win_to_moon_mouse_code(uint16_t win32MouseCode)
+    {
+        // Map Win32 mouse button codes to moon MouseCode
+        static const std::unordered_map<uint16_t, MouseCode> win32ToMoonMouseMap = {
+            {0, MouseCode::Button0},
+            {1, MouseCode::Button1},
+            {2, MouseCode::Button2},
+            {3, MouseCode::Button3},
+            {4, MouseCode::Button4},
+            {5, MouseCode::Button5},
+            {6, MouseCode::Button6},
+            {7, MouseCode::Button7}
+        };
+
+        auto it = win32ToMoonMouseMap.find(win32MouseCode);
+        if (it != win32ToMoonMouseMap.end())
+        {
+            return it->second;
+        }
+        MOON_CORE_ASSERT(false, "Unknown MouseCode!");
+        return MouseCode::Button0;
+    }
+
     LRESULT windows_window::on_window_message(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         window_data* data = (window_data*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -230,19 +386,19 @@ namespace moon
         }
         case WM_CHAR:
         {
-            key_typed_event kte((int)wParam);
+            key_typed_event kte(win_to_moon_key_code((uint16_t)wParam));
             data->event_callback(kte);
             return 0;
         }
         case WM_KEYDOWN:
         {
-            key_pressed_event kpe((int)wParam, (int)lParam & 0xFFFF);
+            key_pressed_event kpe(win_to_moon_key_code((uint16_t)wParam), (int)lParam & 0xFFFF);
             data->event_callback(kpe);
             return 0;
         }
         case WM_KEYUP:
         {
-            key_released_event kre((int)wParam);
+            key_released_event kre(win_to_moon_key_code((uint16_t)wParam));
             data->event_callback(kre);
             return 0;
         }
@@ -274,13 +430,13 @@ namespace moon
         }
         case WM_MBUTTONDOWN:
         {
-            mouse_pressed_event mmpe((int)wParam);
+            mouse_pressed_event mmpe(win_to_moon_mouse_code((uint16_t)wParam));
             data->event_callback(mmpe);
             return 0;
         }
         case WM_MBUTTONUP:
         {
-            mouse_released_event mmre((int)wParam);
+            mouse_released_event mmre(win_to_moon_mouse_code((uint16_t)wParam));
             data->event_callback(mmre);
             return 0;
         }

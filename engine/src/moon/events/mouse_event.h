@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event.h"
+#include "core/mouse_codes.h"
 
 namespace moon
 {
@@ -59,22 +60,22 @@ namespace moon
     class MOON_API mouse_button_event : public event
     {
     public:
-        inline int get_mouse_button() const { return button_; }
+        inline MouseCode get_mouse_button() const { return m_button; }
 
         EVENT_CLASS_CATEGORY(EVENT_CATEGORY_MOUSE | EVENT_CATEGORY_INPUT)
     protected:
-        explicit mouse_button_event(int button)
+        explicit mouse_button_event(MouseCode button)
             :
-            button_(button)
+            m_button(button)
         {}
 
-        int button_;
+        MouseCode m_button;
     };
 
     class MOON_API mouse_pressed_event : public mouse_button_event
     {
     public:
-        explicit mouse_pressed_event(int button)
+        explicit mouse_pressed_event(MouseCode button)
             :
             mouse_button_event(button)
         {}
@@ -84,7 +85,7 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "MouseButtonPressedEvent: [" << button_;
+            ss << "MouseButtonPressedEvent: [" << m_button;
             return ss.str();
         }
     };
@@ -92,7 +93,7 @@ namespace moon
     class MOON_API mouse_released_event : public mouse_button_event
     {
     public:
-        explicit mouse_released_event(int button)
+        explicit mouse_released_event(MouseCode button)
             :
             mouse_button_event(button)
         {}
@@ -102,9 +103,8 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "MouseButtonReleasedEvent: [" << button_;
+            ss << "MouseButtonReleasedEvent: [" << m_button;
             return ss.str();
         }
     };
-
 }

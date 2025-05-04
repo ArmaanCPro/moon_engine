@@ -3,12 +3,12 @@
 #include "directx_context.h"
 #include "moon/core/application.h"
 
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx12.h"
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx12.h>
 
 // Forward declare ImGui Win32 handler from imgui_impl_win32.cpp
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+// extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace moon
 {
@@ -42,7 +42,7 @@ namespace moon
 
         // Get DirectX context
         auto& app = application::get();
-        auto* dx_context = static_cast<directx_context*>(app.get_context());
+        auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
         
         // Create descriptor heap for ImGui
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
@@ -67,7 +67,7 @@ namespace moon
         ImGui_ImplDX12_InitInfo init_info = {};
         init_info.Device = dx_context->get_device().Get();
         init_info.CommandQueue = dx_context->get_command_queue().Get();
-        init_info.NumFramesInFlight = dx_context->s_frames_in_flight;
+        init_info.NumFramesInFlight = directx_context::s_frames_in_flight;
         init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         init_info.DSVFormat = DXGI_FORMAT_D32_FLOAT;
         init_info.SrvDescriptorHeap = m_srv_heap.Get();

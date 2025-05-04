@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event.h"
+#include "core/key_codes.h"
 
 #include <sstream>
 
@@ -9,22 +10,22 @@ namespace moon
     class MOON_API key_event : public event
     {
     public:
-        inline int get_keycode() const { return keycode_; }
+        inline KeyCode get_keycode() const { return m_keycode; }
 
         EVENT_CLASS_CATEGORY(EVENT_CATEGORY_KEYBOARD | EVENT_CATEGORY_INPUT)
     protected:
-        explicit key_event(int keycode)
+        explicit key_event(KeyCode keycode)
             :
-            keycode_(keycode)
+            m_keycode(keycode)
         {}
 
-        int keycode_ = 0;
+        KeyCode m_keycode;
     };
 
     class MOON_API key_typed_event : public key_event
     {
     public:
-        explicit key_typed_event(int keycode)
+        explicit key_typed_event(KeyCode keycode)
             :
             key_event(keycode)
         {}
@@ -34,7 +35,7 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "KeyTypedEvent: " << keycode_;
+            ss << "KeyTypedEvent: " << m_keycode;
             return ss.str();
         }
     };
@@ -42,7 +43,7 @@ namespace moon
     class MOON_API key_pressed_event : public key_event
     {
     public:
-        key_pressed_event(int keycode, int repeat_count)
+        key_pressed_event(KeyCode keycode, int repeat_count)
             :
             key_event(keycode),
             repeat_count_(repeat_count)
@@ -55,7 +56,7 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "KeyPressedEvent: " << keycode_ << " (" << repeat_count_ << " repeats)";
+            ss << "KeyPressedEvent: " << m_keycode << " (" << repeat_count_ << " repeats)";
             return ss.str();
         }
     private:
@@ -65,7 +66,7 @@ namespace moon
     class MOON_API key_released_event : public key_event
     {
     public:
-        key_released_event(int keycode)
+        explicit key_released_event(KeyCode keycode)
             :
             key_event(keycode)
         {}
@@ -74,7 +75,7 @@ namespace moon
         [[nodiscard]] std::string to_string() const override
         {
             std::stringstream ss;
-            ss << "KeyReleasedEvent: " << keycode_;
+            ss << "KeyReleasedEvent: " << m_keycode;
             return ss.str();
         }
     };

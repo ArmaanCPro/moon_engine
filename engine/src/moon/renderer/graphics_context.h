@@ -11,6 +11,7 @@ namespace moon
         virtual ~graphics_context() = default;
 
         virtual void init() = 0;
+        virtual void shutdown() = 0;
         virtual void swap_buffers() = 0;
 
         virtual void begin_frame() {};

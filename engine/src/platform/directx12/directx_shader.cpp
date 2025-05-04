@@ -90,9 +90,7 @@ namespace moon
 
     directx_shader::~directx_shader()
     {
-        m_constant_buffers.clear();
-        m_cbv_descriptor_heap.Reset();
-        m_srv_descriptor_heap.Reset();
+
     }
 
     ComPtr<ID3DBlob> directx_shader::create_blob() const

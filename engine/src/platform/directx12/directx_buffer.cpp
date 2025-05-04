@@ -93,12 +93,6 @@ namespace moon
         m_view.StrideInBytes = sizeof(float) * 5;
     }
 
-    directx_vertex_buffer::~directx_vertex_buffer()
-    {
-        m_buffer.Reset();
-        m_device = nullptr;
-    }
-
     void directx_vertex_buffer::bind() const
     {
         MOON_PROFILE_FUNCTION();
@@ -214,11 +208,6 @@ namespace moon
         m_view.BufferLocation = m_buffer->GetGPUVirtualAddress();
         m_view.SizeInBytes = size;
         m_view.Format = DXGI_FORMAT_R32_UINT; // 32-bit indices
-    }
-
-    directx_index_buffer::~directx_index_buffer()
-    {
-        m_buffer.Reset();
     }
 
     void directx_index_buffer::bind() const

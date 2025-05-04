@@ -46,8 +46,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         renderer::shutdown();
-        delete m_context;
-        m_context = nullptr;
+        m_context->shutdown();
     }
 
     void application::push_layer(layer* layer)

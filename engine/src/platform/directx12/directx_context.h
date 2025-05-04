@@ -15,7 +15,7 @@ namespace moon
         explicit directx_context(HWND window_handle);
 
         void init() override;
-        void shutdown();
+        void shutdown() override;
 
         void begin_frame() override;
         void end_frame() override;
@@ -25,7 +25,7 @@ namespace moon
 
         void set_vsync(bool value) { vsync = value; }
 
-        void flush(size_t count) override { for (size_t i = 0; i < count; i++) signal_and_wait(); }
+        void flush(size_t count) override { for (size_t i = 0; i < count; i++) signal_and_wait((uint32_t)i); }
 
         inline ComPtr<IDXGIFactory7>& get_dxgi_factory() { return m_dxgi_factory_; }
         inline ComPtr<ID3D12Device14>& get_device() { return m_device_; }
@@ -38,7 +38,7 @@ namespace moon
         // TEMP - Move into application
         static constexpr int s_frames_in_flight = 2;
 
-        void signal_and_wait();
+        void signal_and_wait(uint32_t frame_index);
 
         ID3D12GraphicsCommandList* init_command_lists();
 
@@ -57,15 +57,6 @@ namespace moon
         void release_buffers();
 
     private:
-        struct frame_data
-        {
-            ComPtr<ID3D12CommandAllocator> allocator;
-            scope<directx_command_list> command_list;
-            ComPtr<ID3D12Fence1> fence;
-            HANDLE fence_event;
-            UINT fence_value;
-        };
-        std::array<frame_data, s_frames_in_flight> m_frames;
 
         HWND m_window_handle_;
 
@@ -84,6 +75,16 @@ namespace moon
         bool vsync = true;
 
         glm::vec4 m_clear_color_ { 0.0f };
+
+        struct frame_data
+        {
+            ComPtr<ID3D12CommandAllocator> allocator;
+            scope<directx_command_list> command_list;
+            ComPtr<ID3D12Fence1> fence;
+            HANDLE fence_event;
+            UINT fence_value;
+        };
+        std::array<frame_data, s_frames_in_flight> m_frames;
 
         // Debug Layer
 #ifdef _DEBUG

@@ -9,7 +9,8 @@ namespace moon
 {
     directx_context::directx_context(HWND window_handle)
         :
-        m_window_handle_(window_handle)
+        m_window_handle_(window_handle),
+        m_frames()
     {
         MOON_CORE_ASSERT(window_handle, "Window handle is null!");
     }
@@ -18,8 +19,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // make sure CPU and GPU are synced before final releasing objects
-        signal_and_wait();
+        flush(s_frames_in_flight);
 
         // Debug layer
 #ifdef _DEBUG
@@ -34,14 +34,6 @@ namespace moon
 #endif
 
         m_swap_chain_.Reset();
-
-        for (size_t i = 0; i < s_frames_in_flight; ++i)
-        {
-            m_buffers[i].Reset();
-            m_frames[i].allocator.Reset();
-            m_frames[i].fence.Reset();
-            m_frames[i].fence_event = nullptr;
-        }
 
         m_command_queue_.Reset();
         m_device_.Reset();
@@ -81,7 +73,7 @@ namespace moon
 
         m_frames[m_current_buffer_index_].command_list->end();
         m_frames[m_current_buffer_index_].command_list->submit();
-        signal_and_wait();
+        signal_and_wait(m_current_buffer_index_);
         //execute_command_lists();
     }
 
@@ -109,13 +101,13 @@ namespace moon
         m_swap_chain_->Present(sync_interval, present_flags);
     }
 
-    void directx_context::signal_and_wait()
+    void directx_context::signal_and_wait(uint32_t frame_index)
     {
         MOON_PROFILE_FUNCTION();
 
-        auto& fence = m_frames[m_current_buffer_index_].fence;
-        auto& fence_event = m_frames[m_current_buffer_index_].fence_event;
-        auto& fence_value = m_frames[m_current_buffer_index_].fence_value;
+        auto& fence = m_frames[frame_index].fence;
+        auto& fence_event = m_frames[frame_index].fence_event;
+        auto& fence_value = m_frames[frame_index].fence_value;
 
         m_command_queue_->Signal(fence.Get(), ++fence_value);
         if (SUCCEEDED(fence->SetEventOnCompletion(fence_value, fence_event)))
@@ -138,7 +130,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        m_frames[m_current_buffer_index_].command_list.reset();
+        m_frames[m_current_buffer_index_].command_list->reset();
         return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 

@@ -196,14 +196,6 @@ namespace moon
         stbi_image_free(data); // Free raw image data
     }
 
-    directx_texture2d::~directx_texture2d()
-    {
-        m_texture_resource.Reset();
-        m_upload_buffer.Reset();
-        m_descriptor_heap.Reset();
-        m_context = nullptr;
-    }
-
     void directx_texture2d::set_data(void* data, uint32_t size)
     {
         MOON_PROFILE_FUNCTION();

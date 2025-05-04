@@ -12,6 +12,7 @@ namespace moon
         opengl_context(GLFWwindow* window_handle);
 
         void init() override;
+        void shutdown() override {}
         void swap_buffers() override;
 
         command_list* get_command_list(uint32_t frame_index) override

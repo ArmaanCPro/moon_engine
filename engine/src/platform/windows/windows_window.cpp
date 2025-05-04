@@ -164,9 +164,6 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // same count as we pass in for sync interval (frames in flight)
-        application::get().get_context()->flush(2);
-
         if (m_window_class_)
         {
             UnregisterClass((LPCSTR)m_window_class_, GetModuleHandle(nullptr));
@@ -178,9 +175,6 @@ namespace moon
             m_window_ = nullptr;
             --s_window_count;
         }
-
-        // TODO: Consider making shutdown a virtual func of graphics_context
-        ((directx_context*)application::get().get_context())->shutdown();
     }
 
     void windows_window::resize()

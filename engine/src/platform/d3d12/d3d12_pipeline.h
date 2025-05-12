@@ -1,15 +1,15 @@
 #pragma once
 
 #include "moon/renderer/pipeline.h"
-#include "directx.h"
+#include "d3d12_include.h"
 
 namespace moon
 {
-    class directx_pipeline : public pipeline
+    class d3d12_pipeline : public pipeline
     {
     public:
-        directx_pipeline(const pipeline_spec& spec);
-        ~directx_pipeline() override;
+        d3d12_pipeline(const pipeline_spec& spec);
+        ~d3d12_pipeline() override;
 
         void bind() override;
         void unbind() override {}

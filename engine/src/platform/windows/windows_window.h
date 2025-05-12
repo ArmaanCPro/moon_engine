@@ -2,7 +2,7 @@
 
 #include "moon/core/window.h"
 
-#include "platform/directx12/directx.h"
+#include "platform/d3d12/d3d12_include.h"
 
 #include <glm/glm.hpp>
 

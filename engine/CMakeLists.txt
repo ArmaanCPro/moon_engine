@@ -36,18 +36,18 @@ set(ENGINE_SOURCES
         src/platform/opengl/opengl_framebuffer.cpp
         src/moon/scene/scene.cpp
         src/moon/scene/entity.cpp
-        src/platform/directx12/directx_context.cpp
-        src/platform/directx12/directx_renderer_api.cpp
-        src/platform/directx12/directx_vertex_array.cpp
+        src/platform/d3d12/d3d12_context.cpp
+        src/platform/d3d12/d3d12_renderer_api.cpp
+        src/platform/d3d12/d3d12_vertex_array.cpp
         src/moon/renderer/pipeline.cpp
-        src/platform/directx12/directx_pipeline.cpp
-        src/platform/directx12/directx_shader.cpp
-        src/platform/directx12/directx_texture.cpp
-        src/platform/directx12/directx_imgui_layer.cpp
+        src/platform/d3d12/d3d12_pipeline.cpp
+        src/platform/d3d12/d3d12_shader.cpp
+        src/platform/d3d12/d3d12_texture.cpp
+        src/platform/d3d12/d3d12_imgui_layer.cpp
         src/platform/opengl/opengl_imgui_layer.cpp
         src/moon/renderer/graphics_context.cpp
-        src/platform/directx12/directx_command_list.cpp
-        src/platform/directx12/directx_framebuffer.cpp
+        src/platform/d3d12/d3d12_command_list.cpp
+        src/platform/d3d12/d3d12_framebuffer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -93,22 +93,22 @@ set(ENGINE_HEADERS
         src/moon/scene/scene.h
         src/moon/scene/components.h
         src/moon/scene/entity.h
-        src/platform/directx12/directx_context.h
-        src/platform/directx12/directx_renderer_api.h
-        src/platform/directx12/directx.h
-        src/platform/directx12/directx_buffer.h
-        src/platform/directx12/directx_buffer.cpp
-        src/platform/directx12/directx_vertex_array.h
+        src/platform/d3d12/d3d12_context.h
+        src/platform/d3d12/d3d12_renderer_api.h
+        src/platform/d3d12/d3d12_include.h
+        src/platform/d3d12/d3d12_buffer.h
+        src/platform/d3d12/d3d12_buffer.cpp
+        src/platform/d3d12/d3d12_vertex_array.h
         src/moon/renderer/pipeline.h
-        src/platform/directx12/directx_pipeline.h
-        src/platform/directx12/directx_shader.h
-        src/platform/directx12/directx_texture.h
-        src/platform/directx12/directx_imgui_layer.h
+        src/platform/d3d12/d3d12_pipeline.h
+        src/platform/d3d12/d3d12_shader.h
+        src/platform/d3d12/d3d12_texture.h
+        src/platform/d3d12/d3d12_imgui_layer.h
         src/platform/opengl/opengl_imgui_layer.h
         src/moon/renderer/command_list.h
-        src/platform/directx12/directx_command_list.h
+        src/platform/d3d12/d3d12_command_list.h
         src/platform/opengl/opengl_command_list.h
-        src/platform/directx12/directx_framebuffer.h
+        src/platform/d3d12/d3d12_framebuffer.h
 )
 
 # platform

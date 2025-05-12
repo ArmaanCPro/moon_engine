@@ -1,8 +1,8 @@
 #include "moonpch.h"
-#include "directx_pipeline.h"
+#include "d3d12_pipeline.h"
 
-#include "directx_context.h"
-#include "directx_shader.h"
+#include "d3d12_context.h"
+#include "d3d12_shader.h"
 #include "core/application.h"
 
 namespace moon
@@ -71,7 +71,7 @@ namespace moon
         return d3d_layout;
     }
 
-    directx_pipeline::directx_pipeline(const pipeline_spec& spec)
+    d3d12_pipeline::d3d12_pipeline(const pipeline_spec& spec)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -80,7 +80,7 @@ namespace moon
             MOON_CORE_ASSERT(false, "Root signature shader is null!");
         }
 
-        directx_context* context = (directx_context*)application::get().get_context();
+        d3d12_context* context = (d3d12_context*)application::get().get_context();
 
         ComPtr<ID3D12RootSignature> root_signature;
         if (spec.rootsig_shader)
@@ -90,7 +90,7 @@ namespace moon
         }
         else // embedded root signature
         {
-            auto* dx_vs = (directx_shader*)spec.vertex_shader;
+            auto* dx_vs = (d3d12_shader*)spec.vertex_shader;
             root_signature = dx_vs->get_root_signature();
         }
 
@@ -186,14 +186,14 @@ namespace moon
         context->get_device()->CreateGraphicsPipelineState(&psod, IID_PPV_ARGS(&m_pipeline_state));
     }
 
-    directx_pipeline::~directx_pipeline()
+    d3d12_pipeline::~d3d12_pipeline()
     {
         m_pipeline_state.Reset();
     }
 
-    void directx_pipeline::bind()
+    void d3d12_pipeline::bind()
     {
-        directx_context* context = (directx_context*)application::get().get_context();
+        d3d12_context* context = (d3d12_context*)application::get().get_context();
         context->get_native_command_list()->SetPipelineState(m_pipeline_state.Get());
     }
 }

@@ -1,16 +1,16 @@
 #pragma once
 
 #include "moon/imgui/imgui_layer.h"
-#include "directx.h"
+#include "d3d12_include.h"
 #include "events/application_event.h"
 
 namespace moon
 {
-    class directx_imgui_layer : public imgui_layer
+    class d3d12_imgui_layer : public imgui_layer
     {
     public:
-        directx_imgui_layer();
-        ~directx_imgui_layer() override;
+        d3d12_imgui_layer();
+        ~d3d12_imgui_layer() override;
 
         void on_attach() override;
         void on_detach() override;

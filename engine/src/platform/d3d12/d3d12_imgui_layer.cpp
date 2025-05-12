@@ -1,6 +1,6 @@
 #include "moonpch.h"
-#include "directx_imgui_layer.h"
-#include "directx_context.h"
+#include "d3d12_imgui_layer.h"
+#include "d3d12_context.h"
 #include "moon/core/application.h"
 
 #include <imgui.h>
@@ -15,20 +15,20 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace moon
 {
-    directx_imgui_layer::DescriptorAllocator directx_imgui_layer::s_allocator;
+    d3d12_imgui_layer::DescriptorAllocator d3d12_imgui_layer::s_allocator;
 
-    directx_imgui_layer::directx_imgui_layer()
+    d3d12_imgui_layer::d3d12_imgui_layer()
         : imgui_layer()
     {
         MOON_PROFILE_FUNCTION();
     }
 
-    directx_imgui_layer::~directx_imgui_layer()
+    d3d12_imgui_layer::~d3d12_imgui_layer()
     {
         MOON_PROFILE_FUNCTION();
     }
 
-    void directx_imgui_layer::on_attach()
+    void d3d12_imgui_layer::on_attach()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -47,7 +47,7 @@ namespace moon
 
         // Get DirectX context
         auto& app = application::get();
-        auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
+        auto* dx_context = dynamic_cast<d3d12_context*>(app.get_context());
 
         windows_window& window = static_cast<windows_window&>(app.get_window());
         window.set_wnd_proc_callback([](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -80,7 +80,7 @@ namespace moon
         ImGui_ImplDX12_InitInfo init_info = {};
         init_info.Device = dx_context->get_device().Get();
         init_info.CommandQueue = dx_context->get_command_queue().Get();
-        init_info.NumFramesInFlight = directx_context::s_frames_in_flight;
+        init_info.NumFramesInFlight = d3d12_context::s_frames_in_flight;
         init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         init_info.DSVFormat = DXGI_FORMAT_UNKNOWN;
         init_info.SrvDescriptorHeap = m_srv_heap.Get();
@@ -99,7 +99,7 @@ namespace moon
         m_initialized = true;
     }
 
-    void directx_imgui_layer::on_detach()
+    void d3d12_imgui_layer::on_detach()
     {
         MOON_PROFILE_FUNCTION();
         
@@ -118,7 +118,7 @@ namespace moon
         m_initialized = false;
     }
 
-    void directx_imgui_layer::begin()
+    void d3d12_imgui_layer::begin()
     {
         MOON_PROFILE_FUNCTION();
         
@@ -130,7 +130,7 @@ namespace moon
         ImGui::NewFrame();
     }
 
-    void directx_imgui_layer::end()
+    void d3d12_imgui_layer::end()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -144,7 +144,7 @@ namespace moon
         ImGui::Render();
         
         // Get context
-        auto* dx_context = dynamic_cast<directx_context*>(app.get_context());
+        auto* dx_context = dynamic_cast<d3d12_context*>(app.get_context());
         ID3D12GraphicsCommandList* command_list = dx_context->get_native_command_list();
 
         // IMPORTANT: Set descriptor heaps BEFORE rendering ImGui
@@ -162,10 +162,10 @@ namespace moon
         }
     }
 
-    void directx_imgui_layer::on_imgui_render()
+    void d3d12_imgui_layer::on_imgui_render()
     {}
 
-    void directx_imgui_layer::on_event(event& e)
+    void d3d12_imgui_layer::on_event(event& e)
     {
         if (m_block_events_)
         {

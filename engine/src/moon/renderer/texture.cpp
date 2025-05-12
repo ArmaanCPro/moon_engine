@@ -2,7 +2,7 @@
 #include "texture.h"
 
 #include "renderer.h"
-#include "platform/directx12/directx_texture.h"
+#include "platform/d3d12/d3d12_texture.h"
 #include "platform/opengl/opengl_texture.h"
 
 namespace moon
@@ -17,7 +17,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_texture2d>(width, height);
         case renderer_api::API::DirectX:
-            return create_ref<directx_texture2d>(width, height);
+            return create_ref<d3d12_texture2d>(width, height);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -34,7 +34,7 @@ namespace moon
             case renderer_api::API::OpenGL:
                 return create_ref<opengl_texture2d>(path);
             case renderer_api::API::DirectX:
-                return create_ref<directx_texture2d>(path);
+                return create_ref<d3d12_texture2d>(path);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

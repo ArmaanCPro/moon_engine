@@ -1,12 +1,12 @@
 #include "moonpch.h"
-#include "directx_framebuffer.h"
+#include "d3d12_framebuffer.h"
 
-#include "directx_context.h"
+#include "d3d12_context.h"
 #include "core/application.h"
 
 namespace moon
 {
-    directx_framebuffer::directx_framebuffer(const framebuffer_spec& spec)
+    d3d12_framebuffer::d3d12_framebuffer(const framebuffer_spec& spec)
         :
         m_spec(spec),
         m_color_current_state(D3D12_RESOURCE_STATE_COMMON),
@@ -15,12 +15,12 @@ namespace moon
         invalidate();
     }
 
-    directx_framebuffer::~directx_framebuffer()
+    d3d12_framebuffer::~d3d12_framebuffer()
     {
         cleanup();
     }
 
-    void directx_framebuffer::invalidate()
+    void d3d12_framebuffer::invalidate()
     {
         if (m_color_texture)
             cleanup();
@@ -28,9 +28,9 @@ namespace moon
         create_textures();
     }
 
-    void directx_framebuffer::bind()
+    void d3d12_framebuffer::bind()
     {
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         // command_list* cmd = context->get_command_list(context->get_current_buffer_index());
         ID3D12GraphicsCommandList* native_cmd = context->get_native_command_list();
 
@@ -56,11 +56,11 @@ namespace moon
         native_cmd->RSSetScissorRects(1, &scissor_rect);
     }
 
-    void directx_framebuffer::unbind()
+    void d3d12_framebuffer::unbind()
     {
         if (m_color_current_state == D3D12_RESOURCE_STATE_RENDER_TARGET)
         {
-            auto* context = (directx_context*)application::get().get_context();
+            auto* context = (d3d12_context*)application::get().get_context();
             // command_list* cmd = context->get_command_list(context->get_current_buffer_index());
             ID3D12GraphicsCommandList* native_cmd = context->get_native_command_list();
 
@@ -73,16 +73,16 @@ namespace moon
         }
     }
 
-    void directx_framebuffer::resize(uint32_t width, uint32_t height)
+    void d3d12_framebuffer::resize(uint32_t width, uint32_t height)
     {
         m_spec.width = width;
         m_spec.height = height;
         invalidate();
     }
 
-    void directx_framebuffer::create_textures()
+    void d3d12_framebuffer::create_textures()
     {
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         ID3D12Device* device = context->get_device().Get();
 
         // Create color texture
@@ -157,10 +157,10 @@ namespace moon
         device->CreateDepthStencilView(m_depth_texture.Get(), &depth_dsv_desc, m_depth_dsv_handle);
     }
 
-    void directx_framebuffer::cleanup()
+    void d3d12_framebuffer::cleanup()
     {
-        auto* context = (directx_context*)application::get().get_context();
-        context->flush(directx_context::s_frames_in_flight);
+        auto* context = (d3d12_context*)application::get().get_context();
+        context->flush(d3d12_context::s_frames_in_flight);
 
         // Release RTV and DSV heaps
         m_rtv_heap.Reset();

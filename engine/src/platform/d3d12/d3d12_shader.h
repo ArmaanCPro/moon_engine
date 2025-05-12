@@ -1,17 +1,17 @@
 #pragma once
 
 #include "moon/renderer/shader.h"
-#include "directx.h"
+#include "d3d12_include.h"
 
 namespace moon
 {
-    class directx_shader : public shader
+    class d3d12_shader : public shader
     {
     public:
-        explicit directx_shader(ShaderType type, std::string_view filepath);
-        directx_shader(std::string_view vertex_path, std::string_view fragment_path);
-        directx_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
-        ~directx_shader() override;
+        explicit d3d12_shader(ShaderType type, std::string_view filepath);
+        d3d12_shader(std::string_view vertex_path, std::string_view fragment_path);
+        d3d12_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
+        ~d3d12_shader() override;
 
         std::string_view get_data() override { return m_data; }
         std::string_view get_name() override { return m_name; }

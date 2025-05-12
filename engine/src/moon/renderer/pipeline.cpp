@@ -2,7 +2,7 @@
 #include "pipeline.h"
 
 #include "renderer.h"
-#include "platform/directx12/directx_pipeline.h"
+#include "platform/d3d12/d3d12_pipeline.h"
 
 namespace moon
 {
@@ -17,7 +17,7 @@ namespace moon
                 return nullptr;
                 //return create_ref<opengl_pipeline>(spec);
             case renderer_api::API::DirectX:
-                return create_ref<directx_pipeline>(spec);
+                return create_ref<d3d12_pipeline>(spec);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

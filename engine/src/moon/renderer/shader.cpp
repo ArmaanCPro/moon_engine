@@ -2,7 +2,7 @@
 #include "shader.h"
 
 #include "renderer.h"
-#include "platform/directx12/directx_shader.h"
+#include "platform/d3d12/d3d12_shader.h"
 #include "platform/opengl/opengl_shader.h"
 
 namespace moon
@@ -17,7 +17,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_shader>(type, file_path);
         case renderer_api::API::DirectX:
-            return create_ref<directx_shader>(type, file_path);
+            return create_ref<d3d12_shader>(type, file_path);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -34,7 +34,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_shader>(vertex_path, fragment_path);
         case renderer_api::API::DirectX:
-            return create_ref<directx_shader>(vertex_path, fragment_path);
+            return create_ref<d3d12_shader>(vertex_path, fragment_path);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -51,7 +51,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_shader>(name, vertex_src, fragment_src);
         case renderer_api::API::DirectX:
-            return create_ref<directx_shader>(name, vertex_src, fragment_src);
+            return create_ref<d3d12_shader>(name, vertex_src, fragment_src);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

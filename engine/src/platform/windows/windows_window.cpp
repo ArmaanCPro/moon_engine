@@ -7,7 +7,7 @@
 #include "moon/events/application_event.h"
 #include "moon/events/mouse_event.h"
 #include "moon/events/key_event.h"
-#include "platform/directx12/directx_context.h"
+#include "platform/d3d12/d3d12_context.h"
 #include "platform/opengl/opengl_context.h"
 
 #include <windows.h>
@@ -63,7 +63,7 @@ namespace moon
     void windows_window::set_vsync(bool enabled)
     {
         data_.vsync = enabled;
-        ((directx_context*)application::get().get_context())->set_vsync(enabled);
+        ((d3d12_context*)application::get().get_context())->set_vsync(enabled);
     }
 
     void windows_window::set_fullscreen(bool enabled)

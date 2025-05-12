@@ -1,16 +1,16 @@
 #pragma once
 
-#include "directx.h"
+#include "d3d12_include.h"
 #include "moon/renderer/buffer.h"
 
 namespace moon
 {
-    class directx_vertex_buffer : public vertex_buffer
+    class d3d12_vertex_buffer : public vertex_buffer
     {
     public:
-        directx_vertex_buffer(uint32_t size);
-        directx_vertex_buffer(const float* vertices, uint32_t size);
-        ~directx_vertex_buffer() override = default;
+        d3d12_vertex_buffer(uint32_t size);
+        d3d12_vertex_buffer(const float* vertices, uint32_t size);
+        ~d3d12_vertex_buffer() override = default;
 
         void bind() const override;
         void unbind() const override {}
@@ -29,11 +29,11 @@ namespace moon
         ID3D12Device14* m_device;
     };
 
-    class directx_index_buffer : public index_buffer
+    class d3d12_index_buffer : public index_buffer
     {
     public:
-        directx_index_buffer(const uint32_t* indices, uint32_t count);
-        ~directx_index_buffer() override = default;
+        d3d12_index_buffer(const uint32_t* indices, uint32_t count);
+        ~d3d12_index_buffer() override = default;
 
         inline uint32_t get_count() const override { return m_count; }
 

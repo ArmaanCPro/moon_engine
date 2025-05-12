@@ -2,7 +2,7 @@
 #include "graphics_context.h"
 
 #include "renderer.h"
-#include "platform/directx12/directx_context.h"
+#include "platform/d3d12/d3d12_context.h"
 #include "platform/opengl/opengl_context.h"
 
 namespace moon
@@ -17,7 +17,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return new opengl_context((GLFWwindow*)window_handle);
         case renderer_api::API::DirectX:
-            return new directx_context((HWND)window_handle);
+            return new d3d12_context((HWND)window_handle);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

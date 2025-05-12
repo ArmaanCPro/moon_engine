@@ -1,15 +1,15 @@
 #pragma once
 
 #include "moon/renderer/framebuffer.h"
-#include "directx.h"
+#include "d3d12_include.h"
 
 namespace moon
 {
-    class directx_framebuffer : public framebuffer
+    class d3d12_framebuffer : public framebuffer
     {
     public:
-        explicit directx_framebuffer(const framebuffer_spec& spec);
-        ~directx_framebuffer() override;
+        explicit d3d12_framebuffer(const framebuffer_spec& spec);
+        ~d3d12_framebuffer() override;
 
         void invalidate();
         void bind() override;

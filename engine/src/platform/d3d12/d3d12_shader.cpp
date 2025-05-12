@@ -1,16 +1,16 @@
 #include "moonpch.h"
-#include "directx_shader.h"
+#include "d3d12_shader.h"
 
-#include "directx_context.h"
+#include "d3d12_context.h"
 #include "core/application.h"
 
-#include "directx.h"
+#include "d3d12_include.h"
 #include <d3d12shader.h>
 #include <d3dcompiler.h>
 
 namespace moon
 {
-    directx_shader::directx_shader(ShaderType type, std::string_view filepath)
+    d3d12_shader::d3d12_shader(ShaderType type, std::string_view filepath)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -36,7 +36,7 @@ namespace moon
         init_constant_buffers();
         init_shader_resource_views();
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         auto* cmd_list = context->get_native_command_list();
         ID3D12DescriptorHeap* heaps[] =  { m_cbv_descriptor_heap.Get() };
         cmd_list->SetDescriptorHeaps(_countof(heaps), heaps);
@@ -44,7 +44,7 @@ namespace moon
         cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
     }
 
-    directx_shader::directx_shader(std::string_view vertex_path, std::string_view fragment_path)
+    d3d12_shader::d3d12_shader(std::string_view vertex_path, std::string_view fragment_path)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -70,7 +70,7 @@ namespace moon
         init_constant_buffers();
         init_shader_resource_views();
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         auto* cmd_list = context->get_native_command_list();
         ID3D12DescriptorHeap* heaps[] =  { m_cbv_descriptor_heap.Get() };
         cmd_list->SetDescriptorHeaps(_countof(heaps), heaps);
@@ -78,7 +78,7 @@ namespace moon
         cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
     }
 
-    directx_shader::directx_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
+    d3d12_shader::d3d12_shader(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -88,12 +88,12 @@ namespace moon
         //m_data = vertex_src + fragment_src;
     }
 
-    directx_shader::~directx_shader()
+    d3d12_shader::~d3d12_shader()
     {
 
     }
 
-    ComPtr<ID3DBlob> directx_shader::create_blob() const
+    ComPtr<ID3DBlob> d3d12_shader::create_blob() const
     {
         MOON_PROFILE_FUNCTION();
 
@@ -104,11 +104,11 @@ namespace moon
         return blob;
     }
 
-    void directx_shader::bind() const
+    void d3d12_shader::bind() const
     {
         MOON_PROFILE_FUNCTION();
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
         auto* native_cmd = context->get_native_command_list();
@@ -125,34 +125,34 @@ namespace moon
         cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     }
 
-    void directx_shader::unbind() const
+    void d3d12_shader::unbind() const
     {
 
     }
 
-    void directx_shader::set_int(std::string_view name, int value)
+    void d3d12_shader::set_int(std::string_view name, int value)
     {}
 
-    void directx_shader::set_int_array(std::string_view name, int* values, uint32_t count)
+    void d3d12_shader::set_int_array(std::string_view name, int* values, uint32_t count)
     {
         // no-op
     }
 
-    void directx_shader::set_float(std::string_view name, float value)
+    void d3d12_shader::set_float(std::string_view name, float value)
     {
 
     }
 
-    void directx_shader::set_float2(std::string_view name, const glm::vec2& value)
+    void d3d12_shader::set_float2(std::string_view name, const glm::vec2& value)
     {}
 
-    void directx_shader::set_float3(std::string_view name, const glm::vec3& value)
+    void d3d12_shader::set_float3(std::string_view name, const glm::vec3& value)
     {}
 
-    void directx_shader::set_float4(std::string_view name, const glm::vec4& value)
+    void d3d12_shader::set_float4(std::string_view name, const glm::vec4& value)
     {}
 
-    void directx_shader::set_mat4(std::string_view name, const glm::mat4& value)
+    void d3d12_shader::set_mat4(std::string_view name, const glm::mat4& value)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -162,7 +162,7 @@ namespace moon
         memcpy(m_cbv_mapped_data, &transposed, constant_buffer_size);
     }
 
-    std::string directx_shader::read_file(std::string_view filepath)
+    std::string d3d12_shader::read_file(std::string_view filepath)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -195,7 +195,7 @@ namespace moon
         return result;
     }
 
-    void directx_shader::init_root_signature()
+    void d3d12_shader::init_root_signature()
     {
         ComPtr<ID3DBlob> blob = create_blob();
         ComPtr<ID3DBlob> rootsig_blob;
@@ -242,7 +242,7 @@ namespace moon
             }
         }
 
-        auto* context = (directx_context*)(application::get().get_context());
+        auto* context = (d3d12_context*)(application::get().get_context());
         auto* device = context->get_device().Get();
 
         hr = device->CreateRootSignature(0, rootsig_blob->GetBufferPointer(), rootsig_blob->GetBufferSize(), IID_PPV_ARGS(&m_root_signature));
@@ -251,11 +251,11 @@ namespace moon
         context->get_native_command_list()->SetGraphicsRootSignature(m_root_signature.Get());
     }
 
-    void directx_shader::init_constant_buffers()
+    void d3d12_shader::init_constant_buffers()
     {
         MOON_PROFILE_FUNCTION();
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         // ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
         constexpr UINT constant_buffer_size = (sizeof(glm::mat4) + 255) & ~255;
@@ -307,13 +307,13 @@ namespace moon
         m_constant_buffers.push_back(constant_buffer);
     }
 
-    void directx_shader::init_shader_resource_views()
+    void d3d12_shader::init_shader_resource_views()
     {
         MOON_PROFILE_FUNCTION();
 
         constexpr uint32_t count = 32;
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         // ID3D12GraphicsCommandList* cmd_list = context->get_native_command_list();
 
         /*

@@ -4,11 +4,11 @@
 
 namespace moon
 {
-    class directx_vertex_array : public vertex_array
+    class d3d12_vertex_array : public vertex_array
     {
     public:
-        directx_vertex_array() = default;
-        ~directx_vertex_array() override = default;
+        d3d12_vertex_array() = default;
+        ~d3d12_vertex_array() override = default;
 
         void bind() const override;
         void unbind() const override {}

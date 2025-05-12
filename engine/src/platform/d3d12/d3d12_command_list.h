@@ -1,7 +1,7 @@
 #pragma once
 
 #include "moon/renderer/command_list.h"
-#include "directx.h"
+#include "d3d12_include.h"
 
 namespace moon
 {
@@ -20,11 +20,11 @@ namespace moon
         }
     }
 
-    class directx_command_list : public command_list
+    class d3d12_command_list : public command_list
     {
     public:
-        directx_command_list(ID3D12Device* device, ID3D12CommandAllocator* allocator);
-        ~directx_command_list() override;
+        d3d12_command_list(ID3D12Device* device, ID3D12CommandAllocator* allocator);
+        ~d3d12_command_list() override;
 
         void reset() override;
         // optional, same as reset

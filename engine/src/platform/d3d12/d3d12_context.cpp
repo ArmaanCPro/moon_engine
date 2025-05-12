@@ -1,13 +1,13 @@
 #include "moonpch.h"
-#include "directx_context.h"
+#include "d3d12_context.h"
 
-#include "directx.h"
+#include "d3d12_include.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
 namespace moon
 {
-    directx_context::directx_context(HWND window_handle)
+    d3d12_context::d3d12_context(HWND window_handle)
         :
         m_window_handle_(window_handle),
         m_frames()
@@ -15,7 +15,7 @@ namespace moon
         MOON_CORE_ASSERT(window_handle, "Window handle is null!");
     }
 
-    void directx_context::shutdown()
+    void d3d12_context::shutdown()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -40,7 +40,7 @@ namespace moon
         m_dxgi_factory_.Reset();
     }
 
-    void directx_context::begin_frame()
+    void d3d12_context::begin_frame()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -61,7 +61,7 @@ namespace moon
         cmd->set_render_target(&m_rtv_handles[m_current_buffer_index_]);
     }
 
-    void directx_context::end_frame()
+    void d3d12_context::end_frame()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -76,12 +76,12 @@ namespace moon
         signal_and_wait(m_current_buffer_index_);
     }
 
-    void directx_context::set_clear_color(const glm::vec4& color)
+    void d3d12_context::set_clear_color(const glm::vec4& color)
     {
         m_clear_color_ = color;
     }
 
-    void directx_context::clear() const
+    void d3d12_context::clear() const
     {
         MOON_PROFILE_FUNCTION();
 
@@ -90,7 +90,7 @@ namespace moon
         cmd->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
     }
 
-    void directx_context::swap_buffers()
+    void d3d12_context::swap_buffers()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -100,7 +100,7 @@ namespace moon
         m_swap_chain_->Present(sync_interval, present_flags);
     }
 
-    void directx_context::signal_and_wait(uint32_t frame_index)
+    void d3d12_context::signal_and_wait(uint32_t frame_index)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -125,7 +125,7 @@ namespace moon
         }
     }
 
-    ID3D12GraphicsCommandList* directx_context::init_command_lists()
+    ID3D12GraphicsCommandList* d3d12_context::init_command_lists()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -133,14 +133,14 @@ namespace moon
         return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 
-    ID3D12GraphicsCommandList* directx_context::get_native_command_list() const
+    ID3D12GraphicsCommandList* d3d12_context::get_native_command_list() const
     {
         MOON_PROFILE_FUNCTION();
 
         return (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
     }
 
-    void directx_context::execute_command_lists()
+    void d3d12_context::execute_command_lists()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -148,7 +148,7 @@ namespace moon
         m_frames[m_current_buffer_index_].command_list->submit();
     }
 
-    void directx_context::on_resize(uint32_t width, uint32_t height)
+    void d3d12_context::on_resize(uint32_t width, uint32_t height)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -164,7 +164,7 @@ namespace moon
         fetch_buffers();
     }
 
-    void directx_context::fetch_buffers()
+    void d3d12_context::fetch_buffers()
     {
         for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
@@ -182,7 +182,7 @@ namespace moon
         }
     }
 
-    void directx_context::release_buffers()
+    void d3d12_context::release_buffers()
     {
         for (size_t i = 0; i < s_frames_in_flight; ++i)
         {
@@ -190,7 +190,7 @@ namespace moon
         }
     }
 
-    void directx_context::init()
+    void d3d12_context::init()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -248,7 +248,7 @@ namespace moon
                 MOON_CORE_ASSERT(false, "Failed to create command allocator!");
             }
 
-            m_frames[i].command_list = create_scope<directx_command_list>(m_device_.Get(), m_frames[i].allocator.Get());
+            m_frames[i].command_list = create_scope<d3d12_command_list>(m_device_.Get(), m_frames[i].allocator.Get());
         }
 
         // === Swapchain ===

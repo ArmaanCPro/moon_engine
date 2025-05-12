@@ -10,7 +10,7 @@
 
 #include "moon/renderer/renderer.h"
 #include "moon/renderer/render_command.h"
-#include "platform/directx12/directx_imgui_layer.h"
+#include "platform/d3d12/d3d12_imgui_layer.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -141,7 +141,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return new imgui_layer();
         case renderer_api::API::DirectX:
-            return new directx_imgui_layer();
+            return new d3d12_imgui_layer();
         }
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;

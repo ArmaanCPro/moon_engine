@@ -1,15 +1,15 @@
 #pragma once
 
-#include "directx_context.h"
+#include "d3d12_context.h"
 #include "moon/renderer/renderer_api.h"
 
 namespace moon
 {
-    class directx_renderer_api : public renderer_api
+    class d3d12_renderer_api : public renderer_api
     {
     public:
-        directx_renderer_api() = default;
-        ~directx_renderer_api() override = default;
+        d3d12_renderer_api() = default;
+        ~d3d12_renderer_api() override = default;
 
         void init() override;
         void set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
@@ -21,6 +21,6 @@ namespace moon
 
     private:
         // TEMPORARY
-        directx_context* context_;
+        d3d12_context* context_;
     };
 }

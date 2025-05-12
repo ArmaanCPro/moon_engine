@@ -2,17 +2,17 @@
 
 #include "moon/renderer/graphics_context.h"
 
-#include "directx.h"
-#include "directx_command_list.h"
+#include "d3d12_include.h"
+#include "d3d12_command_list.h"
 
 #include <glm/vec4.hpp>
 
 namespace moon
 {
-    class directx_context : public graphics_context
+    class d3d12_context : public graphics_context
     {
     public:
-        explicit directx_context(HWND window_handle);
+        explicit d3d12_context(HWND window_handle);
 
         void init() override;
         void shutdown() override;
@@ -81,7 +81,7 @@ namespace moon
         struct frame_data
         {
             ComPtr<ID3D12CommandAllocator> allocator;
-            scope<directx_command_list> command_list;
+            scope<d3d12_command_list> command_list;
             ComPtr<ID3D12Fence1> fence;
             HANDLE fence_event;
             UINT fence_value;

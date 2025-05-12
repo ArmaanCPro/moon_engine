@@ -3,7 +3,7 @@
 #include "buffer.h"
 #include "renderer.h"
 #include "platform/opengl/opengl_buffer.h"
-#include "platform/directx12/directx_buffer.h"
+#include "platform/d3d12/d3d12_buffer.h"
 
 namespace moon
 {
@@ -17,7 +17,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_vertex_buffer>(size);
         case renderer_api::API::DirectX:
-            return create_ref<directx_vertex_buffer>(size);
+            return create_ref<d3d12_vertex_buffer>(size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -34,7 +34,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_vertex_buffer>(vertices, size);
         case renderer_api::API::DirectX:
-            return create_ref<directx_vertex_buffer>(vertices, size);
+            return create_ref<d3d12_vertex_buffer>(vertices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -51,7 +51,7 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_index_buffer>(indices, size);
         case renderer_api::API::DirectX:
-            return create_ref<directx_index_buffer>(indices, size);
+            return create_ref<d3d12_index_buffer>(indices, size);
         }
 
         MOON_CORE_ASSERT(false, "Unknown RendererAPI!");

@@ -1,12 +1,12 @@
 #include "moonpch.h"
-#include "directx_command_list.h"
+#include "d3d12_command_list.h"
 
-#include "directx_context.h"
+#include "d3d12_context.h"
 #include "core/application.h"
 
 namespace moon
 {
-    directx_command_list::directx_command_list(ID3D12Device* device, ID3D12CommandAllocator* allocator)
+    d3d12_command_list::d3d12_command_list(ID3D12Device* device, ID3D12CommandAllocator* allocator)
         :
         m_device(device),
         m_allocator(allocator)
@@ -22,13 +22,13 @@ namespace moon
         m_open = true;
     }
 
-    directx_command_list::~directx_command_list()
+    d3d12_command_list::~d3d12_command_list()
     {
         MOON_PROFILE_FUNCTION();
 
     }
 
-    void directx_command_list::reset()
+    void d3d12_command_list::reset()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -40,7 +40,7 @@ namespace moon
         m_open = true;
     }
 
-    void directx_command_list::begin()
+    void d3d12_command_list::begin()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -54,7 +54,7 @@ namespace moon
         m_open = true;
     }
 
-    void directx_command_list::end()
+    void d3d12_command_list::end()
     {
         MOON_PROFILE_FUNCTION();
 
@@ -66,13 +66,13 @@ namespace moon
         m_open = false;
     }
 
-    void directx_command_list::submit()
+    void d3d12_command_list::submit()
     {
         MOON_PROFILE_FUNCTION();
 
         MOON_CORE_ASSERT(!m_open, "Command list is open!");
 
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         auto* dx_queue = context->get_command_queue().Get();
         auto* dx_fence = context->get_fence().Get();
         auto& dx_fence_value = context->get_fence_value();
@@ -83,7 +83,7 @@ namespace moon
         dx_queue->Signal(dx_fence, ++dx_fence_value);
     }
 
-    void directx_command_list::draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count)
+    void d3d12_command_list::draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -95,12 +95,12 @@ namespace moon
         m_command_list->DrawIndexedInstanced(index_count, 1, 0, 0, 0);
     }
 
-    void directx_command_list::dispatch()
+    void d3d12_command_list::dispatch()
     {
 
     }
 
-    void directx_command_list::upload_data(const void* data, size_t size, void* gpu_buffer, size_t dest_offset,
+    void d3d12_command_list::upload_data(const void* data, size_t size, void* gpu_buffer, size_t dest_offset,
         size_t src_offset)
     {
         MOON_PROFILE_FUNCTION();
@@ -136,7 +136,7 @@ namespace moon
         );
     }
 
-    void directx_command_list::transition_resource(void* resource, ResourceState before, ResourceState after, size_t num_barriers)
+    void d3d12_command_list::transition_resource(void* resource, ResourceState before, ResourceState after, size_t num_barriers)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -157,7 +157,7 @@ namespace moon
         m_command_list->ResourceBarrier((UINT)num_barriers, &barrier);
     }
 
-    void directx_command_list::set_render_target(void* target_descriptor, void* depth_stencil_desc)
+    void d3d12_command_list::set_render_target(void* target_descriptor, void* depth_stencil_desc)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -168,7 +168,7 @@ namespace moon
         m_command_list->OMSetRenderTargets(1, target, FALSE, depth_stencil);
     }
 
-    void directx_command_list::bind_vertex_buffer(void* vbuf_view, size_t num_views, size_t start_slot)
+    void d3d12_command_list::bind_vertex_buffer(void* vbuf_view, size_t num_views, size_t start_slot)
     {
         MOON_PROFILE_FUNCTION();
 

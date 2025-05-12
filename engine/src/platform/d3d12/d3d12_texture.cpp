@@ -1,19 +1,19 @@
 #include "moonpch.h"
-#include "directx_texture.h"
+#include "d3d12_texture.h"
 
 #include "core/application.h"
 #include "stb_image.h"
 
 namespace moon
 {
-    directx_texture2d::directx_texture2d(uint32_t width, uint32_t height)
+    d3d12_texture2d::d3d12_texture2d(uint32_t width, uint32_t height)
         :
         m_width(width),
         m_height(height)
     {
         MOON_PROFILE_FUNCTION();
 
-        m_context = (directx_context*)application::get().get_context();
+        m_context = (d3d12_context*)application::get().get_context();
 
         m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -68,7 +68,7 @@ namespace moon
         m_context->get_device()->CreateShaderResourceView(m_texture_resource.Get(), &srvd, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
     }
 
-    directx_texture2d::directx_texture2d(std::string_view path)
+    d3d12_texture2d::d3d12_texture2d(std::string_view path)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -83,7 +83,7 @@ namespace moon
         m_dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
         channels = 4;
 
-        m_context = (directx_context*)application::get().get_context();
+        m_context = (d3d12_context*)application::get().get_context();
 
         // Create default heap for the texture resource
         D3D12_HEAP_PROPERTIES default_heap_properties = {};
@@ -196,7 +196,7 @@ namespace moon
         stbi_image_free(data); // Free raw image data
     }
 
-    void directx_texture2d::set_data(void* data, uint32_t size)
+    void d3d12_texture2d::set_data(void* data, uint32_t size)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -281,7 +281,7 @@ namespace moon
         m_upload_buffer = temp_upload_buffer;
     }
 
-    void directx_texture2d::bind(uint32_t slot) const
+    void d3d12_texture2d::bind(uint32_t slot) const
     {
         MOON_PROFILE_FUNCTION();
 

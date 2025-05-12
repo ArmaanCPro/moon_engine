@@ -1,7 +1,7 @@
 #include "moonpch.h"
-#include "directx_buffer.h"
+#include "d3d12_buffer.h"
 
-#include "directx_context.h"
+#include "d3d12_context.h"
 #include "core/application.h"
 
 namespace moon
@@ -9,11 +9,11 @@ namespace moon
     // ////////////////////////////////////////////////
     // VERTEX BUFFER ///////////////////////////////////
 
-    directx_vertex_buffer::directx_vertex_buffer(uint32_t size)
+    d3d12_vertex_buffer::d3d12_vertex_buffer(uint32_t size)
     {
         MOON_PROFILE_FUNCTION();
 
-        directx_context* context = (directx_context*)application::get().get_context();
+        d3d12_context* context = (d3d12_context*)application::get().get_context();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
 
@@ -52,11 +52,11 @@ namespace moon
         m_view.StrideInBytes = sizeof(float) * 5;
     }
 
-    directx_vertex_buffer::directx_vertex_buffer(const float* vertices, uint32_t size)
+    d3d12_vertex_buffer::d3d12_vertex_buffer(const float* vertices, uint32_t size)
     {
         MOON_PROFILE_FUNCTION();
 
-        directx_context* context = (directx_context*)application::get().get_context();
+        d3d12_context* context = (d3d12_context*)application::get().get_context();
         ID3D12Device14* device = context->get_device().Get();
         m_device = device;
 
@@ -93,14 +93,14 @@ namespace moon
         m_view.StrideInBytes = sizeof(float) * 5;
     }
 
-    void directx_vertex_buffer::bind() const
+    void d3d12_vertex_buffer::bind() const
     {
         MOON_PROFILE_FUNCTION();
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         context->get_command_list(context->get_current_buffer_index())->bind_vertex_buffer((void*)&m_view, 0, 0);
     }
 
-    void directx_vertex_buffer::set_data(const void* data, uint32_t size)
+    void d3d12_vertex_buffer::set_data(const void* data, uint32_t size)
     {
         MOON_PROFILE_FUNCTION();
 
@@ -126,7 +126,7 @@ namespace moon
             MOON_CORE_ERROR("Cannot map buffer that is not on UPLOAD heap. Current heap type: {0}",
                             (int)heapProps.Type);
 
-            auto* context = (directx_context*)application::get().get_context();
+            auto* context = (d3d12_context*)application::get().get_context();
             command_list* cmd = context->get_command_list(context->get_current_buffer_index());
             cmd->upload_data(data, size, m_buffer.Get(), 0, 0);
 
@@ -152,13 +152,13 @@ namespace moon
     // ////////////////////////////////////////////////
     // INDEX BUFFER ///////////////////////////////////
 
-    directx_index_buffer::directx_index_buffer(const uint32_t* indices, uint32_t count)
+    d3d12_index_buffer::d3d12_index_buffer(const uint32_t* indices, uint32_t count)
         :
         m_count(count)
     {
         uint32_t size = count * sizeof(uint32_t);
 
-        directx_context* context = (directx_context*)application::get().get_context();
+        d3d12_context* context = (d3d12_context*)application::get().get_context();
         ID3D12Device14* device = context->get_device().Get();
 
         // create buffer in gpu memory
@@ -210,10 +210,10 @@ namespace moon
         m_view.Format = DXGI_FORMAT_R32_UINT; // 32-bit indices
     }
 
-    void directx_index_buffer::bind() const
+    void d3d12_index_buffer::bind() const
     {
         MOON_PROFILE_FUNCTION();
-        auto* context = (directx_context*)application::get().get_context();
+        auto* context = (d3d12_context*)application::get().get_context();
         auto* command_list = context->get_command_list(context->get_current_buffer_index());
         command_list->bind_vertex_buffer((void*)&m_view);
     }

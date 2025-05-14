@@ -83,7 +83,7 @@ namespace moon
     void d3d12_framebuffer::create_textures()
     {
         auto* context = (d3d12_context*)application::get().get_context();
-        ID3D12Device* device = context->get_device().Get();
+        ID3D12Device* device = context->get_native_device().Get();
 
         // Create color texture
         CD3DX12_RESOURCE_DESC color_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UNORM, m_spec.width, m_spec.height);

@@ -19,8 +19,7 @@ namespace moon
 
         void begin_frame() override;
         void end_frame() override;
-        void set_clear_color(const glm::vec4& color);
-        void clear() const;
+        void clear(const glm::vec4& color) const;
         void swap_buffers() override;
 
         void set_vsync(bool value) { vsync = value; }
@@ -28,7 +27,7 @@ namespace moon
         void flush(size_t count) override { for (size_t i = 0; i < count; i++) signal_and_wait((uint32_t)i); }
 
         inline ComPtr<IDXGIFactory7>& get_dxgi_factory() { return m_dxgi_factory_; }
-        inline ComPtr<ID3D12Device14>& get_device() { return m_device_; }
+        inline ComPtr<ID3D12Device14>& get_native_device() { return m_device_; }
         inline ComPtr<ID3D12CommandQueue>& get_command_queue() { return m_command_queue_; }
         inline ComPtr<ID3D12DescriptorHeap>& get_rtv_heap() { return m_rtv_heap_; }
         inline ComPtr<ID3D12Fence1>& get_fence() { return m_frames[m_current_buffer_index_].fence; }
@@ -75,8 +74,6 @@ namespace moon
         D3D12_CPU_DESCRIPTOR_HANDLE m_rtv_handles[s_frames_in_flight] {};
 
         bool vsync = true;
-
-        glm::vec4 m_clear_color_ { 0.0f };
 
         struct frame_data
         {

@@ -48,7 +48,10 @@ namespace moon
 
         // TODO: We are closing this here because the command list is already open in the constructor
         // and we need the command list to be open in the ctor because Renderer::Init happens in the ctor and needs the command list to be open
-        m_command_list->Close();
+        if (m_open)
+        {
+            m_command_list->Close();
+        }
         m_allocator->Reset();
         m_command_list->Reset(m_allocator, nullptr);
         m_open = true;

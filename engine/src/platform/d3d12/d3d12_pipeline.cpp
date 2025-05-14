@@ -86,7 +86,7 @@ namespace moon
         if (spec.rootsig_shader)
         {
             std::string_view rootsig_data = spec.rootsig_shader->get_data();
-            context->get_device()->CreateRootSignature(0, rootsig_data.data(), rootsig_data.size(), IID_PPV_ARGS(&root_signature));
+            context->get_native_device()->CreateRootSignature(0, rootsig_data.data(), rootsig_data.size(), IID_PPV_ARGS(&root_signature));
         }
         else // embedded root signature
         {
@@ -183,7 +183,7 @@ namespace moon
         psod.CachedPSO.pCachedBlob = nullptr;
         psod.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
-        context->get_device()->CreateGraphicsPipelineState(&psod, IID_PPV_ARGS(&m_pipeline_state));
+        context->get_native_device()->CreateGraphicsPipelineState(&psod, IID_PPV_ARGS(&m_pipeline_state));
     }
 
     d3d12_pipeline::~d3d12_pipeline()

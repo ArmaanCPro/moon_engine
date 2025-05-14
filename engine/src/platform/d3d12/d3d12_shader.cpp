@@ -243,7 +243,7 @@ namespace moon
         }
 
         auto* context = (d3d12_context*)(application::get().get_context());
-        auto* device = context->get_device().Get();
+        auto* device = context->get_native_device().Get();
 
         hr = device->CreateRootSignature(0, rootsig_blob->GetBufferPointer(), rootsig_blob->GetBufferSize(), IID_PPV_ARGS(&m_root_signature));
         MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create root signature!");
@@ -267,7 +267,7 @@ namespace moon
         CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_UPLOAD);
         CD3DX12_RESOURCE_DESC buffer_desc = CD3DX12_RESOURCE_DESC::Buffer(constant_buffer_size);
 
-        HRESULT hr = context->get_device()->CreateCommittedResource(
+        HRESULT hr = context->get_native_device()->CreateCommittedResource(
             &heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &buffer_desc,
@@ -294,7 +294,7 @@ namespace moon
             desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
             desc.NodeMask = 0;
 
-            hr = context->get_device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_cbv_descriptor_heap));
+            hr = context->get_native_device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_cbv_descriptor_heap));
             MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create descriptor heap!");
         }
 
@@ -302,7 +302,7 @@ namespace moon
         cbv_desc.BufferLocation = constant_buffer->GetGPUVirtualAddress();
         cbv_desc.SizeInBytes = constant_buffer_size;
 
-        context->get_device()->CreateConstantBufferView(&cbv_desc, m_cbv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+        context->get_native_device()->CreateConstantBufferView(&cbv_desc, m_cbv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 
         m_constant_buffers.push_back(constant_buffer);
     }
@@ -343,13 +343,13 @@ namespace moon
         CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
             m_cbv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
             1,         // 0 is the CBV, SRV starts at 1
-            context->get_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+            context->get_native_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
         );
 
         for (uint32_t i = 0; i < count; i++)
         {
-            context->get_device()->CreateShaderResourceView(m_null_texture.Get(), &null_srv_desc, handle);
-            handle.Offset(1, context->get_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+            context->get_native_device()->CreateShaderResourceView(m_null_texture.Get(), &null_srv_desc, handle);
+            handle.Offset(1, context->get_native_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
         }
 
         /*

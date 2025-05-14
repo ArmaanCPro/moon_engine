@@ -76,17 +76,12 @@ namespace moon
         signal_and_wait(m_current_buffer_index_);
     }
 
-    void d3d12_context::set_clear_color(const glm::vec4& color)
-    {
-        m_clear_color_ = color;
-    }
-
-    void d3d12_context::clear() const
+    void d3d12_context::clear(const glm::vec4& color) const
     {
         MOON_PROFILE_FUNCTION();
 
         auto* cmd = (ID3D12GraphicsCommandList*)(m_frames[m_current_buffer_index_].command_list->get_native_handle());
-        const float clear_color[] = { m_clear_color_.r, m_clear_color_.g, m_clear_color_.b, m_clear_color_.a };
+        const float clear_color[] = { color.r, color.g, color.b, color.a };
         cmd->ClearRenderTargetView(m_rtv_handles[m_current_buffer_index_], clear_color, 0, nullptr);
     }
 
@@ -215,11 +210,20 @@ namespace moon
         {
             MOON_CORE_ERROR("Failed to create DXGI factory!");
         }
-        
+
         if (FAILED(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&m_device_))))
         {
             MOON_CORE_ERROR("Failed to create D3D12 device!");
         }
+
+        // info queue for breaking on d3d errors
+#ifdef _DEBUG
+        ComPtr<ID3D12InfoQueue> info_queue;
+        if (SUCCEEDED(m_device_->QueryInterface(IID_PPV_ARGS(&info_queue))))
+        {
+            info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+        }
+#endif
 
         D3D12_COMMAND_QUEUE_DESC cmd_queue_desc = {};
         cmd_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;

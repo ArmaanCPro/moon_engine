@@ -63,13 +63,13 @@ namespace moon
         desc.NumDescriptors = 128;
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         
-        HRESULT hr = dx_context->get_device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_srv_heap));
+        HRESULT hr = dx_context->get_native_device()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_srv_heap));
         MOON_CORE_ASSERT(SUCCEEDED(hr), "Failed to create ImGui descriptor heap!");
         
         // Setup allocator
         s_allocator.heap = m_srv_heap.Get();
         s_allocator.capacity = desc.NumDescriptors;
-        s_allocator.descriptor_size = dx_context->get_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        s_allocator.descriptor_size = dx_context->get_native_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
         s_allocator.current_offset = 0;
         
         // Setup Win32 backend
@@ -78,7 +78,7 @@ namespace moon
         
         // Setup DirectX backend
         ImGui_ImplDX12_InitInfo init_info = {};
-        init_info.Device = dx_context->get_device().Get();
+        init_info.Device = dx_context->get_native_device().Get();
         init_info.CommandQueue = dx_context->get_command_queue().Get();
         init_info.NumFramesInFlight = d3d12_context::s_frames_in_flight;
         init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;

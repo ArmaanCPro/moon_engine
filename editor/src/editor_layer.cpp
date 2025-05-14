@@ -57,8 +57,7 @@ namespace moon
 
         renderer2d::reset_stats();
         m_framebuffer_->bind();
-        render_command::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f } );
-        render_command::clear();
+        render_command::clear({0.1f, 0.1f, 0.1f, 1.0f } );
 
         // Update Scene
         m_active_scene_->on_update(ts);

@@ -11,7 +11,7 @@ namespace moon
 
         for (const auto& vbuf : m_vertex_buffers)
         {
-            // consider reducing this to 1 api call by binding all the views in one cmdlist call
+            // TODO: consider reducing this to 1 api call by binding all the views in one cmdlist call
             vbuf->bind();
         }
         if (m_index_buffer)

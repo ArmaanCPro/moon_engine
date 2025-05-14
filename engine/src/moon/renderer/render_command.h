@@ -20,15 +20,10 @@ namespace moon
         {
             s_renderer_api_->set_viewport(x, y, width, height);
         }
-        inline static void set_clear_color(const glm::vec4& color)
+        inline static void clear(const glm::vec4& color)
         {
-            s_renderer_api_->set_clear_color(color);
+            s_renderer_api_->clear(color);
         }
-        inline static void clear()
-        {
-            s_renderer_api_->clear();
-        }
-
         inline static void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t index_count = 0)
         {
             s_renderer_api_->draw_indexed(vertex_array, index_count);

@@ -14,7 +14,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         d3d12_context* context = (d3d12_context*)application::get().get_context();
-        ID3D12Device14* device = context->get_device().Get();
+        ID3D12Device14* device = context->get_native_device().Get();
         m_device = device;
 
         // Using UPLOAD heap directly
@@ -57,7 +57,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         d3d12_context* context = (d3d12_context*)application::get().get_context();
-        ID3D12Device14* device = context->get_device().Get();
+        ID3D12Device14* device = context->get_native_device().Get();
         m_device = device;
 
         command_list* command_list = context->get_command_list(context->get_current_buffer_index());
@@ -159,7 +159,7 @@ namespace moon
         uint32_t size = count * sizeof(uint32_t);
 
         d3d12_context* context = (d3d12_context*)application::get().get_context();
-        ID3D12Device14* device = context->get_device().Get();
+        ID3D12Device14* device = context->get_native_device().Get();
 
         // create buffer in gpu memory
         D3D12_HEAP_PROPERTIES heap_properties = {};

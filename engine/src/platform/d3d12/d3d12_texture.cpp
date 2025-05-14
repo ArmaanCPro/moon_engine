@@ -37,7 +37,7 @@ namespace moon
         rd.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         rd.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-        if (FAILED(m_context->get_device()->CreateCommittedResource(
+        if (FAILED(m_context->get_native_device()->CreateCommittedResource(
             &hp_default,
             D3D12_HEAP_FLAG_NONE, &rd, D3D12_RESOURCE_STATE_COPY_DEST,
             nullptr,
@@ -53,7 +53,7 @@ namespace moon
         dhd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         dhd.NodeMask = 0;
 
-        m_context->get_device()->CreateDescriptorHeap(&dhd, IID_PPV_ARGS(&m_descriptor_heap));
+        m_context->get_native_device()->CreateDescriptorHeap(&dhd, IID_PPV_ARGS(&m_descriptor_heap));
 
         // SRV for texture
         D3D12_SHADER_RESOURCE_VIEW_DESC srvd = {};
@@ -65,7 +65,7 @@ namespace moon
         srvd.Texture2D.PlaneSlice = 0;
         srvd.Texture2D.ResourceMinLODClamp = 0.0f;
 
-        m_context->get_device()->CreateShaderResourceView(m_texture_resource.Get(), &srvd, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+        m_context->get_native_device()->CreateShaderResourceView(m_texture_resource.Get(), &srvd, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
     }
 
     d3d12_texture2d::d3d12_texture2d(std::string_view path)
@@ -102,7 +102,7 @@ namespace moon
         texture_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-        if (FAILED(m_context->get_device()->CreateCommittedResource(
+        if (FAILED(m_context->get_native_device()->CreateCommittedResource(
             &default_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &texture_desc,
@@ -134,7 +134,7 @@ namespace moon
         upload_buffer_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
         upload_buffer_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-        if (FAILED(m_context->get_device()->CreateCommittedResource(
+        if (FAILED(m_context->get_native_device()->CreateCommittedResource(
             &upload_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &upload_buffer_desc,
@@ -174,7 +174,7 @@ namespace moon
         srv_heap_desc.NumDescriptors = 1;
         srv_heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-        if (FAILED(m_context->get_device()->CreateDescriptorHeap(&srv_heap_desc, IID_PPV_ARGS(&m_descriptor_heap))))
+        if (FAILED(m_context->get_native_device()->CreateDescriptorHeap(&srv_heap_desc, IID_PPV_ARGS(&m_descriptor_heap))))
         {
             MOON_CORE_ERROR("Failed to create descriptor heap!");
             stbi_image_free(data);
@@ -190,7 +190,7 @@ namespace moon
         srv_desc.Texture2D.PlaneSlice = 0;
         srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-        m_context->get_device()->CreateShaderResourceView(m_texture_resource.Get(), &srv_desc, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+        m_context->get_native_device()->CreateShaderResourceView(m_texture_resource.Get(), &srv_desc, m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 
         // Clean up
         stbi_image_free(data); // Free raw image data
@@ -241,7 +241,7 @@ namespace moon
 
         // Create upload buffer
         ComPtr<ID3D12Resource2> temp_upload_buffer;
-        if (FAILED(m_context->get_device()->CreateCommittedResource(
+        if (FAILED(m_context->get_native_device()->CreateCommittedResource(
             &hp_upload,
             D3D12_HEAP_FLAG_NONE,
             &rd,
@@ -289,7 +289,7 @@ namespace moon
         auto cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
             m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
             slot,
-            m_context->get_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+            m_context->get_native_device()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
         );
 
         D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
@@ -298,7 +298,7 @@ namespace moon
         srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srv_desc.Texture2D.MipLevels = 1;
 
-        m_context->get_device()->CreateShaderResourceView(m_texture_resource.Get(), &srv_desc, cpu_handle);
+        m_context->get_native_device()->CreateShaderResourceView(m_texture_resource.Get(), &srv_desc, cpu_handle);
 
         /*
         ID3D12GraphicsCommandList* command_list = m_context->get_native_command_list();

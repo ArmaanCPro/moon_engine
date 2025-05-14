@@ -34,8 +34,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
     {
         MOON_PROFILE_SCOPE("Renderer Prep");
 
-        moon::render_command::set_clear_color({0.8f, 0.0f, 0.8f, 1.0f } );
-        moon::render_command::clear();
+        moon::render_command::clear({0.8f, 0.0f, 0.8f, 1.0f } );
     }
 
     {

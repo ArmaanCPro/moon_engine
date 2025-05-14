@@ -51,13 +51,9 @@ namespace moon
         glViewport(x, y, width, height);
     }
 
-    void opengl_renderer_api::set_clear_color(const glm::vec4& color)
+    void opengl_renderer_api::clear(const glm::vec4& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
-    }
-
-    void opengl_renderer_api::clear()
-    {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 

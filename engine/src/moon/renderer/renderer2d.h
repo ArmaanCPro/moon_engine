@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pipeline.h"
 #include "moon/core/core.h"
 
 #include "moon/renderer/camera.h"

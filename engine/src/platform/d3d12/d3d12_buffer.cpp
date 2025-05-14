@@ -49,7 +49,7 @@ namespace moon
         // Set the vertex buffer view
         m_view.BufferLocation = m_buffer->GetGPUVirtualAddress();
         m_view.SizeInBytes = size;
-        m_view.StrideInBytes = sizeof(float) * 5;
+        m_view.StrideInBytes = 44; // TODO: change to sizeof(quad_vertex)
     }
 
     d3d12_vertex_buffer::d3d12_vertex_buffer(const float* vertices, uint32_t size)
@@ -90,7 +90,7 @@ namespace moon
         // Set buffer view properties
         m_view.BufferLocation = m_buffer->GetGPUVirtualAddress();
         m_view.SizeInBytes = size;
-        m_view.StrideInBytes = sizeof(float) * 5;
+        m_view.StrideInBytes = 44; // same todo as above
     }
 
     void d3d12_vertex_buffer::bind() const

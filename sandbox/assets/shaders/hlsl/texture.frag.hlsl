@@ -9,7 +9,7 @@ void main(
     in float4 v_Color : COLOR,
     in float2 v_TexCoord : TEXCOORD,
     in float v_TexIndex : TEXINDEX,
-    in float v_TilingFactor : TILING_FACTOR,
+    in float v_TilingFactor : TILINGFACTOR,
 
     // out
     out float4 o_Pixel : SV_TARGET

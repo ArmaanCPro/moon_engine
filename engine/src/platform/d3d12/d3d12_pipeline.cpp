@@ -95,7 +95,7 @@ namespace moon
         }
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psod = {};
-        psod.pRootSignature = root_signature.Get();
+        // psod.pRootSignature = root_signature.Get();
 
         // TODO: Get all unique buffer layouts in the vertex array and accordingly set the InputSlot
         auto input_layout = buffer_layout_to_d3d_layout(spec.vertex_array->get_vertex_buffers()[0]->get_layout());
@@ -191,7 +191,7 @@ namespace moon
         m_pipeline_state.Reset();
     }
 
-    void d3d12_pipeline::bind()
+    void d3d12_pipeline::bind() const
     {
         d3d12_context* context = (d3d12_context*)application::get().get_context();
         context->get_native_command_list()->SetPipelineState(m_pipeline_state.Get());

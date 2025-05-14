@@ -29,7 +29,8 @@ namespace moon
 
         ref<vertex_array> quad_vertex_array;
         ref<vertex_buffer> quad_vertex_buffer;
-        ref<shader> texture_shader;
+        ref<shader> texture_shader_vert;
+        ref<shader> texture_shader_frag;
         ref<texture2d> white_texture;
 
         uint32_t quad_index_count = 0;
@@ -40,6 +41,8 @@ namespace moon
         uint32_t texture_slot_index = 1; // 0 = white texture
 
         glm::vec4 quad_vertex_positions[4];
+
+        ref<pipeline> pso;
 
         renderer2d::statistics stats;
     };
@@ -57,11 +60,11 @@ namespace moon
         // vertex buffer
         s_data.quad_vertex_buffer = vertex_buffer::create(s_data.max_vertices * sizeof(quad_vertex));
         s_data.quad_vertex_buffer->set_layout({
-            { ShaderDataType::Float3, "a_Position" },
-            { ShaderDataType::Float4, "a_Color" },
-            { ShaderDataType::Float2, "a_TexCoord" },
-            { ShaderDataType::Float, "a_TexIndex" },
-            { ShaderDataType::Float, "a_TilingFactor" }
+            { ShaderDataType::Float3, "POSITION" },
+            { ShaderDataType::Float4, "COLOR" },
+            { ShaderDataType::Float2, "TEXCOORD" },
+            { ShaderDataType::Float, "TEXINDEX" },
+            { ShaderDataType::Float, "TILINGFACTOR" }
         });
         s_data.quad_vertex_array->add_vertex_buffer(s_data.quad_vertex_buffer);
 
@@ -101,9 +104,10 @@ namespace moon
 
         // create our texture shader
         // s_data.texture_shader = shader::create(ShaderType::VertexAndFragment, "assets/shaders/texture.glsl");
-        s_data.texture_shader = shader::create("assets/shaders/hlsl/texture.vert.cso", "assets/shaders/hlsl/texture.frag.cso");
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_int_array("u_Textures", samplers, renderer2d_data::max_texture_slots);
+        s_data.texture_shader_vert = shader::create(ShaderType::Vertex, "assets/shaders/hlsl/texture.vert.cso");
+        s_data.texture_shader_frag = shader::create(ShaderType::Fragment, "assets/shaders/hlsl/texture.frag.cso");
+        s_data.texture_shader_frag->bind();
+        s_data.texture_shader_frag->set_int_array("u_Textures", samplers, renderer2d_data::max_texture_slots);
 
         // set index 0 to white texture
         s_data.texture_slots[0] = s_data.white_texture;
@@ -127,26 +131,46 @@ namespace moon
 
         glm::mat4 view_proj = camera.get_projection() * glm::inverse(transform);
 
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_mat4("u_VP", view_proj);
+        s_data.texture_shader_vert->bind();
+        s_data.texture_shader_vert->set_mat4("u_VP", view_proj);
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
         s_data.texture_slot_index = 1;
+
+        pipeline_spec spec = {};
+        spec.vertex_shader = s_data.texture_shader_vert.get();
+        spec.fragment_shader = s_data.texture_shader_frag.get();
+        spec.textures.push_back(s_data.white_texture.get());
+        for (const auto& texture : s_data.texture_slots)
+            spec.textures.push_back(texture.get());
+        spec.vertex_array = s_data.quad_vertex_array.get();
+        s_data.pso->create(spec);
+        s_data.pso->bind();
     }
 
     void renderer2d::begin_scene(const ortho_camera& camera)
     {
         MOON_PROFILE_FUNCTION();
 
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
+        s_data.texture_shader_vert->bind();
+        s_data.texture_shader_vert->set_mat4("u_VP", camera.get_view_projection_matrix());
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
         s_data.texture_slot_index = 1;
+
+        pipeline_spec spec = {};
+        spec.vertex_shader = s_data.texture_shader_vert.get();
+        spec.fragment_shader = s_data.texture_shader_frag.get();
+        spec.textures.push_back(s_data.white_texture.get());
+        for (const auto& texture : s_data.texture_slots)
+            spec.textures.push_back(texture.get());
+        spec.vertex_array = s_data.quad_vertex_array.get();
+        s_data.pso->create(spec);
+        s_data.pso->bind();
     }
 
     void renderer2d::end_scene()

@@ -11,8 +11,8 @@ namespace moon
         d3d12_pipeline(const pipeline_spec& spec);
         ~d3d12_pipeline() override;
 
-        void bind() override;
-        void unbind() override {}
+        void bind() const override;
+        void unbind() const override {}
 
     private:
         ComPtr<ID3D12PipelineState> m_pipeline_state;

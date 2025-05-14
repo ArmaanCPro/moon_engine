@@ -48,6 +48,7 @@ set(ENGINE_SOURCES
         src/moon/renderer/graphics_context.cpp
         src/platform/d3d12/d3d12_command_list.cpp
         src/platform/d3d12/d3d12_framebuffer.cpp
+        src/moon/renderer/binding_resource.cpp
 )
 
 set(ENGINE_HEADERS
@@ -109,6 +110,7 @@ set(ENGINE_HEADERS
         src/platform/d3d12/d3d12_command_list.h
         src/platform/opengl/opengl_command_list.h
         src/platform/d3d12/d3d12_framebuffer.h
+        src/moon/renderer/binding_resource.h
 )
 
 # platform

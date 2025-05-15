@@ -1,5 +1,6 @@
 #pragma once
 
+#include "binding_set.h"
 #include "shader.h"
 #include "texture.h"
 #include "vertex_array.h"
@@ -13,7 +14,9 @@ namespace moon
     {
         shader* vertex_shader = nullptr;
         shader* fragment_shader = nullptr;
-        shader* rootsig_shader = nullptr;
+
+        binding_layout layout;
+
         std::vector<texture*> textures;
 
         // TODO: consider removing vertex arrays entirely

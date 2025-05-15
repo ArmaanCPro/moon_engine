@@ -1,6 +1,9 @@
 #include "rootsig.hlsli"
 
-float4x4 u_VP : register(b0);
+cbuffer ViewProj : register(b0, space0)
+{
+    float4x4 u_VP;
+}
 
 [RootSignature(ROOTSIG)]
 void main(

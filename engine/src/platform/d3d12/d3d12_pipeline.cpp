@@ -2,8 +2,10 @@
 #include "d3d12_pipeline.h"
 
 #include "d3d12_context.h"
+#include "d3d12_root_signature.h"
 #include "d3d12_shader.h"
 #include "core/application.h"
+#include "renderer/root_signature.h"
 
 namespace moon
 {
@@ -75,27 +77,17 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        if (spec.rootsig_shader)
-        {
-            MOON_CORE_ASSERT(false, "Root signature shader is null!");
-        }
-
         d3d12_context* context = (d3d12_context*)application::get().get_context();
 
-        ComPtr<ID3D12RootSignature> root_signature;
-        if (spec.rootsig_shader)
-        {
-            std::string_view rootsig_data = spec.rootsig_shader->get_data();
-            context->get_native_device()->CreateRootSignature(0, rootsig_data.data(), rootsig_data.size(), IID_PPV_ARGS(&root_signature));
-        }
-        else // embedded root signature
-        {
-            auto* dx_vs = (d3d12_shader*)spec.vertex_shader;
-            root_signature = dx_vs->get_root_signature();
-        }
+        // root sig shenanigans
+        d3d12_root_signature_desc root_signature_desc(spec.layout); // could use create function here on abstract parent type
+        d3d12_root_signature root_signature(root_signature_desc);
 
+
+        // === BEGIN PSOD CREATION ===
+        // -------------------------
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psod = {};
-        // psod.pRootSignature = root_signature.Get();
+        psod.pRootSignature = root_signature.get();
 
         // TODO: Get all unique buffer layouts in the vertex array and accordingly set the InputSlot
         auto input_layout = buffer_layout_to_d3d_layout(spec.vertex_array->get_vertex_buffers()[0]->get_layout());

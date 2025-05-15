@@ -48,7 +48,10 @@ set(ENGINE_SOURCES
         src/moon/renderer/graphics_context.cpp
         src/platform/d3d12/d3d12_command_list.cpp
         src/platform/d3d12/d3d12_framebuffer.cpp
-        src/moon/renderer/binding_resource.cpp
+        src/moon/renderer/binding_set.cpp
+        src/platform/d3d12/d3d12_binding_set.cpp
+        src/moon/renderer/root_signature.cpp
+        src/platform/d3d12/d3d12_root_signature.cpp
 )
 
 set(ENGINE_HEADERS
@@ -110,7 +113,10 @@ set(ENGINE_HEADERS
         src/platform/d3d12/d3d12_command_list.h
         src/platform/opengl/opengl_command_list.h
         src/platform/d3d12/d3d12_framebuffer.h
-        src/moon/renderer/binding_resource.h
+        src/moon/renderer/binding_set.h
+        src/platform/d3d12/d3d12_binding_set.h
+        src/moon/renderer/root_signature.h
+        src/platform/d3d12/d3d12_root_signature.h
 )
 
 # platform

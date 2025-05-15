@@ -3,7 +3,8 @@
 
 /*
  *   Root Signature Layout (CPU)
- *   -> 0        descriptor table "ViewProjection" and "Textures"
+ *   -> 0        descriptor table "ViewProjection"
+ *   -> 0        descriptor table "Textures"
  *
  *   Root Signature Layout (GPU)
  *   -> b0       float4x4 "ViewProj"
@@ -14,7 +15,9 @@
 #define ROOTSIG \
 "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT)," \
 "DescriptorTable(" \
-    "CBV(b0)," \
+    "CBV(b0)" \
+")," \
+"DescriptorTable(" \
     "SRV(t0, numDescriptors = 32)" \
 ")," \
 "StaticSampler(s0)"

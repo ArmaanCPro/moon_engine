@@ -15,9 +15,6 @@ namespace moon
 
         std::string_view get_data() override { return m_data; }
         std::string_view get_name() override { return m_name; }
-        const ComPtr<ID3D12RootSignature>& get_root_signature() const { return m_root_signature; }
-
-        ComPtr<ID3DBlob> create_blob() const;
 
         void bind() const override;
         void unbind() const override;
@@ -33,24 +30,8 @@ namespace moon
     private:
         std::string read_file(std::string_view filepath);
 
-        void init_root_signature();
-        void init_constant_buffers();
-        void init_shader_resource_views();
-
     private:
         std::string m_name;
         std::string m_data;
-        // embedded rootsig
-        ComPtr<ID3D12RootSignature> m_root_signature;
-
-        // DX specific resources
-        ComPtr<ID3D12DescriptorHeap> m_srv_descriptor_heap;
-        ComPtr<ID3D12Resource2> m_null_texture; // null srv resource for initialization purposes
-
-        ComPtr<ID3D12DescriptorHeap> m_cbv_descriptor_heap;
-        std::vector<ComPtr<ID3D12Resource2>> m_constant_buffers;
-
-        // Persistent mapping for the CBV's mat4
-        UINT8* m_cbv_mapped_data = nullptr;
     };
 }

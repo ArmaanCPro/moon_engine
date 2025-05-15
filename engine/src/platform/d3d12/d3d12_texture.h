@@ -26,6 +26,9 @@ namespace moon
             return m_texture_resource == ((d3d12_texture2d&)other).m_texture_resource;
         }
 
+        DXGI_FORMAT get_dxgi_format() const { return m_dxgi_format; }
+        ID3D12Resource* get_resource() const { return m_texture_resource.Get(); }
+
     private:
         std::string m_path;
         uint32_t m_width, m_height;

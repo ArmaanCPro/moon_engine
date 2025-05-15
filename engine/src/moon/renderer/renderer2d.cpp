@@ -42,6 +42,7 @@ namespace moon
 
         glm::vec4 quad_vertex_positions[4];
 
+        ref<binding_set> binding_set;
         ref<pipeline> pso;
 
         renderer2d::statistics stats;
@@ -116,6 +117,24 @@ namespace moon
         s_data.quad_vertex_positions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
         s_data.quad_vertex_positions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
         s_data.quad_vertex_positions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+
+        binding_layout layout;
+        layout.add_binding({ BindingResourceType::UniformBuffer, 0, 0, "u_VP" });
+        layout.add_binding({ BindingResourceType::Texture, 0, 1, "u_Textures", 32 });
+
+        pipeline_spec spec = {};
+        spec.vertex_shader = s_data.texture_shader_vert.get();
+        spec.fragment_shader = s_data.texture_shader_frag.get();
+        spec.layout = layout;
+        spec.textures.push_back(s_data.white_texture.get());
+        for (const auto& texture : s_data.texture_slots)
+            spec.textures.push_back(texture.get());
+        spec.vertex_array = s_data.quad_vertex_array.get();
+        s_data.pso->create(spec);
+        s_data.pso->bind();
+
+        s_data.binding_set = binding_set::create(layout, s_data.pso);
     }
 
     void renderer2d::shutdown()
@@ -131,22 +150,20 @@ namespace moon
 
         glm::mat4 view_proj = camera.get_projection() * glm::inverse(transform);
 
+        // TEMP
+        view_proj = glm::transpose(view_proj);
+
         s_data.texture_shader_vert->bind();
-        s_data.texture_shader_vert->set_mat4("u_VP", view_proj);
+        // s_data.texture_shader_vert->set_mat4("u_VP", view_proj);
+
+        s_data.binding_set->set_constant(0, &view_proj, sizeof(glm::mat4));
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
         s_data.texture_slot_index = 1;
 
-        pipeline_spec spec = {};
-        spec.vertex_shader = s_data.texture_shader_vert.get();
-        spec.fragment_shader = s_data.texture_shader_frag.get();
-        spec.textures.push_back(s_data.white_texture.get());
-        for (const auto& texture : s_data.texture_slots)
-            spec.textures.push_back(texture.get());
-        spec.vertex_array = s_data.quad_vertex_array.get();
-        s_data.pso->create(spec);
+        s_data.binding_set->bind();
         s_data.pso->bind();
     }
 
@@ -154,23 +171,18 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
+        // TEMP
+        glm::mat4 view_proj = glm::transpose(camera.get_view_projection_matrix());
+
         s_data.texture_shader_vert->bind();
-        s_data.texture_shader_vert->set_mat4("u_VP", camera.get_view_projection_matrix());
+        // s_data.texture_shader_vert->set_mat4("u_VP", camera.get_view_projection_matrix());
+
+        s_data.binding_set->set_constant(0, &view_proj, sizeof(glm::mat4));
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
 
         s_data.texture_slot_index = 1;
-
-        pipeline_spec spec = {};
-        spec.vertex_shader = s_data.texture_shader_vert.get();
-        spec.fragment_shader = s_data.texture_shader_frag.get();
-        spec.textures.push_back(s_data.white_texture.get());
-        for (const auto& texture : s_data.texture_slots)
-            spec.textures.push_back(texture.get());
-        spec.vertex_array = s_data.quad_vertex_array.get();
-        s_data.pso->create(spec);
-        s_data.pso->bind();
     }
 
     void renderer2d::end_scene()

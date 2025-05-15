@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "buffer.h"
+#include "shader.h"
 #include "texture.h"
 #include "moon/core/core.h"
 
@@ -23,11 +24,12 @@ namespace moon
         uint32_t binding;
         uint32_t set;
         std::string name;
+        uint32_t array_size = 1;
 
         binding_element() = default;
-        binding_element(BindingResourceType type, uint32_t binding, uint32_t set, std::string_view name)
+        binding_element(BindingResourceType type, uint32_t binding, uint32_t set, std::string_view name, uint32_t array_size = 1)
             :
-            type(type), binding(binding), set(set), name(name)
+            type(type), binding(binding), set(set), name(name), array_size(array_size)
         {}
     };
 
@@ -58,13 +60,12 @@ namespace moon
         std::vector<binding_element> m_elements;
     };
 
+
+    class pipeline;
+
     class MOON_API binding_set
     {
     public:
-        explicit binding_set(binding_layout layout)
-            :
-            m_layout(std::move(layout))
-        {}
         virtual ~binding_set() = default;
 
         virtual void bind() const = 0;
@@ -72,12 +73,20 @@ namespace moon
 
         const binding_layout& get_layout() const { return m_layout; }
 
-        // resource setting TODO: remove this from shader class
+        // resource setting TODO: remove these from shader class
         virtual void set_uniform_buffer(uint32_t binding, const ref<vertex_buffer>& buffer) = 0;
         virtual void set_constant(uint32_t binding, const void* data, size_t size) = 0;
-        virtual void set_texture(uint32_t binding, const ref<texture>& texture) = 0;
+        virtual void set_texture(uint32_t binding, const ref<texture2d>& texture) = 0;
 
-    private:
+        static ref<binding_set> create(binding_layout layout, const ref<pipeline>& pipeline);
+
+    protected:
+        explicit binding_set(binding_layout layout)
+            :
+            m_layout(std::move(layout))
+        {}
+
+    protected:
         binding_layout m_layout;
     };
 }

@@ -1,6 +1,6 @@
 #include "rootsig.hlsli"
 
-Texture2D<float4> textures[32] : register(t0);
+Texture2D textures[32] : register(t0, space0);
 sampler textureSampler : register(s0);
 
 [RootSignature(ROOTSIG)]

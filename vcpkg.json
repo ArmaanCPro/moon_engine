@@ -15,12 +15,15 @@
       "features": [
         "docking-experimental",
         "glfw-binding",
-        "opengl3-binding"
+        "opengl3-binding",
+        "vulkan-binding"
       ]
     },
     "glm",
     "stb",
-    "entt"
+    "entt",
+    "vulkan",
+    "vulkan-memory-allocator"
   ],
   "builtin-baseline": "bc994510d2eb11aac7b43b03f67a7751d5bfe0e4"
 }

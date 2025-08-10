@@ -49,7 +49,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/src/moon
-        ${CMAKE_CURRENT_SOURCE_DIR}src/platform
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/platform
 )
 
 # pch
@@ -67,7 +67,7 @@ find_package(Vulkan REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad Vulkan::Vulkan GPUOpen::VulkanMemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator)
 
 # stb (image)
 find_package(Stb REQUIRED)

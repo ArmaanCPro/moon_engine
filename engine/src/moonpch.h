@@ -2,6 +2,7 @@
 
 // stl
 #include <iostream>
+#include <print>
 #include <memory>
 #include <utility>
 #include <algorithm>
@@ -16,6 +17,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <array>
+#include <deque>
+#include <variant>
 
 // our stuff
 #include "moon/core/core.h"
@@ -24,8 +27,9 @@
 #include "moon/core/key_codes.h"
 #include "moon/core/mouse_codes.h"
 
+#if 0
 #ifdef _WIN32
     #include <windows.h>
 #endif
-
+#endif
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "moon/core/window.h"
+#include "vulkan/vk.h"
 
 struct GLFWwindow;
 
@@ -14,6 +15,8 @@ namespace moon
 
         void on_update() override;
 
+        void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
+
         [[nodiscard]] uint32_t get_width() const override { return data_.width; }
         [[nodiscard]] uint32_t get_height() const override { return data_.height; }
 
@@ -23,19 +26,20 @@ namespace moon
         [[nodiscard]] bool is_vsync() const override { return data_.vsync; }
 
         inline void* get_native_window() const override { return window_; }
+        inline const native_handle& get_native_handle() const override { return handle_; }
 
     private:
-        void init(const window_props& props);
-        void shutdown();
-    private:
+        static void set_glfw_callbacks(GLFWwindow* window);
         GLFWwindow* window_ = nullptr;
+        native_handle handle_{};
 
         struct window_data
         {
-            std::string title;
-            uint32_t width;
-            uint32_t height;
-            bool vsync;
+            std::string title{};
+            uint32_t width{};
+            uint32_t height{};
+            bool vsync = false;
+            bool framebufferResized = false;
 
             event_callback_fn event_callback;
         };

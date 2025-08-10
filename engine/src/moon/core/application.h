@@ -30,6 +30,7 @@ namespace moon
 
         inline static application& get() { return *s_instance; }
         inline window& get_window() { return *window_; }
+        inline graphics_context& get_context() { return *m_context; }
 
         imgui_layer* get_imgui_layer() { return m_imgui_layer_; }
 
@@ -47,6 +48,8 @@ namespace moon
         static application* s_instance;
 
         float last_frame_time_ = 0.0f;
+
+        scope<graphics_context> m_context;
     };
 
     // to be defined in the client

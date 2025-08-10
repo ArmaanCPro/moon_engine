@@ -6,8 +6,22 @@
 #include "moon/events/event.h"
 #include "moon/renderer/graphics_context.h"
 
+struct GLFWwindow;
+
 namespace moon
 {
+    enum class NativeHandleType
+    {
+        None,
+        GLFW
+    };
+
+    struct native_handle
+    {
+        NativeHandleType type;
+        std::variant<void*, GLFWwindow*> handle;
+    };
+
     struct window_props
     {
         explicit window_props(std::string_view title = "Moon Engine", uint32_t width = 1280, uint32_t height = 720)
@@ -25,12 +39,7 @@ namespace moon
     public:
         using event_callback_fn = std::function<void(event&)>;
 
-        virtual ~window()
-        {
-            MOON_CORE_ASSERT(context_, "Window context is null!");
-            delete context_;
-            context_ = nullptr;
-        }
+        virtual ~window() = default;
 
         virtual void on_update() = 0;
 
@@ -43,10 +52,9 @@ namespace moon
         [[nodiscard]] virtual bool is_vsync() const = 0;
 
         [[nodiscard]] virtual void* get_native_window() const = 0;
+        [[nodiscard]] virtual const native_handle& get_native_handle() const = 0;
 
         static scope<window> create(const window_props& props = window_props());
 
-    protected:
-        graphics_context* context_ = nullptr;
     };
 }

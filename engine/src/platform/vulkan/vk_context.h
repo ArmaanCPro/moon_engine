@@ -14,5 +14,12 @@ namespace moon
 
         void init() override;
         void swap_buffers() override;
+
+    private:
+        GLFWwindow* m_glfwwindow;
+
+        vk::Instance m_instance;
+        vk::PhysicalDevice m_physical_device;
+        vk::Device m_device;
     };
 }

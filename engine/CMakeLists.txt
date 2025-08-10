@@ -56,6 +56,8 @@ target_include_directories(${PROJECT_NAME}
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/moonpch.h)
 
 # libraries
+add_subdirectory(third_party)
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -67,7 +69,7 @@ find_package(Vulkan REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator vk-bootstrap)
 
 # stb (image)
 find_package(Stb REQUIRED)

@@ -43,6 +43,7 @@ if (MSVC OR VCPKG_CMAKE_SYSTEM STREQUAL MSVC)
 endif()
 
 # vcpkg
+set(VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/overlays" CACHE PATH "Path to local vcpkg overlay ports")
 if (DEFINED ENV{VCPKG_ROOT})
     set(VCPKG_ROOT $ENV{VCPKG_ROOT})
 else ()

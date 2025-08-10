@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device.h"
 #include "moon/core/core.h"
 
 namespace moon
@@ -11,5 +12,7 @@ namespace moon
 
         virtual void init() = 0;
         virtual void swap_buffers() = 0;
+
+        virtual device& get_device() = 0;
     };
 }

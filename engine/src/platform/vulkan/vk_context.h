@@ -4,15 +4,12 @@
 #include "renderer/graphics_context.h"
 
 #include "vk.h"
+#include "vk_device.h"
+
+#include "vk_swapchain.h"
 
 namespace moon
 {
-    struct QueueFamilies
-    {
-        vk::Queue graphics_queue;
-        uint32_t graphics_queue_index;
-    };
-
     class vk_context final : public graphics_context
     {
     public:
@@ -22,16 +19,16 @@ namespace moon
         void init() override;
         void swap_buffers() override;
 
+        device& get_device() override { return m_device; }
+
     private:
         GLFWwindow* m_glfwwindow;
 
         vk::UniqueInstance m_instance;
         vk::DebugUtilsMessengerEXT m_debug_messenger;
         vk::UniqueSurfaceKHR m_surface;
-        vk::PhysicalDevice m_physical_device;
-        vk::UniqueDevice m_device;
-
-        QueueFamilies m_queue_families;
+        vk_device m_device;
+        vk_swapchain m_swapchain;
 
         VmaAllocator m_allocator{};
     };

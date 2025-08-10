@@ -5,6 +5,6 @@
 #endif
 #include <vulkan/vulkan.hpp> // consider transitioning to c++ module import
 
-#include <vk_mem_alloc.h>
+#include <vma/vk_mem_alloc.h>
 #include <VkBootstrap.h>
 

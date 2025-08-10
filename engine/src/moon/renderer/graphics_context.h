@@ -13,6 +13,9 @@ namespace moon
         virtual void init() = 0;
         virtual void swap_buffers() = 0;
 
+        virtual void begin_frame() = 0;
+        virtual void end_frame() = 0;
+
         virtual device& get_device() = 0;
     };
 }

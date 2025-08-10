@@ -23,6 +23,7 @@ namespace moon
         vk::Device get_device() const { return m_device.get(); }
 
         vk::Queue get_graphics_queue() const { return m_queue_families.graphics_queue; }
+        uint32_t get_graphics_queue_index() const { return m_queue_families.graphics_queue_index; }
 
         VmaAllocator get_allocator() const { return m_allocator; }
     private:

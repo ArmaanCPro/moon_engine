@@ -92,7 +92,6 @@ namespace moon
             window_data* data = (window_data*)glfwGetWindowUserPointer(window);
             data->width = width;
             data->height = height;
-            data->framebufferResized = true;
             window_resize_event event(width, height);
             data->event_callback(event);
         });

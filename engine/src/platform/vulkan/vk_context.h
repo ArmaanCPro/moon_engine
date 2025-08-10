@@ -10,6 +10,17 @@
 
 namespace moon
 {
+    static constexpr auto s_frames_in_flight = 2u;
+
+    struct frame_data
+    {
+        vk::UniqueCommandPool command_pool;
+        vk::UniqueCommandBuffer command_buffer;
+
+        vk::UniqueSemaphore swapchain_semaphore, render_semaphore;
+        vk::UniqueFence render_fence;
+    };
+
     class vk_context final : public graphics_context
     {
     public:
@@ -19,7 +30,13 @@ namespace moon
         void init() override;
         void swap_buffers() override;
 
+        void begin_frame() override;
+        void end_frame() override;
+
         device& get_device() override { return m_device; }
+
+    private:
+        frame_data& get_current_frame() { return m_frames[m_frame_number]; }
 
     private:
         GLFWwindow* m_glfwwindow;
@@ -31,5 +48,13 @@ namespace moon
         vk_swapchain m_swapchain;
 
         VmaAllocator m_allocator{};
+
+        std::array<frame_data, s_frames_in_flight> m_frames;
+        uint32_t m_frame_number = 0;
+
+        // immediate commands
+        vk::UniqueCommandPool m_imm_command_pool;
+        vk::UniqueCommandBuffer m_imm_command_buffer;
+        vk::UniqueFence m_imm_fence;
     };
 }

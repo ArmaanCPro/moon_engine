@@ -36,6 +36,40 @@ namespace moon
         m_device.init(vkbInstance, m_surface.get());
         m_swapchain = vk_swapchain{ m_glfwwindow, m_surface.get(), m_instance.get(),
                                    m_device.get_physical_device(), m_device.get_device() };
+
+        // command buffers
+        vk::CommandPoolCreateInfo command_poolCI{};
+        command_poolCI.queueFamilyIndex = m_device.get_graphics_queue_index();
+        command_poolCI.flags = vk::CommandPoolCreateFlagBits::eTransient;
+
+        for (auto i = 0u; i < m_frames.size(); ++i)
+        {
+            m_frames[i].command_pool = m_device.get_device().createCommandPoolUnique(command_poolCI);
+
+            vk::CommandBufferAllocateInfo cmdAllocInfo{};
+            cmdAllocInfo.commandPool = m_frames[i].command_pool.get();
+            cmdAllocInfo.commandBufferCount = 1;
+
+            m_frames[i].command_buffer = std::move(m_device.get_device().allocateCommandBuffersUnique(cmdAllocInfo).front());
+        }
+        m_imm_command_pool = m_device.get_device().createCommandPoolUnique(command_poolCI);
+        vk::CommandBufferAllocateInfo cmdAllocInfo{};
+        cmdAllocInfo.commandPool = m_imm_command_pool.get();
+        cmdAllocInfo.commandBufferCount = 1;
+        m_imm_command_buffer = std::move(m_device.get_device().allocateCommandBuffersUnique(cmdAllocInfo).front());
+
+        // sync structures
+        vk::FenceCreateInfo fenceCI{};
+        fenceCI.flags = vk::FenceCreateFlagBits::eSignaled; // start fence signaled so we can wait on it first frame
+        vk::SemaphoreCreateInfo semaphoreCI{};
+        for (auto i = 0u; i < m_frames.size(); ++i)
+        {
+            m_frames[i].render_fence = m_device.get_device().createFenceUnique(fenceCI);
+
+            m_frames[i].swapchain_semaphore = m_device.get_device().createSemaphoreUnique(semaphoreCI);
+            m_frames[i].render_semaphore = m_device.get_device().createSemaphoreUnique(semaphoreCI);
+        }
+        m_imm_fence = m_device.get_device().createFenceUnique(fenceCI);
     }
 
     vk_context::~vk_context()
@@ -45,9 +79,18 @@ namespace moon
 
     void vk_context::init()
     {
-
     }
 
     void vk_context::swap_buffers()
     {}
+
+    void vk_context::begin_frame()
+    {
+        [[maybe_unused]] auto result = m_device.get_device().waitForFences(1, &get_current_frame().render_fence.get(), vk::True, std::numeric_limits<uint64_t>::max());
+    }
+
+    void vk_context::end_frame()
+    {
+        m_frame_number = (m_frame_number + 1) % s_frames_in_flight;
+    }
 }

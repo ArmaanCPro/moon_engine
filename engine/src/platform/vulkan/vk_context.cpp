@@ -14,6 +14,11 @@ namespace moon
         init();
     }
 
+    vk_context::~vk_context()
+    {
+        vmaDestroyAllocator(m_allocator);
+    }
+
     void vk_context::init()
     {
         //uint32_t glfwExtensionCount = 0;
@@ -33,7 +38,7 @@ namespace moon
         VULKAN_HPP_DEFAULT_DISPATCHER.init(m_instance.get(), reinterpret_cast<PFN_vkGetInstanceProcAddr>(glfwGetInstanceProcAddress));
         m_debug_messenger = vkbInstance.debug_messenger;
 
-        glfwCreateWindowSurface(m_instance.get(), m_glfwwindow, nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_surface));
+        glfwCreateWindowSurface(m_instance.get(), m_glfwwindow, nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_surface.get()));
 
         // vk 1.3 features
         vk::PhysicalDeviceVulkan13Features features;
@@ -62,7 +67,12 @@ namespace moon
         m_queue_families.graphics_queue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
         m_queue_families.graphics_queue_index = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
 
-        VmaAllocatorCreateInfo allocatorInfo{};
+        VmaAllocatorCreateInfo allocatorCI{};
+        allocatorCI.physicalDevice = m_physical_device;
+        allocatorCI.device = m_device.get();
+        allocatorCI.instance = m_instance.get();
+        allocatorCI.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+        vmaCreateAllocator(&allocatorCI, &m_allocator);
     }
 
     void vk_context::swap_buffers()

@@ -17,6 +17,7 @@ namespace moon
     {
     public:
         vk_context(const native_handle& window);
+        ~vk_context();
 
         void init() override;
         void swap_buffers() override;
@@ -31,5 +32,7 @@ namespace moon
         vk::UniqueDevice m_device;
 
         QueueFamilies m_queue_families;
+
+        VmaAllocator m_allocator{};
     };
 }

@@ -73,12 +73,6 @@ namespace moon
         glfwPollEvents();
     }
 
-    void windows_window::create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const
-    {
-        const auto result = glfwCreateWindowSurface(instance, window_, nullptr, surface);
-        MOON_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface!");
-    }
-
     void windows_window::set_event_callback(const event_callback_fn& fn)
     {
         data_.event_callback = fn;

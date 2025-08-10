@@ -43,7 +43,7 @@
       "inherits": "default-common",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl.exe",
         "VCPKG_CMAKE_SYSTEM": "MSVC"
       }
     },

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "moon/core/window.h"
-#include "vulkan/vk.h"
 
 struct GLFWwindow;
 
@@ -14,8 +13,6 @@ namespace moon
         ~windows_window() override;
 
         void on_update() override;
-
-        void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
 
         [[nodiscard]] uint32_t get_width() const override { return data_.width; }
         [[nodiscard]] uint32_t get_height() const override { return data_.height; }

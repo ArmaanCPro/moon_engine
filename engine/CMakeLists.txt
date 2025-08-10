@@ -8,8 +8,6 @@ else ()
     add_compile_options(-W -Wall -Werror -Wno-unused-parameter) #All Warnings, all warnings are errors
 endif ()
 
-
-
 # platform
 if (WIN32 OR MINGW)
     SET(PLATFORM_PREFIX windows)
@@ -55,9 +53,10 @@ target_include_directories(${PROJECT_NAME}
 # pch
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/moonpch.h)
 
-# libraries
-add_subdirectory(third_party)
+# library defines
+#target_compile_definitions(${PROJECT_NAME} PUBLIC VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
+# libraries
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -65,11 +64,13 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
+find_package(VulkanHeaders CONFIG)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+find_package(vk-bootstrap CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator vk-bootstrap)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap)
+
 
 # stb (image)
 find_package(Stb REQUIRED)

@@ -7,4 +7,6 @@ A c++ game engine
 
 ## Building
 
-See [BUILD.md](/BUILD.md)
+- git clone --recursive https://github.com/ArmaanCPro/moon_engine.git
+    - If not recursively cloned: git submodule --init --recursive
+- See [BUILD.md](/BUILD.md)

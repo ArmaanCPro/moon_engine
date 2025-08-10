@@ -23,7 +23,8 @@
     "stb",
     "entt",
     "vulkan-headers",
-    "vulkan-memory-allocator"
+    "vulkan-memory-allocator",
+    "vk-bootstrap"
   ],
-  "builtin-baseline": "bc994510d2eb11aac7b43b03f67a7751d5bfe0e4"
+  "builtin-baseline": "3bdaa9b42070c241c1bdb02b4cf01f90de579738"
 }

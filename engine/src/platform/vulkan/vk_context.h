@@ -7,6 +7,12 @@
 
 namespace moon
 {
+    struct QueueFamilies
+    {
+        vk::Queue graphics_queue;
+        uint32_t graphics_queue_index;
+    };
+
     class vk_context final : public graphics_context
     {
     public:
@@ -18,8 +24,12 @@ namespace moon
     private:
         GLFWwindow* m_glfwwindow;
 
-        vk::Instance m_instance;
+        vk::UniqueInstance m_instance;
+        vk::DebugUtilsMessengerEXT m_debug_messenger;
+        vk::UniqueSurfaceKHR m_surface;
         vk::PhysicalDevice m_physical_device;
-        vk::Device m_device;
+        vk::UniqueDevice m_device;
+
+        QueueFamilies m_queue_families;
     };
 }

@@ -179,6 +179,40 @@ namespace moon
         return m_queue_families.graphics_queue.presentKHR(present_info);
     }
 
+    allocated_image vk_device::allocate_image(const vk::ImageCreateInfo& image_info, const vk::ImageViewCreateInfo& image_view_info, const std::optional<VmaAllocationCreateInfo>& alloc_info) const
+    {
+        allocated_image return_image;
+        return_image.extent = image_info.extent;
+        return_image.format = image_info.format;
+
+        VmaAllocationCreateInfo alloc_info_temp;
+        if (alloc_info.has_value())
+            alloc_info_temp = alloc_info.value();
+        else
+        {
+            alloc_info_temp.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+            alloc_info_temp.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+        }
+
+        VkImage temp_image;
+        VmaAllocation temp_allocation;
+        vmaCreateImage(m_allocator, (VkImageCreateInfo*)&image_info, &alloc_info_temp, &temp_image, &temp_allocation, nullptr);
+        return_image.image = temp_image;
+        return_image.allocation = temp_allocation;
+
+        return_image.view = m_device->createImageView(image_view_info);
+
+        return return_image;
+    }
+
+    void vk_device::destroy_image(allocated_image& image) const
+    {
+        if (image.image && image.allocation)
+            vmaDestroyImage(m_allocator, image.image, image.allocation);
+        image.image = VK_NULL_HANDLE;
+        image.allocation = VK_NULL_HANDLE;
+    }
+
     VkDeviceAddress vk_device::get_buffer_device_address(vk::Buffer buffer) const
     {
         vk::BufferDeviceAddressInfo info{};

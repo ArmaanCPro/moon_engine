@@ -8,3 +8,11 @@
 #include <vma/vk_mem_alloc.h>
 #include <VkBootstrap.h>
 
+struct allocated_image
+{
+    vk::Image image;
+    vk::ImageView view;
+    VmaAllocation allocation;
+    vk::Extent3D extent;
+    vk::Format format;
+};

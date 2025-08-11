@@ -50,6 +50,10 @@ namespace moon
         vk::Result submit_and_present(vk::CommandBuffer cmd, vk::Semaphore wait_semaphore, vk::Semaphore signal_semaphore,
                                 vk::Fence signal_fence, vk::SwapchainKHR swapchain, uint32_t image_index);
 
+        // image allocation
+        allocated_image allocate_image(const vk::ImageCreateInfo& image_info, const vk::ImageViewCreateInfo& image_view_info, const std::optional<VmaAllocationCreateInfo>& alloc_info = {}) const;
+        void destroy_image(allocated_image& image) const;
+
         VkDeviceAddress get_buffer_device_address(vk::Buffer buffer) const;
 
         [[nodiscard]] VmaAllocator get_allocator() const { return m_allocator; }

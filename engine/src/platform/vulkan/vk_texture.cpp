@@ -6,8 +6,7 @@ namespace moon
     vk_texture2d::vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags,
         vk_device& device, bool mipmapped)
         :
-        m_image_extent(extent)
-        , m_image_format(format)
+        m_image{.extent = vk::Extent3D{extent, 1}, .format = format}
         , m_allocator(device.get_allocator())
         , m_mipmapped(mipmapped)
     {
@@ -23,13 +22,7 @@ namespace moon
         imgCI.samples = vk::SampleCountFlagBits::e1;
         imgCI.usage = usage_flags;
 
-        VmaAllocationCreateInfo allocCI{};
-        allocCI.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-        allocCI.requiredFlags = VkMemoryPropertyFlags(vk::MemoryPropertyFlagBits::eDeviceLocal);
-
-        auto result = vmaCreateImage(m_allocator, (VkImageCreateInfo*)&imgCI, &allocCI,
-            (VkImage*)&m_image.get(), &m_allocation, nullptr);
-        MOON_CORE_ASSERT(result == VK_SUCCESS, "Could not allocate image");
+        m_image = device.allocate_image(imgCI, TODO);
 
         // handle image format
         vk::ImageAspectFlags aspect_flag = vk::ImageAspectFlagBits::eColor;

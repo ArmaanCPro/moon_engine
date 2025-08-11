@@ -5,7 +5,6 @@
 
 namespace moon
 {
-
     void vk_renderer_api::init(graphics_context* context)
     {
         m_context = static_cast<vk_context*>(context);

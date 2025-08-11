@@ -52,8 +52,8 @@ namespace moon
         glfwSetWindowUserPointer(window_, &data_);
         windows_window::set_vsync(true);
 
-        handle_.type = NativeHandleType::GLFW;
-        handle_.handle = window_;
+        m_handle.type = NativeHandleType::GLFW;
+        m_handle.handle = window_;
 
         set_glfw_callbacks(window_);
     }
@@ -82,7 +82,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        // no way to easily set vsync in vulkan
+        // recreate swapchain with different present mode
     }
 
     void windows_window::set_glfw_callbacks(GLFWwindow* window)

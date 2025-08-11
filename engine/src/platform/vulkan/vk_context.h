@@ -34,6 +34,8 @@ namespace moon
         void end_frame() override;
 
         device& get_device() override { return m_device; }
+        const vk_swapchain& get_swapchain() const { return m_swapchain; }
+        uint32_t get_swapchain_image_index() const { return m_swapchain_image_index; }
 
         vk::CommandBuffer get_active_command_buffer() { return get_current_frame().command_buffer.get(); }
 

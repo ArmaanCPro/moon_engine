@@ -178,4 +178,11 @@ namespace moon
 
         return m_queue_families.graphics_queue.presentKHR(present_info);
     }
+
+    VkDeviceAddress vk_device::get_buffer_device_address(vk::Buffer buffer) const
+    {
+        vk::BufferDeviceAddressInfo info{};
+        info.buffer = buffer;
+        return m_device->getBufferAddress(info);
+    }
 }

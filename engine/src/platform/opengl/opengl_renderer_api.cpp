@@ -2,6 +2,7 @@
 #include "opengl_renderer_api.h"
 
 #include "moon/renderer/renderer.h"
+#include "renderer/graphics_context.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -28,7 +29,7 @@ namespace moon
         MOON_CORE_ASSERT(false, "Unknown severity level!");
     }
 
-    void opengl_renderer_api::init()
+    void opengl_renderer_api::init(graphics_context* context)
     {
         MOON_PROFILE_FUNCTION();
 

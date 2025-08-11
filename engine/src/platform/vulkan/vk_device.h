@@ -41,7 +41,7 @@ namespace moon
             vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary) const;
         void reset_command_pool(vk::CommandPool pool);
 
-        void immediate_submit(std::function<void(vk::CommandBuffer)> fn);
+        void immediate_submit(std::function<void(vk::CommandBuffer)>&& fn);
 
         vk::Result submit(vk::Queue queue, vk::CommandBuffer cmd, vk::Semaphore wait_semaphore,
                           vk::PipelineStageFlags2 wait_stage,

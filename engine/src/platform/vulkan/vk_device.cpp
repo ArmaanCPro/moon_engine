@@ -118,7 +118,7 @@ namespace moon
         m_device->resetCommandPool(pool);
     }
 
-    void vk_device::immediate_submit(std::function<void(vk::CommandBuffer)> fn)
+    void vk_device::immediate_submit(std::function<void(vk::CommandBuffer)>&& fn)
     {
         auto pool = create_command_pool(m_queue_families.transfer_queue_index,
             vk::CommandPoolCreateFlagBits::eTransient);

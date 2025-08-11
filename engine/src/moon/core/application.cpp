@@ -73,6 +73,8 @@ namespace moon
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
 
+            m_context->begin_frame();
+
             if (!minimized_)
             {
                 {
@@ -95,6 +97,8 @@ namespace moon
             }
 
             window_->on_update();
+
+            m_context->end_frame();
         }
     }
 

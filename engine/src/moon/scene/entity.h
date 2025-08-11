@@ -45,7 +45,7 @@ namespace moon
             m_scene_->m_registry_.remove<T>(m_entity_handle_);
         }
 
-        operator bool() const { return m_entity_handle_ != entt::null; }
+        explicit operator bool() const { return m_entity_handle_ != entt::null; }
 
     private:
         entt::entity m_entity_handle_ {entt::null};

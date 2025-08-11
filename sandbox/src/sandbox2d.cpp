@@ -42,6 +42,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
         static float rotation = 0.0f;
         rotation += ts * 50.0f;
 
+#if 0
         MOON_PROFILE_SCOPE("Renderer Draw");
         moon::renderer2d::begin_scene(camera_controller_.get_camera());
 
@@ -61,6 +62,7 @@ void sandbox2d_layer::on_update(moon::timestep ts)
         }
 
         moon::renderer2d::end_scene();
+#endif
     }
 }
 

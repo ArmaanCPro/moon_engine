@@ -42,4 +42,9 @@ namespace moon
             m_swapchain_image_views.emplace_back(img_view);
         }
     }
+
+    vk::ResultValue<uint32_t> vk_swapchain::acquire_next_image(vk::Device device, vk::Semaphore wait_semaphore)
+    {
+        return device.acquireNextImageKHR(m_swapchain.get(), std::numeric_limits<uint64_t>::max(), wait_semaphore, nullptr);
+    }
 }

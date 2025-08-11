@@ -2,8 +2,9 @@
 #include "render_command.h"
 
 #include "platform/opengl/opengl_renderer_api.h"
+#include "vulkan/vk_renderer_api.h"
 
 namespace moon
 {
-    renderer_api* render_command::s_renderer_api_ = new opengl_renderer_api();
+    renderer_api* render_command::s_renderer_api_ = new vk_renderer_api();
 }

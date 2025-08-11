@@ -11,6 +11,8 @@ namespace moon
     vk_context::vk_context(const native_handle& window)
     {
         MOON_CORE_ASSERT(window.type == NativeHandleType::GLFW, "Unsupported window type used with vulkan!");
+        m_glfwwindow = std::get<GLFWwindow*>(window.handle);
+
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
@@ -38,43 +40,26 @@ namespace moon
                                    m_device.get_physical_device(), m_device.get_device() };
 
         // command buffers
-        vk::CommandPoolCreateInfo command_poolCI{};
-        command_poolCI.queueFamilyIndex = m_device.get_graphics_queue_index();
-        command_poolCI.flags = vk::CommandPoolCreateFlagBits::eTransient;
 
         for (auto i = 0u; i < m_frames.size(); ++i)
         {
-            m_frames[i].command_pool = m_device.get_device().createCommandPoolUnique(command_poolCI);
-
-            vk::CommandBufferAllocateInfo cmdAllocInfo{};
-            cmdAllocInfo.commandPool = m_frames[i].command_pool.get();
-            cmdAllocInfo.commandBufferCount = 1;
-
-            m_frames[i].command_buffer = std::move(m_device.get_device().allocateCommandBuffersUnique(cmdAllocInfo).front());
+            m_frames[i].command_pool = m_device.create_command_pool(m_device.get_graphics_queue_index(), vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+            m_frames[i].command_buffer = m_device.allocate_command_buffer(m_frames[i].command_pool.get());
         }
-        m_imm_command_pool = m_device.get_device().createCommandPoolUnique(command_poolCI);
-        vk::CommandBufferAllocateInfo cmdAllocInfo{};
-        cmdAllocInfo.commandPool = m_imm_command_pool.get();
-        cmdAllocInfo.commandBufferCount = 1;
-        m_imm_command_buffer = std::move(m_device.get_device().allocateCommandBuffersUnique(cmdAllocInfo).front());
 
         // sync structures
-        vk::FenceCreateInfo fenceCI{};
-        fenceCI.flags = vk::FenceCreateFlagBits::eSignaled; // start fence signaled so we can wait on it first frame
-        vk::SemaphoreCreateInfo semaphoreCI{};
         for (auto i = 0u; i < m_frames.size(); ++i)
         {
-            m_frames[i].render_fence = m_device.get_device().createFenceUnique(fenceCI);
+            m_frames[i].render_fence = m_device.create_fence(true);
 
-            m_frames[i].swapchain_semaphore = m_device.get_device().createSemaphoreUnique(semaphoreCI);
-            m_frames[i].render_semaphore = m_device.get_device().createSemaphoreUnique(semaphoreCI);
+            m_frames[i].swapchain_semaphore = m_device.create_semaphore();
+            m_frames[i].render_semaphore = m_device.create_semaphore();
         }
-        m_imm_fence = m_device.get_device().createFenceUnique(fenceCI);
     }
 
     vk_context::~vk_context()
     {
-        vmaDestroyAllocator(m_allocator);
+        vkb::destroy_debug_utils_messenger(m_instance.get(), m_debug_messenger);
     }
 
     void vk_context::init()
@@ -86,11 +71,52 @@ namespace moon
 
     void vk_context::begin_frame()
     {
-        [[maybe_unused]] auto result = m_device.get_device().waitForFences(1, &get_current_frame().render_fence.get(), vk::True, std::numeric_limits<uint64_t>::max());
+        auto& frame = get_current_frame();
+
+        m_device.wait_for_fence(frame.render_fence.get());
+        m_device.reset_fence(frame.render_fence.get());
+
+        auto [result, img_index] = m_swapchain.acquire_next_image(m_device.get_device(), frame.swapchain_semaphore.get());
+        m_swapchain_image_index = img_index;
+        if (result == vk::Result::eSuboptimalKHR || result == vk::Result::eErrorOutOfDateKHR)
+        {
+            recreate_swapchain();
+            return;
+        }
+
+        m_device.reset_command_pool(frame.command_pool.get());
+
+        vk::CommandBufferBeginInfo beginInfo{};
+        beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+        frame.command_buffer->begin(beginInfo);
     }
 
     void vk_context::end_frame()
     {
+        auto& frame = get_current_frame();
+        frame.command_buffer->end();
+
+        auto result = m_device.submit_and_present(frame.command_buffer.get(), frame.swapchain_semaphore.get(),
+            frame.render_semaphore.get(), frame.render_fence.get(), m_swapchain.get_swapchain(), m_swapchain_image_index);
+        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR)
+        {
+            recreate_swapchain();
+        }
+
         m_frame_number = (m_frame_number + 1) % s_frames_in_flight;
+    }
+
+    void vk_context::recreate_swapchain()
+    {
+        m_device.get_device().waitIdle();
+
+        int width, height;
+        glfwGetFramebufferSize(m_glfwwindow, &width, &height);
+
+        auto newSwap = vk_swapchain{ m_glfwwindow, m_surface.get(), m_instance.get(),
+                                   m_device.get_physical_device(), m_device.get_device(), vk::PresentModeKHR::eFifo,
+        std::move(m_swapchain)};
+        m_swapchain = std::move(newSwap);
+        m_resize_requested = false;
     }
 }

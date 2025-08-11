@@ -41,6 +41,8 @@ namespace moon
 
         m_queue_families.graphics_queue = vkb_device.get_queue(vkb::QueueType::graphics).value();
         m_queue_families.graphics_queue_index = vkb_device.get_queue_index(vkb::QueueType::graphics).value();
+        m_queue_families.transfer_queue = vkb_device.get_queue(vkb::QueueType::transfer).value();
+        m_queue_families.transfer_queue_index = vkb_device.get_queue_index(vkb::QueueType::transfer).value();
 
         VmaAllocatorCreateInfo allocatorCI{};
         allocatorCI.physicalDevice = m_physical_device;
@@ -59,5 +61,121 @@ namespace moon
             vmaDestroyAllocator(m_allocator);
             m_allocator = VK_NULL_HANDLE;
         }
+    }
+
+    void vk_device::record(vk::CommandBuffer cmd)
+    {
+
+    }
+
+    vk::UniqueSemaphore vk_device::create_semaphore() const
+    {
+        vk::SemaphoreCreateInfo ci{};
+        return m_device->createSemaphoreUnique(ci);
+    }
+
+    vk::UniqueFence vk_device::create_fence(bool start_open) const
+    {
+        vk::FenceCreateInfo ci{};
+        if (start_open)
+        {
+            ci.flags |= vk::FenceCreateFlagBits::eSignaled;
+        }
+        return m_device->createFenceUnique(ci);
+    }
+
+    void vk_device::wait_for_fence(vk::Fence fence)
+    {
+        while (m_device->waitForFences(1, &fence, vk::True, std::numeric_limits<uint64_t>::max()) == vk::Result::eTimeout)
+        {}
+    }
+
+    void vk_device::reset_fence(vk::Fence fence)
+    {
+        while (m_device->resetFences(1, &fence) == vk::Result::eTimeout)
+        {}
+    }
+
+    vk::UniqueCommandPool vk_device::create_command_pool(uint32_t queue_index, vk::CommandPoolCreateFlagBits flags) const
+    {
+        vk::CommandPoolCreateInfo ci{};
+        ci.queueFamilyIndex = queue_index;
+        ci.flags = flags;
+        return m_device->createCommandPoolUnique(ci);
+    }
+
+    vk::UniqueCommandBuffer vk_device::allocate_command_buffer(vk::CommandPool pool, vk::CommandBufferLevel level) const
+    {
+        vk::CommandBufferAllocateInfo alloc_info{};
+        alloc_info.commandPool = pool;
+        alloc_info.commandBufferCount = 1;
+        alloc_info.level = level;
+        return std::move(m_device->allocateCommandBuffersUnique(alloc_info).front());
+    }
+
+    void vk_device::reset_command_pool(vk::CommandPool pool)
+    {
+        m_device->resetCommandPool(pool);
+    }
+
+    void vk_device::immediate_submit(std::function<void(vk::CommandBuffer)> fn)
+    {
+        auto pool = create_command_pool(m_queue_families.transfer_queue_index,
+            vk::CommandPoolCreateFlagBits::eTransient);
+        auto cmd = allocate_command_buffer(pool.get());
+
+        cmd->begin({ vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
+        fn(cmd.get());
+        cmd->end();
+
+        auto fence = create_fence(false);
+        vk::CommandBufferSubmitInfo cmdSI{};
+        cmdSI.commandBuffer = cmd.get();
+        vk::SubmitInfo2 submit_info{};
+        submit_info.commandBufferInfoCount = 1;
+        submit_info.pCommandBufferInfos = &cmdSI;
+        [[maybe_unused]] auto result = m_queue_families.transfer_queue.submit2(1, &submit_info, fence.get());
+        wait_for_fence(fence.get());
+    }
+
+    vk::Result vk_device::submit(vk::Queue queue, vk::CommandBuffer cmd, vk::Semaphore wait_semaphore,
+                                 vk::PipelineStageFlags2 wait_stage, vk::Semaphore signal_semaphore,
+                                 vk::Fence signal_fence)
+    {
+        vk::CommandBufferSubmitInfo cmdSI{};
+        cmdSI.commandBuffer = cmd;
+        vk::SemaphoreSubmitInfo waitInfo{};
+        waitInfo.semaphore = wait_semaphore;
+        waitInfo.value = 1;
+        waitInfo.stageMask = wait_stage;
+        vk::SemaphoreSubmitInfo signalInfo{};
+        signalInfo.semaphore = signal_semaphore;
+        signalInfo.value = 1;
+        signalInfo.stageMask = vk::PipelineStageFlagBits2::eAllGraphics;
+        vk::SubmitInfo2 submit_info{};
+        submit_info.commandBufferInfoCount = 1;
+        submit_info.pCommandBufferInfos = &cmdSI;
+        submit_info.waitSemaphoreInfoCount = 1;
+        submit_info.pWaitSemaphoreInfos = &waitInfo;
+        submit_info.signalSemaphoreInfoCount = 1;
+        submit_info.pSignalSemaphoreInfos = &signalInfo;
+
+        return queue.submit2(1, &submit_info, signal_fence);
+    }
+
+    vk::Result vk_device::submit_and_present(vk::CommandBuffer cmd, vk::Semaphore wait_semaphore, vk::Semaphore signal_semaphore,
+        vk::Fence signal_fence, vk::SwapchainKHR swapchain, uint32_t image_index)
+    {
+        submit(m_queue_families.graphics_queue, cmd, wait_semaphore, vk::PipelineStageFlagBits2::eColorAttachmentOutput, signal_semaphore, signal_fence);
+
+        vk::PresentInfoKHR present_info{};
+        present_info.waitSemaphoreCount = 1;
+        present_info.pWaitSemaphores = &signal_semaphore;
+        present_info.swapchainCount = 1;
+        present_info.pSwapchains = &swapchain;
+        present_info.pImageIndices = &image_index;
+        present_info.pResults = nullptr;
+
+        return m_queue_families.graphics_queue.presentKHR(present_info);
     }
 }

@@ -35,8 +35,12 @@ namespace moon
 
         device& get_device() override { return m_device; }
 
+        vk::CommandBuffer get_active_command_buffer() { return get_current_frame().command_buffer.get(); }
+
     private:
         frame_data& get_current_frame() { return m_frames[m_frame_number]; }
+
+        void recreate_swapchain();
 
     private:
         GLFWwindow* m_glfwwindow;
@@ -46,15 +50,11 @@ namespace moon
         vk::UniqueSurfaceKHR m_surface;
         vk_device m_device;
         vk_swapchain m_swapchain;
-
-        VmaAllocator m_allocator{};
+        uint32_t m_swapchain_image_index = 0;
 
         std::array<frame_data, s_frames_in_flight> m_frames;
         uint32_t m_frame_number = 0;
 
-        // immediate commands
-        vk::UniqueCommandPool m_imm_command_pool;
-        vk::UniqueCommandBuffer m_imm_command_buffer;
-        vk::UniqueFence m_imm_fence;
+        bool m_resize_requested = false;
     };
 }

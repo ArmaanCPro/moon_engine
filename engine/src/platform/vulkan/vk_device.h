@@ -51,7 +51,7 @@ namespace moon
                                 vk::Fence signal_fence, vk::SwapchainKHR swapchain, uint32_t image_index);
 
         // image allocation
-        allocated_image allocate_image(const vk::ImageCreateInfo& image_info, const vk::ImageViewCreateInfo& image_view_info, const std::optional<VmaAllocationCreateInfo>& alloc_info = {}) const;
+        allocated_image allocate_image(vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false) const;
         void destroy_image(allocated_image& image) const;
 
         VkDeviceAddress get_buffer_device_address(vk::Buffer buffer) const;

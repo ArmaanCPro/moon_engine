@@ -179,36 +179,60 @@ namespace moon
         return m_queue_families.graphics_queue.presentKHR(present_info);
     }
 
-    allocated_image vk_device::allocate_image(const vk::ImageCreateInfo& image_info, const vk::ImageViewCreateInfo& image_view_info, const std::optional<VmaAllocationCreateInfo>& alloc_info) const
+    allocated_image vk_device::allocate_image(vk::Extent3D extent, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped) const
     {
         allocated_image return_image;
-        return_image.extent = image_info.extent;
-        return_image.format = image_info.format;
+        return_image.extent = extent;
+        return_image.format = format;
 
-        VmaAllocationCreateInfo alloc_info_temp;
-        if (alloc_info.has_value())
-            alloc_info_temp = alloc_info.value();
-        else
+        vk::ImageCreateInfo imgCI{};
+        imgCI.imageType = extent.depth == 1 ? vk::ImageType::e2D : vk::ImageType::e3D;
+        imgCI.format = format;
+        imgCI.mipLevels = 1;
+        if (mipmapped)
         {
-            alloc_info_temp.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-            alloc_info_temp.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+            imgCI.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(extent.width, extent.height)))) + 1;
+        }
+        imgCI.arrayLayers = 1;
+        imgCI.samples = vk::SampleCountFlagBits::e1;
+        imgCI.usage = usage;
+
+        // always allocate images on gpu
+        VmaAllocationCreateInfo alloc_info{};
+        alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        alloc_info.requiredFlags = VMA_MEMORY_USAGE_GPU_ONLY;
+
+        vmaCreateImage(m_allocator, (VkImageCreateInfo*)&imgCI, &alloc_info, (VkImage*)&return_image.image, &return_image.allocation, nullptr);
+
+        vk::ImageAspectFlags aspect_flag = vk::ImageAspectFlagBits::eColor;
+        if (format == vk::Format::eD32Sfloat)
+        {
+            aspect_flag = vk::ImageAspectFlagBits::eDepth;
         }
 
-        VkImage temp_image;
-        VmaAllocation temp_allocation;
-        vmaCreateImage(m_allocator, (VkImageCreateInfo*)&image_info, &alloc_info_temp, &temp_image, &temp_allocation, nullptr);
-        return_image.image = temp_image;
-        return_image.allocation = temp_allocation;
+        vk::ImageViewCreateInfo img_viewCI{};
+        img_viewCI.format = format;
+        img_viewCI.image = return_image.image;
+        img_viewCI.viewType = extent.depth == 1 ? vk::ImageViewType::e2D : vk::ImageViewType::e3D;
+        img_viewCI.subresourceRange.aspectMask = aspect_flag;
+        img_viewCI.subresourceRange.levelCount = imgCI.mipLevels;
+        img_viewCI.subresourceRange.baseMipLevel = 0;
+        img_viewCI.subresourceRange.levelCount = 1;
+        img_viewCI.subresourceRange.baseArrayLayer = 0;
+        img_viewCI.subresourceRange.layerCount = 1;
 
-        return_image.view = m_device->createImageView(image_view_info);
+        return_image.view = m_device->createImageView(img_viewCI);
 
         return return_image;
     }
 
     void vk_device::destroy_image(allocated_image& image) const
     {
-        if (image.image && image.allocation)
+        if (image.image)
+        {
+            m_device->destroyImageView(image.view);
             vmaDestroyImage(m_allocator, image.image, image.allocation);
+        }
         image.image = VK_NULL_HANDLE;
         image.allocation = VK_NULL_HANDLE;
     }

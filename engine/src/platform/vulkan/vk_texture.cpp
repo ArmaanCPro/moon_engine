@@ -6,8 +6,7 @@ namespace moon
     vk_texture2d::vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags,
         vk_device& device, bool mipmapped)
         :
-        m_image{.extent = vk::Extent3D{extent, 1}, .format = format}
-        , m_allocator(device.get_allocator())
+         m_allocator(device.get_allocator())
         , m_mipmapped(mipmapped)
     {
         vk::ImageCreateInfo imgCI{};
@@ -22,24 +21,7 @@ namespace moon
         imgCI.samples = vk::SampleCountFlagBits::e1;
         imgCI.usage = usage_flags;
 
-        m_image = device.allocate_image(imgCI, TODO);
-
-        // handle image format
-        vk::ImageAspectFlags aspect_flag = vk::ImageAspectFlagBits::eColor;
-        if (format == vk::Format::eD32Sfloat)
-        {
-            aspect_flag = vk::ImageAspectFlagBits::eDepth;
-        }
-
-        // build image view
-        vk::ImageViewCreateInfo img_viewCI{};
-        img_viewCI.format = format;
-        img_viewCI.image = m_image.get();
-        img_viewCI.viewType = vk::ImageViewType::e2D;
-        img_viewCI.subresourceRange.aspectMask = aspect_flag;
-        img_viewCI.subresourceRange.levelCount = imgCI.mipLevels;
-
-        m_image_view = device.get_device().createImageViewUnique(img_viewCI);
+        m_image = device.allocate_image(vk::Extent3D{extent, 1}, format, usage_flags, mipmapped);
     }
 
     vk_texture2d::vk_texture2d(std::filesystem::path path, vk_device& device, bool mipmapped)

@@ -38,9 +38,6 @@ else ()
     add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 endif ()
 
-# enable unity builds
-set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON)
-
 # compile definitions
 target_compile_definitions(${PROJECT_NAME} PRIVATE MOON_ENGINE_EXPORTS GLFW_INCLUDE_NONE)
 

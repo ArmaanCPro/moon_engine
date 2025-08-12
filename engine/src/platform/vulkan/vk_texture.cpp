@@ -4,9 +4,9 @@
 namespace moon
 {
     vk_texture2d::vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags,
-        vk_device& device, bool mipmapped)
+        const vk_device& device, bool mipmapped)
         :
-         m_allocator(device.get_allocator())
+        m_device(device)
         , m_mipmapped(mipmapped)
     {
         vk::ImageCreateInfo imgCI{};
@@ -24,14 +24,17 @@ namespace moon
         m_image = device.allocate_image(vk::Extent3D{extent, 1}, format, usage_flags, mipmapped);
     }
 
-    vk_texture2d::vk_texture2d(std::filesystem::path path, vk_device& device, bool mipmapped)
+    vk_texture2d::vk_texture2d(std::filesystem::path path, const vk_device& device, bool mipmapped)
+        :
+        m_device(device)
+        , m_mipmapped(mipmapped)
     {
 
     }
 
     vk_texture2d::~vk_texture2d()
     {
-        vmaDestroyImage(m_allocator, m_image.get(), m_allocation);
+        m_device.destroy_image(m_image);
     }
 
     void vk_texture2d::set_data(void* data, uint32_t size)

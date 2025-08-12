@@ -55,10 +55,22 @@ namespace moon
             m_frames[i].swapchain_semaphore = m_device.create_semaphore();
             m_frames[i].render_semaphore = m_device.create_semaphore();
         }
+
+        // custom offscreen draw images
+        vk::Extent3D extent = vk::Extent3D{m_swapchain.get_extent()};
+        m_draw_image = m_device.allocate_image(extent, vk::Format::eR8G8B8A8Unorm,
+            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc |
+            vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
+
+        m_depth_image = m_device.allocate_image(extent, vk::Format::eD32Sfloat,
+            vk::ImageUsageFlagBits::eDepthStencilAttachment
+        );
     }
 
     vk_context::~vk_context()
     {
+        m_device.destroy_image(m_depth_image);
+        m_device.destroy_image(m_draw_image);
         vkb::destroy_debug_utils_messenger(m_instance.get(), m_debug_messenger);
     }
 
@@ -95,6 +107,10 @@ namespace moon
     {
         auto& frame = get_current_frame();
         frame.command_buffer->end();
+
+        // after renderer_api is done, the swapchain format should be in ColorAttachmentOptimal
+        transition_image(frame.command_buffer.get(), m_swapchain.get_images()[m_swapchain_image_index],
+            vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::ePresentSrcKHR);
 
         auto result = m_device.submit_and_present(frame.command_buffer.get(), frame.swapchain_semaphore.get(),
             frame.render_semaphore.get(), frame.render_fence.get(), m_swapchain.get_swapchain(), m_swapchain_image_index);

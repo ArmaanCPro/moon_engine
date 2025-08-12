@@ -202,7 +202,8 @@ namespace moon
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
         alloc_info.requiredFlags = VMA_MEMORY_USAGE_GPU_ONLY;
 
-        vmaCreateImage(m_allocator, (VkImageCreateInfo*)&imgCI, &alloc_info, (VkImage*)&return_image.image, &return_image.allocation, nullptr);
+        vmaCreateImage(m_allocator, reinterpret_cast<VkImageCreateInfo*>(&imgCI), &alloc_info,
+            reinterpret_cast<VkImage*>(&return_image.image), &return_image.allocation, nullptr);
 
         vk::ImageAspectFlags aspect_flag = vk::ImageAspectFlagBits::eColor;
         if (format == vk::Format::eD32Sfloat)

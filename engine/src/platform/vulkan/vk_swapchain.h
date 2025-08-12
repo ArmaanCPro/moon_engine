@@ -19,6 +19,7 @@ namespace moon
 
         vk::Extent2D get_extent() const { return m_swapchain_extent; }
         vk::Format get_format() const { return m_swapchain_image_format; }
+        const std::vector<vk::Image>& get_images() const { return m_swapchain_images; }
         const std::vector<vk::ImageView>& get_image_views() const { return m_swapchain_image_views; }
         vk::SwapchainKHR get_swapchain() const { return m_swapchain.get(); }
     private:

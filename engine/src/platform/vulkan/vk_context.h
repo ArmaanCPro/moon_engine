@@ -24,8 +24,8 @@ namespace moon
     class vk_context final : public graphics_context
     {
     public:
-        vk_context(const native_handle& window);
-        ~vk_context();
+        explicit vk_context(const native_handle& window);
+        ~vk_context() override;
 
         void init() override;
         void swap_buffers() override;
@@ -38,6 +38,9 @@ namespace moon
         uint32_t get_swapchain_image_index() const { return m_swapchain_image_index; }
 
         vk::CommandBuffer get_active_command_buffer() { return get_current_frame().command_buffer.get(); }
+
+        allocated_image& get_draw_image() { return m_draw_image; }
+        allocated_image& get_depth_image() { return m_depth_image; }
 
     private:
         frame_data& get_current_frame() { return m_frames[m_frame_number]; }
@@ -56,6 +59,11 @@ namespace moon
 
         std::array<frame_data, s_frames_in_flight> m_frames;
         uint32_t m_frame_number = 0;
+
+        // offscreen draw and depth images
+        allocated_image m_draw_image;
+        allocated_image m_depth_image;
+        float m_render_scale = 1.0f;
 
         bool m_resize_requested = false;
     };

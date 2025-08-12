@@ -12,8 +12,8 @@ namespace moon
     class vk_texture2d final : public texture2d
     {
     public:
-        vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags, vk_device& device, bool mipmapped = false);
-        vk_texture2d(std::filesystem::path path, vk_device& device, bool mipmapped = false);
+        vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags, const vk_device& device, bool mipmapped = false);
+        vk_texture2d(std::filesystem::path path, const vk_device& device, bool mipmapped = false);
         ~vk_texture2d() override;
 
         uint32_t get_width() const override { return m_image.extent.width; }
@@ -30,12 +30,10 @@ namespace moon
         }
 
     private:
-        std::filesystem::path m_path;
-        allocated_image m_image;
+        std::filesystem::path m_path{};
+        allocated_image m_image{};
 
-        // handle to allocator
-        VmaAllocator m_allocator;
-        VmaAllocation m_allocation;
+        const vk_device& m_device;
 
         bool m_mipmapped = false;
     };

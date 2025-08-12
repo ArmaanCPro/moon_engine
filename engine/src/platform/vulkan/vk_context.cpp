@@ -10,8 +10,7 @@ namespace moon
 {
     vk_context::vk_context(const native_handle& window)
     {
-        MOON_CORE_ASSERT(window.type == NativeHandleType::GLFW, "Unsupported window type used with vulkan!");
-        m_glfwwindow = std::get<GLFWwindow*>(window.handle);
+        m_glfwwindow = std::get<GLFWwindow*>(window);
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);

@@ -22,13 +22,11 @@ namespace moon
         void set_vsync(bool enabled) override;
         [[nodiscard]] bool is_vsync() const override { return data_.vsync; }
 
-        inline void* get_native_window() const override { return window_; }
-        inline const native_handle& get_native_handle() const override { return m_handle; }
+        [[nodiscard]] inline native_handle get_native_handle() const override { return window_; }
 
     private:
         static void set_glfw_callbacks(GLFWwindow* window);
         GLFWwindow* window_ = nullptr;
-        native_handle m_handle{};
 
         struct window_data
         {

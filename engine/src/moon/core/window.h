@@ -10,17 +10,7 @@ struct GLFWwindow;
 
 namespace moon
 {
-    enum class NativeHandleType
-    {
-        None,
-        GLFW
-    };
-
-    struct native_handle
-    {
-        NativeHandleType type;
-        std::variant<void*, GLFWwindow*> handle;
-    };
+    using native_handle = std::variant<void*, GLFWwindow*>;
 
     struct window_props
     {
@@ -51,8 +41,7 @@ namespace moon
         virtual void set_vsync(bool enabled) = 0;
         [[nodiscard]] virtual bool is_vsync() const = 0;
 
-        [[nodiscard]] virtual void* get_native_window() const = 0;
-        [[nodiscard]] virtual const native_handle& get_native_handle() const = 0;
+        [[nodiscard]] virtual native_handle get_native_handle() const = 0;
 
         static scope<window> create(const window_props& props = window_props());
 

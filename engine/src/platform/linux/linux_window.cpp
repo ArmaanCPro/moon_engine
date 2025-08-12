@@ -54,9 +54,6 @@ namespace moon
         glfwSetWindowUserPointer(window_, &data_);
         linux_window::set_vsync(true);
 
-        m_handle.type = NativeHandleType::GLFW;
-        m_handle.handle = window_;
-
         set_glfw_callbacks(window_);
     }
 

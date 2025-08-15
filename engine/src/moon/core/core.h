@@ -45,8 +45,8 @@
 #endif
 
 #ifdef MOON_ENABLE_ASSERTS
-    #define MOON_ASSERT(x, ...) { if(!(x)) { MOON_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }
-    #define MOON_CORE_ASSERT(x, ...) { if(!(x)) { MOON_CORE_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }
+    #define MOON_ASSERT(x, ...) { if(!(x)) [[unlikely ]]{ MOON_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }
+    #define MOON_CORE_ASSERT(x, ...) { if(!(x)) [[unlikely]] { MOON_CORE_ERROR("Assertion Failed at {}:{}: {}", __FILE__, __LINE__, __VA_ARGS__); MOON_DEBUGBREAK(); } }
 #else // these macros must expand to something, otherwise the variable may be marked as unused and propogate a warning in -Werror mode
     #define MOON_ASSERT(x, ...) do { (void)(x); } while(0)
     #define MOON_CORE_ASSERT(x, ...) do { (void)(x); } while(0)

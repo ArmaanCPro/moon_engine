@@ -11,8 +11,12 @@
 #include "renderer/pool.h"
 #include "renderer/handle.h"
 
-namespace moon
+namespace moon::vulkan
 {
+    struct render_pipeline_stage final
+    {
+
+    };
     static constexpr auto s_frames_in_flight = 2u;
 
     struct frame_data
@@ -69,5 +73,11 @@ namespace moon
         float m_render_scale = 1.0f;
 
         bool m_resize_requested = false;
+
+
+        pool<sampler_tag, vk::Sampler> m_samplers_pool;
+        pool<buffer_tag, vk::Buffer> m_buffers_pool;
+        pool<texture_tag, vk::Image> m_textures_pool;
+        pool<query_pool_tag, vk::QueryPool> m_queries_pool;
     };
 }

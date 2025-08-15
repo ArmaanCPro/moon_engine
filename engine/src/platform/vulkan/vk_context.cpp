@@ -6,7 +6,7 @@
 
 #include "core/core.h"
 
-namespace moon
+namespace moon::vulkan
 {
     vk_context::vk_context(const native_handle& window)
     {

@@ -8,9 +8,18 @@
 #include <vma/vk_mem_alloc.h>
 #include <VkBootstrap.h>
 
-#include "utils/vk_initializers.h"
+#define VK_CHECK(func)                                              \
+    {                                                               \
+        const vk::Result r = func;                                  \
+        if (r != vk::Result::eSuccess)                              \
+        {                                                           \
+            MOON_CORE_ASSERT("Vulkan API call failed: {}\n {}\n",   \
+                #func,                                              \
+                vk::to_string(r));                                  \
+        }                                                           \
+    }                                                               \
 
-namespace moon
+namespace moon::vulkan
 {
     struct allocated_image
     {

@@ -4,14 +4,16 @@
 
 #include "vk.h"
 
-namespace moon
+namespace moon::vulkan
 {
     struct queue_families
     {
+        static constexpr uint32_t s_invalid_index = std::numeric_limits<uint32_t>::max();
+
         vk::Queue graphics_queue;
-        uint32_t graphics_queue_index;
-        vk::Queue transfer_queue;
-        uint32_t transfer_queue_index;
+        uint32_t graphics_queue_index = s_invalid_index;
+        vk::Queue compute_queue;
+        uint32_t compute_queue_index = s_invalid_index;
     };
 
     class vk_device final : public device

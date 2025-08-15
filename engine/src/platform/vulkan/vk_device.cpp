@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace moon
+namespace moon::vulkan
 {
     void vk_device::init(vkb::Instance vkb_instance, vk::SurfaceKHR surface)
     {
@@ -41,8 +41,8 @@ namespace moon
 
         m_queue_families.graphics_queue = vkb_device.get_queue(vkb::QueueType::graphics).value();
         m_queue_families.graphics_queue_index = vkb_device.get_queue_index(vkb::QueueType::graphics).value();
-        m_queue_families.transfer_queue = vkb_device.get_queue(vkb::QueueType::transfer).value();
-        m_queue_families.transfer_queue_index = vkb_device.get_queue_index(vkb::QueueType::transfer).value();
+        m_queue_families.compute_queue = vkb_device.get_queue(vkb::QueueType::compute).value();
+        m_queue_families.compute_queue_index = vkb_device.get_queue_index(vkb::QueueType::compute).value();
 
         VmaAllocatorCreateInfo allocatorCI{};
         allocatorCI.physicalDevice = m_physical_device;
@@ -120,7 +120,7 @@ namespace moon
 
     void vk_device::immediate_submit(std::function<void(vk::CommandBuffer)>&& fn)
     {
-        auto pool = create_command_pool(m_queue_families.transfer_queue_index,
+        auto pool = create_command_pool(m_queue_families.compute_queue_index,
             vk::CommandPoolCreateFlagBits::eTransient);
         auto cmd = allocate_command_buffer(pool.get());
 
@@ -134,7 +134,7 @@ namespace moon
         vk::SubmitInfo2 submit_info{};
         submit_info.commandBufferInfoCount = 1;
         submit_info.pCommandBufferInfos = &cmdSI;
-        [[maybe_unused]] auto result = m_queue_families.transfer_queue.submit2(1, &submit_info, fence.get());
+        [[maybe_unused]] auto result = m_queue_families.compute_queue.submit2(1, &submit_info, fence.get());
         wait_for_fence(fence.get());
     }
 

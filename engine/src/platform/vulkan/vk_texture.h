@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-namespace moon
+namespace moon::vulkan
 {
     class vk_texture2d final : public texture2d
     {

@@ -4,7 +4,7 @@
 #include "renderer/renderer_api.h"
 #include "renderer/vertex_array.h"
 
-namespace moon
+namespace moon::vulkan
 {
     class vk_renderer_api final : public renderer_api
     {

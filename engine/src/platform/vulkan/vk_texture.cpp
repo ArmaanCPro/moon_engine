@@ -1,7 +1,7 @@
 #include "moonpch.h"
 #include "vk_texture.h"
 
-namespace moon
+namespace moon::vulkan
 {
     vk_texture2d::vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags,
         const vk_device& device, bool mipmapped)

@@ -3,7 +3,7 @@
 
 #include "core/application.h"
 
-namespace moon
+namespace moon::vulkan
 {
     void vk_renderer_api::init(graphics_context* context)
     {

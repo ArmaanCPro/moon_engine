@@ -8,6 +8,8 @@
 #include <vma/vk_mem_alloc.h>
 #include <VkBootstrap.h>
 
+#include "utils/vk_initializers.h"
+
 namespace moon
 {
     struct allocated_image

@@ -10,7 +10,7 @@ namespace moon
 {
     // Pool is only implemented from and used in the backend
     template <typename ObjectType, typename ImplObjectType>
-    class Pool
+    class pool
     {
         static constexpr uint32_t s_ListEndSentinal = std::numeric_limits<uint32_t>::max();
         struct PoolEntry

@@ -8,6 +8,9 @@
 
 #include "vk_swapchain.h"
 
+#include "renderer/pool.h"
+#include "renderer/handle.h"
+
 namespace moon
 {
     static constexpr auto s_frames_in_flight = 2u;

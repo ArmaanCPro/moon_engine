@@ -32,6 +32,7 @@
 #include "moon/renderer/texture.h"
 #include "moon/renderer/subtexture2d.h"
 #include "moon/renderer/orthographic_camera_controller.h"
+#include "moon/renderer/handle.h"
 
 #include "moon/scene/scene.h"
 #include "moon/scene/entity.h"

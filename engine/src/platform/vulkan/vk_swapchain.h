@@ -1,33 +1,54 @@
 #pragma once
 
 #include "vk.h"
+#include "renderer/handle.h"
 
 struct GLFWwindow;
-namespace moon
+namespace moon::vulkan
 {
-    class vk_swapchain
+    class vk_context;
+
+    class vk_swapchain final
     {
     public:
-        vk_swapchain() = default;
-        vk_swapchain(GLFWwindow* window, vk::SurfaceKHR surface, vk::Instance instance, vk::PhysicalDevice physical_device,
+        static constexpr auto s_max_swapchain_images = 16;
+
+        vk_swapchain(vk_context& context, GLFWwindow* window, vk::SurfaceKHR surface, vk::Instance instance, vk::PhysicalDevice physical_device,
             vk::Device device, vk::PresentModeKHR present_mode = vk::PresentModeKHR::eFifo,
             std::optional<vk_swapchain> old_swapchain = {},
             vk::Format format = vk::Format::eB8G8R8Unorm);
+        ~vk_swapchain();
 
         // returns vk::Result and next image index
         vk::ResultValue<uint32_t> acquire_next_image(vk::Device device, vk::Semaphore wait_semaphore);
 
-        vk::Extent2D get_extent() const { return m_swapchain_extent; }
-        vk::Format get_format() const { return m_swapchain_image_format; }
-        const std::vector<vk::Image>& get_images() const { return m_swapchain_images; }
-        const std::vector<vk::ImageView>& get_image_views() const { return m_swapchain_image_views; }
-        vk::SwapchainKHR get_swapchain() const { return m_swapchain.get(); }
+        vk::Result present(vk::Semaphore wait_semaphore);
+        [[nodiscard]] vk::Image get_current_image() const;
+        [[nodiscard]] vk::ImageView get_current_image_view() const;
+        [[nodiscard]] texture_handle get_current_texture();
+        [[nodiscard]] const vk::SurfaceFormatKHR& get_surface_format() const { return m_surface_format; }
+        [[nodiscard]] uint32_t get_swapchain_image_count() const { return m_swapchain_image_count; }
+
+        [[nodiscard]] vk::Extent2D get_extent() const { return m_swapchain_extent; }
+        [[nodiscard]] vk::Format get_format() const { return m_swapchain_image_format; }
+        [[nodiscard]] vk::SwapchainKHR get_swapchain() const { return m_swapchain.get(); }
     private:
         vk::UniqueSwapchainKHR m_swapchain;
+        vk::Device m_device;
+        vk::Queue m_graphics_queue;
+        vk_context& m_context;
 
+        uint32_t m_swapchain_image_count = 0;
+        uint32_t m_current_image = 0; // [0, swapchain_image_count]
+        uint32_t m_current_frame = 0; // [0, +inf]
+        bool m_get_next_image = true;
+
+        vk::SurfaceFormatKHR m_surface_format = vk::Format::eUndefined;
         vk::Format m_swapchain_image_format;
         vk::Extent2D m_swapchain_extent;
-        std::vector<vk::Image> m_swapchain_images;
-        std::vector<vk::ImageView> m_swapchain_image_views;
+        std::array<texture_handle, s_max_swapchain_images> m_swapchain_textures;
+        std::array<vk::UniqueSemaphore, s_max_swapchain_images> m_acquire_semaphores;
+        std::array<vk::UniqueFence, s_max_swapchain_images> m_present_fences;
+        std::array<uint64_t, s_max_swapchain_images> m_timeline_wait_values;
     };
 }

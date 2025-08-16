@@ -30,7 +30,7 @@ namespace moon
         window_ = std::unique_ptr<window>(window::create(window_props(name)));
         window_->set_event_callback([&](event& e) { on_event(e); });
 
-        m_context = create_scope<vk_context>(window_->get_native_handle());
+        m_context = create_scope<vulkan::vk_context>(window_->get_native_handle());
 
         renderer::init();
 

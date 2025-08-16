@@ -5,6 +5,8 @@
 
 #include "vk.h"
 #include "vk_device.h"
+#include "vk_pipelines.h"
+#include "vk_render_types.h"
 
 #include "vk_swapchain.h"
 
@@ -13,10 +15,6 @@
 
 namespace moon::vulkan
 {
-    struct render_pipeline_stage final
-    {
-
-    };
     static constexpr auto s_frames_in_flight = 2u;
 
     struct frame_data
@@ -40,7 +38,7 @@ namespace moon::vulkan
         void begin_frame() override;
         void end_frame() override;
 
-        device& get_device() override { return m_device; }
+        vk_device& get_device() override { return m_device; }
         const vk_swapchain& get_swapchain() const { return m_swapchain; }
         uint32_t get_swapchain_image_index() const { return m_swapchain_image_index; }
 
@@ -74,10 +72,15 @@ namespace moon::vulkan
 
         bool m_resize_requested = false;
 
-
+    public:
+        pool<shader_module_tag, shader_module_state> m_shader_modules_pool;
+        pool<render_pipeline_tag, render_pipeline_state> m_render_pipelines_pool;
+        pool<compute_pipeline_tag, compute_pipeline_state> m_compute_pipelines_pool;
+        pool<raytracing_pipeline_tag, ray_tracing_pipeline_state> m_raytracing_pipelines_pool;
         pool<sampler_tag, vk::Sampler> m_samplers_pool;
-        pool<buffer_tag, vk::Buffer> m_buffers_pool;
-        pool<texture_tag, vk::Image> m_textures_pool;
+        pool<buffer_tag, vulkan_buffer> m_buffers_pool;
+        pool<texture_tag, vulkan_image> m_textures_pool;
         pool<query_pool_tag, vk::QueryPool> m_queries_pool;
+        pool<accel_struct_tag, acceleration_structure> m_accel_structs_pool;
     };
 }

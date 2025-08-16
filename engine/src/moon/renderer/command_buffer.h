@@ -53,6 +53,8 @@ namespace moon
         virtual void cmd_draw_indirect(buffer_handle indirect_buffer, std::size_t offset, uint32_t draw_count, uint32_t stride = 0) = 0;
         virtual void cmd_draw_indexed_indirect(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset,
             std::size_t count_buffer_offset, uint32_t max_draw_count, uint32_t stride = 0) = 0;
+        virtual void cmd_draw_indexed_indirect_count(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset,
+            buffer_handle count_buffer, std::size_t count_buffer_offset, uint32_t max_draw_count, uint32_t stride = 0) = 0;
         virtual void cmd_draw_mesh_tasks(const dimensions& thread_group_count) = 0;
         virtual void cmd_draw_mesh_tasks_indirect(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset,
             uint32_t draw_count, uint32_t stride = 0) = 0;

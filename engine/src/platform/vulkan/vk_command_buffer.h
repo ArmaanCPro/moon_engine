@@ -76,9 +76,56 @@ namespace moon::vulkan
 
         void transition_to_shader_read_only(texture_handle surface) const override;
 
+        void cmd_bind_ray_tracing_pipeline(raytracing_pipeline_handle hdl) override;
+
+        void cmd_bind_compute_pipeline(compute_pipeline_handle hdl) override;
+        void cmd_dispatch_thread_groups(const dimensions& thread_group_count, const dependencies& deps) override;
+
+        void cmd_push_debug_group_label(const char* label, uint32_t color_rgba) const override;
+        void cmd_insert_debug_event_label(const char* label, uint32_t color_rgba) const override;
+        void cmd_pop_debug_group_label() const override;
+
+        void cmd_begin_rendering(const render_pass& r_pass, const framebuffer& fb, const dependencies& deps) override;
+        void cmd_end_rendering() override;
+
+        void cmd_bind_viewport(const viewport& viewport) override;
+        void cmd_bind_scissor_rect(const scissor_rect& rect) override;
+
+        void cmd_bind_render_pipeline(render_pipeline_handle hdl) override;
+        void cmd_bind_depth_state(const depth_state& state) override;
+
+        void cmd_bind_vertex_buffer(uint32_t index, buffer_handle buffer, uint64_t buffer_offset) override;
+        void cmd_bind_index_buffer(buffer_handle index_buffer, IndexFormat index_format, uint64_t index_buffer_offset) override;
+        void cmd_push_constants(const void* data, std::size_t size, std::size_t offset) override;
+
+        void cmd_fill_buffer(buffer_handle buffer, std::size_t buffer_offset, std::size_t size, uint32_t data) override;
+        void cmd_update_buffer(buffer_handle buffer, std::size_t buffer_offset, std::size_t size, const void* data) override;
+
+        void cmd_draw(uint32_t vertex_count, uint32_t instance_count, uint32_t first_vertex, uint32_t base_instance) override;
+        void cmd_draw_indexed(uint32_t index_count, uint32_t instance_count, uint32_t first_index, int32_t vertex_offset, uint32_t base_instance) override;
+        void cmd_draw_indirect(buffer_handle indirect_buffer, std::size_t offset, uint32_t draw_count, uint32_t stride) override;
+        void cmd_draw_indexed_indirect(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset, std::size_t count_buffer_offset, uint32_t draw_count, uint32_t stride) override;
+        void cmd_draw_indexed_indirect_count(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset, buffer_handle count_buffer, std::size_t count_buffer_offset, uint32_t max_draw_count, uint32_t stride) override;
+        void cmd_draw_mesh_tasks(const dimensions& thread_group_count) override;
+        void cmd_draw_mesh_tasks_indirect(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset, uint32_t draw_count, uint32_t stride) override;
+        void cmd_draw_mesh_tasks_indirect_count(buffer_handle indirect_buffer, std::size_t indirect_buffer_offset, buffer_handle count_buffer, std::size_t count_buffer_offset, uint32_t max_draw_count, uint32_t stride) override;
+        void cmd_trace_rays(uint32_t width, uint32_t height, uint32_t depth, const dependencies& deps) override;
+
+        void cmd_set_blend_color(const float color[4]) override;
+        void cmd_set_depth_bias(float constant_factor, float clamp, float slope_factor) override;
+        void cmd_set_depth_bias_enable(bool enable) override;
+
+        void cmd_reset_query_pool(query_pool_handle pool, uint32_t first_query, uint32_t query_count) override;
+        void cmd_write_timestamp(query_pool_handle pool, uint32_t query_index) override;
+
+        void cmd_clear_color_image(texture_handle tex, const ClearColorValue& value, const texture_layers& layers) override;
+        void cmd_copy_image(texture_handle src, texture_handle dst, const dimensions& extent, const offset3D& src_offset, const offset3D& dst_offset, const texture_layers& src_layers, const texture_layers& dst_layers) override;
+        void cmd_generate_mipmap(texture_handle hdl) override;
+        void cmd_update_tlas(accel_struct_handle hdl, buffer_handle instances_buffer) override;
+
     private:
-        void use_compute_texture(texture_handle texture, vk::PipelineStageFlags2 dst_stage);
-        void buffer_barrier(buffer_handle handle, vk::PipelineStageFlags2 src_stage, vk::PipelineStageFlags2 dst_stage);
+        void use_compute_texture(texture_handle texture, vk::PipelineStageFlags2 dst_stage) const;
+        void buffer_barrier(buffer_handle handle, vk::PipelineStageFlags2 src_stage, vk::PipelineStageFlags2 dst_stage) const;
 
     private:
         friend class vk_context;

@@ -23,6 +23,7 @@ namespace moon::vulkan
         vk::Buffer m_buffer = VK_NULL_HANDLE;
         VmaAllocation m_allocation = VK_NULL_HANDLE;
         vk::DeviceSize m_size = 0;
+        vk::BufferUsageFlags m_usage_flags = {};
         void* m_mapped_ptr = nullptr;
         bool m_is_coherent_memory = false;
     };

@@ -45,7 +45,7 @@ namespace moon::vulkan
         if (!m_mapped_ptr)
             return;
 
-        vmaFlushAllocation(static_cast<vk_device&>(context.get_device()).get_allocator(), m_allocation, offset, size);
+        vmaFlushAllocation(context.get_device().get_allocator(), m_allocation, offset, size);
     }
 
     void vulkan_buffer::invalidate_mapped_memory(vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const
@@ -53,7 +53,7 @@ namespace moon::vulkan
         if (!m_mapped_ptr)
             return;
 
-        vmaInvalidateAllocation(static_cast<vk_device&>(context.get_device()).get_allocator(), m_allocation, offset, size);
+        vmaInvalidateAllocation(context.get_device().get_allocator(), m_allocation, offset, size);
     }
 
     vk::ImageView vulkan_image::create_image_view(vk::Device device, vk::ImageViewType type, vk::Format format,
@@ -228,7 +228,7 @@ namespace moon::vulkan
         char debug_name_image_view[320] = {};
         snprintf(debug_name_image_view, sizeof(debug_name_image_view) - 1, "Image View: %s (level %u, layer %u)", m_debug_name, level, layer);
 
-        m_image_view_for_framebuffer[level][layer] = create_image_view(static_cast<vk_device&>(context.get_device()).get_device(),
+        m_image_view_for_framebuffer[level][layer] = create_image_view(context.get_device().get_device(),
             vk::ImageViewType::e2D, m_format, get_image_aspect_flags(), level, 1u, layer, 1u, {}, nullptr, debug_name_image_view);
     }
 

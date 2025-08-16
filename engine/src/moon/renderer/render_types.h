@@ -212,6 +212,8 @@ namespace moon
         SrcAlphaSaturated,
         BlendColor,
         OneMinusBlendColor,
+        BlendAlpha,
+        OneMinusBlendAlpha,
         Src1Color,
         OneMinusSrc1Color,
         Src1Alpha,
@@ -610,7 +612,7 @@ namespace moon
         }
     };
 
-    enum class buffer_usage_bits : uint8_t
+    enum class BufferUsageBits : uint8_t
     {
         Index = 1 << 0,
         Vertex = 1 << 1,

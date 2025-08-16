@@ -73,6 +73,7 @@ namespace moon::vulkan
         bool m_resize_requested = false;
 
     public:
+        // TODO: consider moving pools into a seperate class
         pool<shader_module_tag, shader_module_state> m_shader_modules_pool;
         pool<render_pipeline_tag, render_pipeline_state> m_render_pipelines_pool;
         pool<compute_pipeline_tag, compute_pipeline_state> m_compute_pipelines_pool;

@@ -226,10 +226,12 @@ namespace moon::vulkan
             return m_image_view_for_framebuffer[level][layer];
 
         char debug_name_image_view[320] = {};
-        snprintf(debug_name_image_view, sizeof(debug_name_image_view) - 1, "Image View: %s (level %u, layer %u)", m_debug_name, level, layer);
+        std::snprintf(debug_name_image_view, sizeof(debug_name_image_view) - 1, "Image View: %s (level %u, layer %u)", m_debug_name, level, layer);
 
         m_image_view_for_framebuffer[level][layer] = create_image_view(context.get_device().get_device(),
             vk::ImageViewType::e2D, m_format, get_image_aspect_flags(), level, 1u, layer, 1u, {}, nullptr, debug_name_image_view);
+
+        return m_image_view_for_framebuffer[level][layer];
     }
 
     constexpr bool vulkan_image::is_depth_format(vk::Format format)

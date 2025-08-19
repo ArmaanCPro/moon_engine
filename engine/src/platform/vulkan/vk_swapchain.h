@@ -28,10 +28,14 @@ namespace moon::vulkan
         [[nodiscard]] texture_handle get_current_texture();
         [[nodiscard]] const vk::SurfaceFormatKHR& get_surface_format() const { return m_surface_format; }
         [[nodiscard]] uint32_t get_swapchain_image_count() const { return m_swapchain_image_count; }
+        [[nodiscard]] uint32_t get_current_frame_index() const { return m_current_frame; }
 
         [[nodiscard]] vk::Extent2D get_extent() const { return m_swapchain_extent; }
         [[nodiscard]] vk::Format get_format() const { return m_swapchain_image_format; }
         [[nodiscard]] vk::SwapchainKHR get_swapchain() const { return m_swapchain.get(); }
+
+        void set_timeline_wait_value(uint32_t image_index, uint64_t value) { m_timeline_wait_values[image_index] = value; }
+        [[nodiscard]] uint64_t get_current_timeline_wait_value(uint32_t image_index) const { return m_timeline_wait_values[image_index]; }
     private:
         vk::UniqueSwapchainKHR m_swapchain;
         vk::Device m_device;

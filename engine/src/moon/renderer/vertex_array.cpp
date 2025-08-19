@@ -11,13 +11,13 @@ namespace moon
         switch (renderer::get_api())
         {
         case renderer_api::API::None:
-            MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
             return create_ref<opengl_vertex_array>();
         }
 
-        MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
+        MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");
         return nullptr;
     }
 }

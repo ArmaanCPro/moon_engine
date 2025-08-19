@@ -58,8 +58,8 @@ namespace moon::vulkan
         auto cmd = m_context->get_active_command_buffer();
         cmd.endRendering();
 
-        uint32_t image_index = m_context->get_swapchain_image_index();
-        auto swapchain_image = m_context->get_swapchain().get_images()[image_index];
+        [[maybe_unused]] uint32_t image_index = m_context->get_swapchain_image_index();
+        auto swapchain_image = m_context->get_swapchain().get_current_image();
         auto swapchain_extent = m_context->get_swapchain().get_extent();
 
         allocated_image& offscreen_draw_image = m_context->get_draw_image();

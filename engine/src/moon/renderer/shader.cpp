@@ -11,13 +11,13 @@ namespace moon
         switch (renderer::get_api())
         {
         case renderer_api::API::None:
-            MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
             return std::make_shared<opengl_shader>(file_path);
         }
 
-        MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
+        MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
@@ -26,19 +26,19 @@ namespace moon
         switch (renderer::get_api())
         {
         case renderer_api::API::None:
-            MOON_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
             return std::make_shared<opengl_shader>(name, vertex_src, fragment_src);
         }
 
-        MOON_CORE_ASSERT(false, "Unknown RendererAPI!");
+        MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
     void shader_library::add(std::string_view name, const ref<shader>& shader)
     {
-        MOON_CORE_ASSERT(!exists(name), "Shader already exists!");
+        MOON_CORE_ASSERT_MSG(!exists(name), "Shader already exists!");
         shaders_[name.data()] = shader;
     }
 
@@ -64,7 +64,7 @@ namespace moon
 
     ref<shader> shader_library::get(std::string_view name)
     {
-        MOON_CORE_ASSERT(exists(name), "Shader does not exist!");
+        MOON_CORE_ASSERT_MSG(exists(name), "Shader does not exist!");
         return shaders_[name.data()];
     }
 

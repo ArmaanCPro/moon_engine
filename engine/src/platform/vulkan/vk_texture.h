@@ -9,11 +9,13 @@
 
 namespace moon::vulkan
 {
+    class vk_context;
+
     class vk_texture2d final : public texture2d
     {
     public:
-        vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags, const vk_device& device, bool mipmapped = false);
-        vk_texture2d(std::filesystem::path path, const vk_device& device, bool mipmapped = false);
+        vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags, const vk_context& context, bool mipmapped = false);
+        vk_texture2d(const std::filesystem::path& path, const vk_context& context, bool mipmapped = false);
         ~vk_texture2d() override;
 
         uint32_t get_width() const override { return m_image.extent.width; }

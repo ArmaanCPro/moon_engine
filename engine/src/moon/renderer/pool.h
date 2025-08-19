@@ -38,7 +38,7 @@ namespace moon
             else
             {
                 index = (uint32_t)m_objects.size();
-                m_objects.emplace_back(obj);
+                m_objects.emplace_back(std::move_if_noexcept(obj));
             }
             m_num_objects++;
             return handle<ObjectType>(index, m_objects[index].gen_);
@@ -48,13 +48,12 @@ namespace moon
         {
             if (!handle_to_destroy)
                 return;
-            MOON_CORE_ASSERT(m_num_objects > 0, "Trying to destroy a handle from an empty pool!");
+            MOON_CORE_ASSERT_MSG(m_num_objects > 0, "Trying to destroy a handle from an empty pool!");
             const uint32_t index = handle_to_destroy.index();
-            MOON_CORE_ASSERT(index < m_objects.size(), "Trying to destroy a handle with invalid index out of bounds!");
-            MOON_CORE_ASSERT(m_objects[index].gen_ == handle_to_destroy.gen(), "Trying to destroy a handle with invalid generation! (likely double deletion)");
-            m_objects[index].obj_ = ImplObjectType();
+            MOON_CORE_ASSERT_MSG(index < m_objects.size(), "Trying to destroy a handle with invalid index out of bounds!");
+            MOON_CORE_ASSERT_MSG(m_objects[index].gen_ == handle_to_destroy.gen(), "Trying to destroy a handle with invalid generation! (likely double deletion)");
+            m_objects[index].obj_ = ImplObjectType{};
             ++m_objects[index].gen_;
-            m_objects[index].next_free_ = m_free_list_head;
             m_objects[index].next_free_ = m_free_list_head;
             m_free_list_head = index;
             m_num_objects--;
@@ -65,8 +64,8 @@ namespace moon
             if (!handle_to_get)
                 return nullptr;
             const uint32_t index = handle_to_get.index();
-            MOON_CORE_ASSERT(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
-            MOON_CORE_ASSERT(m_objects[index].gen_ == handle_to_get.gen(), "Trying to get a deleted object!");
+            MOON_CORE_ASSERT_MSG(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
+            MOON_CORE_ASSERT_MSG(m_objects[index].gen_ == handle_to_get.gen(), "Trying to get a deleted object!");
             return &m_objects[index].obj_;
         }
 
@@ -75,14 +74,14 @@ namespace moon
             if (!handle_to_get)
                 return nullptr;
             const uint32_t index = handle_to_get.index();
-            MOON_CORE_ASSERT(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
-            MOON_CORE_ASSERT(m_objects[index].gen_ == handle_to_get.gen(), "Trying to get a deleted object!");
+            MOON_CORE_ASSERT_MSG(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
+            MOON_CORE_ASSERT_MSG(m_objects[index].gen_ == handle_to_get.gen(), "Trying to get a deleted object!");
             return &m_objects[index].obj_;
         }
 
         handle<ObjectType> get_handle(uint32_t index) const
         {
-            MOON_CORE_ASSERT(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
+            MOON_CORE_ASSERT_MSG(index < m_objects.size(), "Trying to get a handle with invalid index out of bounds!");
             if (index >= m_objects.size())
                 return {};
             return handle<ObjectType>(index, m_objects[index].gen_);
@@ -107,6 +106,6 @@ namespace moon
             m_num_objects = 0;
         }
 
-        uint32_t num_objects() const noexcept { return m_num_objects; }
+        [[nodiscard]] uint32_t num_objects() const noexcept { return m_num_objects; }
     };
 }

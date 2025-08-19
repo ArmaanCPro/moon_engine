@@ -42,7 +42,7 @@ namespace moon
 
             data = stbi_load(path.data(), &width, &height, &channels, 0);
         }
-        MOON_CORE_ASSERT(data, "Failed to load image!");
+        MOON_CORE_ASSERT_MSG(data, "Failed to load image!");
 
         width_ = width;
         height_ = height;
@@ -62,7 +62,7 @@ namespace moon
         internal_format = internal_format ? internal_format : GL_RGBA;
         data_format = data_format ? data_format : GL_RGBA;
 
-        MOON_CORE_ASSERT(internal_format & data_format, "Format not supported!");
+        MOON_CORE_ASSERT_MSG(internal_format & data_format, "Format not supported!");
 
         glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
         glTextureStorage2D(renderer_id_, 1, internal_format, width_, height_);
@@ -90,7 +90,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         uint32_t bpp = data_format_ == GL_RGBA ? 4 : 3;
-        MOON_CORE_ASSERT(size == width_ * height_ * bpp, "Data must be entire texture!");
+        MOON_CORE_ASSERT_MSG(size == width_ * height_ * bpp, "Data must be entire texture!");
         glTextureSubImage2D(renderer_id_, 0, 0, 0, width_, height_, data_format_, GL_UNSIGNED_BYTE, data);
     }
 

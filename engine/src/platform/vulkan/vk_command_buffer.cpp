@@ -13,7 +13,7 @@ namespace moon::vulkan
     {
         m_device.getQueue(queue_family_index, 0, &m_queue);
 
-        vk::CommandPoolCreateInfo poolCI = init::command_pool_create_info();
+        vk::CommandPoolCreateInfo poolCI = {};
         poolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient;
         poolCI.queueFamilyIndex = m_queue_family_index;
 
@@ -76,8 +76,8 @@ namespace moon::vulkan
             return m_buffers[0]; // this should never be hit because we already purged above
         }();
 
-        MOON_CORE_ASSERT(m_num_available_command_buffers > 0, "No available command buffers");
-        MOON_CORE_ASSERT(current.command_buffer != VK_NULL_HANDLE, "No available command buffers");
+        MOON_CORE_ASSERT_MSG(m_num_available_command_buffers > 0, "No available command buffers");
+        MOON_CORE_ASSERT_MSG(current.command_buffer != VK_NULL_HANDLE, "No available command buffers");
         MOON_CORE_ASSERT(current.command_buffer_allocated != VK_NULL_HANDLE);
 
         current.handle.submit_id = m_submit_counter;
@@ -139,13 +139,13 @@ namespace moon::vulkan
 
     void vk_immediate_commands::wait_semaphore(vk::Semaphore semaphore)
     {
-        MOON_CORE_ASSERT(m_wait_semaphore.semaphore == VK_NULL_HANDLE, "Wait semaphore already set");
+        MOON_CORE_ASSERT_MSG(m_wait_semaphore.semaphore == VK_NULL_HANDLE, "Wait semaphore already set");
         m_wait_semaphore.semaphore = semaphore;
     }
 
     void vk_immediate_commands::signal_semaphore(vk::Semaphore semaphore, uint64_t signal_value)
     {
-        MOON_CORE_ASSERT(m_signal_semaphore.semaphore == VK_NULL_HANDLE, "Signal semaphore already set");
+        MOON_CORE_ASSERT_MSG(m_signal_semaphore.semaphore == VK_NULL_HANDLE, "Signal semaphore already set");
         m_signal_semaphore.semaphore = semaphore;
         m_signal_semaphore.value = signal_value;
     }
@@ -261,12 +261,12 @@ namespace moon::vulkan
 
     vk_command_buffer::vk_command_buffer(vk_context* context)
         :
-        m_context(context), m_wrapper(&context->m_immediate_commands.acquire())
+        m_context(context), m_wrapper(&context->m_immediate->acquire())
     {}
 
     vk_command_buffer::~vk_command_buffer()
     {
-        MOON_CORE_ASSERT(!m_is_rendering, "Did you forget to call cmdEndRendering()?");
+        MOON_CORE_ASSERT_MSG(!m_is_rendering, "Did you forget to call cmdEndRendering()?");
     }
 
     void vk_command_buffer::transition_to_shader_read_only(texture_handle hdl) const
@@ -288,7 +288,7 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_bind_ray_tracing_pipeline(raytracing_pipeline_handle hdl)
     {
-        if (hdl.empty() || !m_context->m_has_ray_tracing_pipeline)
+        if (hdl.empty() || !m_context->get_device().has_ray_tracing_pipeline())
             return;
 
         m_current_pipeline_graphics = {};
@@ -338,7 +338,7 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_dispatch_thread_groups(const dimensions& thread_group_count, const dependencies& deps)
     {
-        MOON_CORE_ASSERT(!m_is_rendering, "You can't be rendering graphics when dispatching for compute!");
+        MOON_CORE_ASSERT_MSG(!m_is_rendering, "You can't be rendering graphics when dispatching for compute!");
 
         for (uint32_t i = 0; i != dependencies::s_max_submit_dependencies && deps.textures[i]; ++i)
         {
@@ -347,7 +347,7 @@ namespace moon::vulkan
         for (uint32_t i = 0; i != dependencies::s_max_submit_dependencies && deps.buffers[i]; ++i)
         {
             const vulkan_buffer* buf = m_context->m_buffers_pool.get(deps.buffers[i]);
-            MOON_CORE_ASSERT(buf->m_usage_flags & vk::BufferUsageFlagBits::eStorageBuffer,
+            MOON_CORE_ASSERT_MSG(buf->m_usage_flags & vk::BufferUsageFlagBits::eStorageBuffer,
                 "Did you forget to specify vk::BufferUsageFlagBits::eStorageBuffer on your buffer?");
             buffer_barrier(deps.buffers[i], vk::PipelineStageFlagBits2::eVertexShader | vk::PipelineStageFlagBits2::eFragmentShader,
                 vk::PipelineStageFlagBits2::eComputeShader);
@@ -359,7 +359,7 @@ namespace moon::vulkan
     void vk_command_buffer::cmd_push_debug_group_label(const char* label, uint32_t color_rgba) const
     {
         MOON_CORE_ASSERT(label);
-        if (!label || !vkCmdBeginDebugUtilsLabelEXT)
+        if (!label)
             return;
 
         const vk::DebugUtilsLabelEXT utils_label = {
@@ -376,7 +376,7 @@ namespace moon::vulkan
     void vk_command_buffer::cmd_insert_debug_event_label(const char* label, uint32_t color_rgba) const
     {
         MOON_CORE_ASSERT(label);
-        if (!label || !vkCmdInsertDebugUtilsLabelEXT)
+        if (!label)
             return;
         const vk::DebugUtilsLabelEXT utils_label = {
             label, {
@@ -391,15 +391,13 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_pop_debug_group_label() const
     {
-        if (!vkCmdEndDebugUtilsLabelEXT)
-            return;
         m_wrapper->command_buffer.endDebugUtilsLabelEXT();
     }
 
     void vk_command_buffer::cmd_begin_rendering(const render_pass& r_pass, const framebuffer& fb,
         const dependencies& deps)
     {
-        MOON_CORE_ASSERT(!m_is_rendering, "Already rendering!");
+        MOON_CORE_ASSERT_MSG(!m_is_rendering, "Already rendering!");
 
         m_is_rendering = true;
 
@@ -443,7 +441,7 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_end_rendering()
     {
-        MOON_CORE_ASSERT(m_is_rendering, "Called cmd_end_rendering while not rendering!");
+        MOON_CORE_ASSERT_MSG(m_is_rendering, "Called cmd_end_rendering while not rendering!");
 
         m_is_rendering = false;
 
@@ -454,7 +452,7 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_bind_viewport(const viewport& viewport)
     {
-        MOON_CORE_ASSERT(m_is_rendering, "Called cmd_bind_viewport while not rendering!");
+        MOON_CORE_ASSERT_MSG(m_is_rendering, "Called cmd_bind_viewport while not rendering!");
         // https://www.saschawillems.de/blog/2019/03/29/flipping-the-vulkan-viewport/
         const vk::Viewport vp = {
             viewport.x, viewport.height - viewport.y, viewport.width, -viewport.height,
@@ -465,7 +463,7 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_bind_scissor_rect(const scissor_rect& rect)
     {
-        MOON_CORE_ASSERT(m_is_rendering, "Called cmd_bind_scissor_rect while not rendering!");
+        MOON_CORE_ASSERT_MSG(m_is_rendering, "Called cmd_bind_scissor_rect while not rendering!");
         const vk::Rect2D scissor = {
             { static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y) },
             { rect.width, rect.height }
@@ -490,7 +488,7 @@ namespace moon::vulkan
         const bool has_depth_attachment_pass = !m_framebuffer.depth_stencil.texture.empty();
 
         if (has_depth_attachment_pass != has_depth_attachment_pipeline)
-            MOON_CORE_ASSERT(false, "Make sure your render pass and render pipeline both have matching depth attachments!");
+            MOON_CORE_ASSERT_MSG(false, "Make sure your render pass and render pipeline both have matching depth attachments!");
 
         vk::Pipeline pipeline = m_context->get_vk_pipeline(hdl);
 
@@ -539,19 +537,19 @@ namespace moon::vulkan
 
     void vk_command_buffer::cmd_push_constants(const void* data, std::size_t size, std::size_t offset)
     {
-        MOON_CORE_ASSERT(size % 4 == 0, "Push constant size must be a multiple of 4!") // VUID-vkCmdPushConstants-size-00369
+        MOON_CORE_ASSERT_MSG(size % 4 == 0, "Push constant size must be a multiple of 4!") // VUID-vkCmdPushConstants-size-00369
 
         // check push constant size is within max size
-        const vk::PhysicalDeviceLimits& limits = m_context->get_vk_physical_device_properties().limits;
+        const vk::PhysicalDeviceLimits& limits = m_context->get_device().get_physical_device_properties().limits;
         if (size + offset > limits.maxPushConstantsSize)
         {
-            MOON_CORE_ASSERT(false, "Push constants size exceeded {}, (max {} bytes)", size + offset, limits.maxPushConstantsSize);
+            MOON_CORE_ASSERT_MSG(false, "Push constants size exceeded {}, (max {} bytes)", size + offset, limits.maxPushConstantsSize);
             return;
         }
 
         if (!m_current_pipeline_graphics || !m_current_pipeline_compute || !m_current_pipeline_raytracing)
         {
-            MOON_CORE_ASSERT(false, "You must bind a pipeline before pushing constants!");
+            MOON_CORE_ASSERT_MSG(false, "You must bind a pipeline before pushing constants!");
             return;
         }
 
@@ -917,21 +915,21 @@ namespace moon::vulkan
                     .size = build_sizes_info.buildScratchSize,
                     .debug_name = "scratch_buffer"
                 },
-                nullptr,
                 nullptr
-            );
+            ).value();
         }
 
         build_geometry_info = vk::AccelerationStructureBuildGeometryInfoKHR{};
-        build_geometry_info = {
-            .type = vk::AccelerationStructureTypeKHR::eTopLevel,
-            .flags = vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate,
-            .mode = vk::BuildAccelerationStructureModeKHR::eUpdate,
-            .srcAccelerationStructure = accel->vk_handle,
-            .dstAccelerationStructure = accel->vk_handle,
-            .geometryCount = 1u,
-            .pGeometries = &accel_struct_geometry,
-            .scratchData = { m_context->gpu_address(accel->scratch_buffer) }
+        build_geometry_info = vk::AccelerationStructureBuildGeometryInfoKHR{
+            vk::AccelerationStructureTypeKHR::eTopLevel,
+            vk::BuildAccelerationStructureFlagBitsKHR::ePreferFastTrace | vk::BuildAccelerationStructureFlagBitsKHR::eAllowUpdate,
+            vk::BuildAccelerationStructureModeKHR::eUpdate,
+            accel->vk_handle,
+            accel->vk_handle,
+            1u,
+            &accel_struct_geometry,
+            nullptr,
+            { m_context->gpu_address(accel->scratch_buffer) }
         };
 
         const vk::AccelerationStructureBuildRangeInfoKHR* build_structure_range_infos[] = { &accel->build_range_info };
@@ -943,7 +941,8 @@ namespace moon::vulkan
                     vk::AccessFlagBits2::eMemoryRead,
                     vk::PipelineStageFlagBits2::eAccelerationStructureBuildKHR,
                     vk::AccessFlagBits2::eMemoryWrite | vk::AccessFlagBits2::eMemoryWrite,
-                    get_vk_buffer(m_context, hdl),
+                    vk::QueueFamilyIgnored, vk::QueueFamilyIgnored,
+                    m_context->m_buffers_pool.get(m_context->m_accel_structs_pool.get(hdl)->buffer)->m_buffer,
                     vk::WholeSize
                 },
                 vk::BufferMemoryBarrier2{
@@ -959,7 +958,7 @@ namespace moon::vulkan
             };
             const vk::DependencyInfo dep_info {
                 {}, {}, {},
-                barriers.size(),
+                static_cast<uint32_t>(barriers.size()),
                 barriers.data()
             };
             m_wrapper->command_buffer.pipelineBarrier2(dep_info);
@@ -995,7 +994,7 @@ namespace moon::vulkan
 
         if (!tex.is_storage_image() && !tex.is_sampled_image())
         {
-            MOON_CORE_ASSERT(false, "Did you forget to specify TextureUsageBits::Storage or TextureUsageBits::Sampled on your texture?")
+            MOON_CORE_ASSERT_MSG(false, "Did you forget to specify TextureUsageBits::Storage or TextureUsageBits::Sampled on your texture?")
             return;
         }
         tex.transition_layout(m_wrapper->command_buffer,

@@ -1,12 +1,14 @@
 #include "moonpch.h"
 #include "vk_texture.h"
 
+#include "vk_context.h"
+
 namespace moon::vulkan
 {
     vk_texture2d::vk_texture2d(vk::Extent2D extent, vk::Format format, vk::ImageUsageFlags usage_flags,
-        const vk_device& device, bool mipmapped)
+        const vk_context& context, bool mipmapped)
         :
-        m_device(device)
+        m_device(context.get_device())
         , m_mipmapped(mipmapped)
     {
         vk::ImageCreateInfo imgCI{};
@@ -21,15 +23,14 @@ namespace moon::vulkan
         imgCI.samples = vk::SampleCountFlagBits::e1;
         imgCI.usage = usage_flags;
 
-        m_image = device.allocate_image(vk::Extent3D{extent, 1}, format, usage_flags, mipmapped);
+        m_image = m_device.allocate_image(vk::Extent3D{extent, 1}, format, usage_flags, mipmapped);
     }
 
-    vk_texture2d::vk_texture2d(std::filesystem::path path, const vk_device& device, bool mipmapped)
+    vk_texture2d::vk_texture2d(const std::filesystem::path& path, const vk_context& context, bool mipmapped)
         :
-        m_device(device)
+        m_device(context.get_device())
         , m_mipmapped(mipmapped)
     {
-
     }
 
     vk_texture2d::~vk_texture2d()

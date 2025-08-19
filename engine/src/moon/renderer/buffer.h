@@ -25,7 +25,7 @@ namespace moon
         case ShaderDataType::Int4:     return 4 * 4;
         case ShaderDataType::Bool:     return 1;
         default:
-            MOON_CORE_ASSERT(false, "Unknown ShaderDataType!");
+            MOON_CORE_ASSERT_MSG(false, "Unknown ShaderDataType!");
             return 0;
         }
     }
@@ -60,7 +60,7 @@ namespace moon
                 case ShaderDataType::Int4:     return 4;
                 case ShaderDataType::Bool:     return 1;
                 default:
-                    MOON_CORE_ASSERT(false, "Unknown ShaderDataType!"); return 0;
+                    MOON_CORE_ASSERT_MSG(false, "Unknown ShaderDataType!"); return 0;
             }
         }
     };

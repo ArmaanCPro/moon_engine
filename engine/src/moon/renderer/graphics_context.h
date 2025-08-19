@@ -15,24 +15,17 @@ namespace moon
     public:
         virtual ~graphics_context() = default;
 
-        virtual void init() = 0;
-        virtual void swap_buffers() = 0;
-
-        virtual void begin_frame() = 0;
-        virtual void end_frame() = 0;
-
-        virtual device& get_device() = 0;
-
         virtual command_buffer& acquire_command_buffer() = 0;
 
         virtual submit_handle submit(command_buffer& cmd, texture_handle present = {}) = 0;
-        virtual void wait(submit_handle hdl = {}); // waiting on empty handle results in vkDeviceWaitIdle()
+        virtual void wait(submit_handle hdl = {}) = 0; // waiting on empty handle results in vkDeviceWaitIdle()
 
         [[nodiscard]] virtual std::expected<holder<buffer_handle>, result> create_buffer(const buffer_desc& desc, const char* debug_name = nullptr) = 0;
         [[nodiscard]] virtual std::expected<holder<sampler_handle>, result> create_sampler(const sampler_state_desc& desc) = 0;
         [[nodiscard]] virtual std::expected<holder<texture_handle>, result> create_texture(const texture_desc& desc, const char* debug_name = nullptr) = 0;
         [[nodiscard]] virtual std::expected<holder<texture_handle>, result> create_texture_view(texture_handle hdl,
-            const texture_view_desc& desc, const char* debug_name = nullptr);
+            const texture_view_desc& desc, const char* debug_name = nullptr) = 0;
+
         [[nodiscard]] virtual std::expected<holder<compute_pipeline_handle>, result> create_compute_pipeline(const compute_pipeline_desc& desc) = 0;
         [[nodiscard]] virtual std::expected<holder<render_pipeline_handle>, result> create_render_pipeline(const render_pipeline_desc& desc) = 0;
         [[nodiscard]] virtual std::expected<holder<raytracing_pipeline_handle>, result> create_raytracing_pipeline(const ray_tracing_pipeline_desc& desc) = 0;
@@ -50,6 +43,7 @@ namespace moon
         virtual void destroy(texture_handle hdl) = 0;
         virtual void destroy(query_pool_handle hdl) = 0;
         virtual void destroy(accel_struct_handle hdl) = 0;
+        virtual void destroy(framebuffer& fb) = 0;
 
         [[nodiscard]] virtual uint64_t accel_struct_gpu_address(accel_struct_handle hdl) const = 0;
 
@@ -74,9 +68,6 @@ namespace moon
         [[nodiscard]] virtual Format get_swapchain_format() const = 0;
         [[nodiscard]] virtual uint32_t get_swapchain_image_count() const = 0;
         virtual void recreate_swapchain(int new_width, int new_height) = 0;
-
-        // MSAA level is unsupported if ((samples & bitmask) != 0), where samples must be power of 2
-        virtual uint32_t get_framebuffer_msaa_bitmask() const = 0;
 
 #pragma region performance queries
         virtual double get_timestamp_period_to_ms() const = 0;

@@ -21,7 +21,7 @@ namespace moon
         case ShaderDataType::Int3:      return GL_INT;
         case ShaderDataType::Int4:      return GL_INT;
         case ShaderDataType::Bool:      return GL_BOOL;
-        default: MOON_CORE_ASSERT(false, "Unknown ShaderDataType!"); return 0;
+        default: MOON_CORE_ASSERT_MSG(false, "Unknown ShaderDataType!"); return 0;
         }
     }
 
@@ -57,7 +57,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        MOON_CORE_ASSERT(!vbuf->get_layout().get_elements().empty(), "Vertex Buffer has no layout!");
+        MOON_CORE_ASSERT_MSG(!vbuf->get_layout().get_elements().empty(), "Vertex Buffer has no layout!");
         glBindVertexArray(renderer_id_);
         vbuf->bind();
 

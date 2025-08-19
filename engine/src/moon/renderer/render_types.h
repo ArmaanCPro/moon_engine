@@ -357,6 +357,10 @@ namespace moon
         YUV_NV12,
         YUV_420p
     };
+    [[nodiscard]] constexpr inline bool is_depth_or_stencil_format(Format format) noexcept
+    {
+        return format == Format::Z_UN16 || format == Format::Z_UN24 || format == Format::Z_F32 || format == Format::Z_UN24_S_UI8 || format == Format::Z_F32_S_UI8;
+    }
 
     enum class LoadOp : uint8_t
     {
@@ -620,9 +624,9 @@ namespace moon
         Storage = 1 << 3,
         Indirect = 1 << 4,
         // ray tracing
-        shader_binding_table = 1 << 5,
-        accel_struct_build_input_read_only = 1 << 6,
-        accel_struct_storage = 1 << 7
+        ShaderBindingTable = 1 << 5,
+        AccelStructBuildInputReadOnly = 1 << 6,
+        AccelStructStorage = 1 << 7
     };
 
     struct buffer_desc final

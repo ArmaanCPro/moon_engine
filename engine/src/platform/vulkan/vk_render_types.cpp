@@ -1,7 +1,6 @@
 #include "moonpch.h"
 #include "vulkan/vk_render_types.h"
 
-#include "utils/vk_initializers.h"
 #include "utils/vk_utils.h"
 #include "vulkan/vk_context.h"
 
@@ -13,7 +12,7 @@ namespace moon::vulkan
         if (!m_mapped_ptr)
             return;
 
-        MOON_CORE_ASSERT(offset + size <= m_size, "Offset + size must be less than buffer size");
+        MOON_CORE_ASSERT_MSG(offset + size <= m_size, "Offset + size must be less than buffer size");
 
         if (data)
             memcpy((uint8_t*)m_mapped_ptr + offset, data, size);
@@ -26,12 +25,12 @@ namespace moon::vulkan
 
     void vulkan_buffer::get_buffer_subdata(vk_context& context, std::size_t offset, std::size_t size, void* data)
     {
-        MOON_CORE_ASSERT(m_mapped_ptr, "Buffer is not mapped");
+        MOON_CORE_ASSERT_MSG(m_mapped_ptr, "Buffer is not mapped");
 
         if (!m_mapped_ptr)
             return;
 
-        MOON_CORE_ASSERT(offset + size <= m_size, "Offset + size must be less than buffer size");
+        MOON_CORE_ASSERT_MSG(offset + size <= m_size, "Offset + size must be less than buffer size");
 
         if (!m_is_coherent_memory)
             invalidate_mapped_memory(context, offset, size);
@@ -40,7 +39,7 @@ namespace moon::vulkan
         memcpy(data, src, size);
     }
 
-    void vulkan_buffer::flush_mapped_memory(vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const
+    void vulkan_buffer::flush_mapped_memory(const vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const
     {
         if (!m_mapped_ptr)
             return;
@@ -48,7 +47,7 @@ namespace moon::vulkan
         vmaFlushAllocation(context.get_device().get_allocator(), m_allocation, offset, size);
     }
 
-    void vulkan_buffer::invalidate_mapped_memory(vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const
+    void vulkan_buffer::invalidate_mapped_memory(const vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const
     {
         if (!m_mapped_ptr)
             return;
@@ -78,7 +77,7 @@ namespace moon::vulkan
 
             if (!hardware_downscaling_supported)
             {
-                MOON_CORE_WARN("Hardware downscaling not supported for image format {0}", m_format);
+                MOON_CORE_WARN("Hardware downscaling not supported for image format");
                 return;
             }
         }
@@ -96,11 +95,8 @@ namespace moon::vulkan
 
         const vk::ImageAspectFlags image_aspect_flags = get_image_aspect_flags();
 
-        if (vkCmdBeginDebugUtilsLabelEXT)
-        {
-            const vk::DebugUtilsLabelEXT utils_label { "Generate mipmap", {1.0f, 0.75f, 1.0f, 1.0f} };
-            cmd.beginDebugUtilsLabelEXT(&utils_label);
-        }
+        const vk::DebugUtilsLabelEXT utils_label { "Generate mipmap", {1.0f, 0.75f, 1.0f, 1.0f} };
+        cmd.beginDebugUtilsLabelEXT(&utils_label);
 
         const vk::ImageLayout original_image_layout = m_image_layout;
 
@@ -158,8 +154,7 @@ namespace moon::vulkan
             vk::ImageLayout::eTransferDstOptimal, original_image_layout,
             { image_aspect_flags, 0, m_num_levels, 0, m_num_layers });
 
-        if (vkCmdEndDebugUtilsLabelEXT)
-            cmd.endDebugUtilsLabelEXT();
+        cmd.endDebugUtilsLabelEXT();
 
         m_image_layout = original_image_layout;
     }
@@ -232,18 +227,5 @@ namespace moon::vulkan
             vk::ImageViewType::e2D, m_format, get_image_aspect_flags(), level, 1u, layer, 1u, {}, nullptr, debug_name_image_view);
 
         return m_image_view_for_framebuffer[level][layer];
-    }
-
-    constexpr bool vulkan_image::is_depth_format(vk::Format format)
-    {
-        return (format == vk::Format::eS8Uint) || (format == vk::Format::eX8D24UnormPack32) || (format == vk::Format::eD32Sfloat)
-            || (format == vk::Format::eD16UnormS8Uint) || (format == vk::Format::eD24UnormS8Uint)
-            || (format == vk::Format::eD32SfloatS8Uint);
-    }
-
-    constexpr bool vulkan_image::is_stencil_format(vk::Format format)
-    {
-        return (format == vk::Format::eS8Uint) || (format == vk::Format::eD16UnormS8Uint) || (format == vk::Format::eD24UnormS8Uint)
-            || (format == vk::Format::eD32SfloatS8Uint);
     }
 }

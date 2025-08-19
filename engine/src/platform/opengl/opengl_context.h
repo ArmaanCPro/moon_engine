@@ -11,12 +11,6 @@ namespace moon
     public:
         opengl_context(GLFWwindow* window_handle);
 
-        void init() override;
-        void swap_buffers() override;
-
-        void begin_frame() override {}
-        void end_frame() override {}
-
     private:
         GLFWwindow* window_handle_;
     };

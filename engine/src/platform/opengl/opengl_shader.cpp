@@ -20,7 +20,7 @@ namespace moon
         else if (type == "fragment"|| type == "pixel")
             return GL_FRAGMENT_SHADER;
 
-        MOON_CORE_ASSERT(false, "Unknown shader type! {0}", type);
+        MOON_CORE_ASSERT_MSG(false, "Unknown shader type! {0}", type);
         return 0;
     }
 
@@ -106,10 +106,10 @@ namespace moon
         while (pos != std::string::npos)
         {
             size_t eol = source.find_first_of('\n', pos);
-            MOON_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+            MOON_CORE_ASSERT_MSG(eol != std::string::npos, "Syntax error");
             size_t begin = pos + type_token_length + 1;
             std::string type = source.substr(begin, eol - begin);
-            MOON_CORE_ASSERT(shader_type_from_string(type), "Invalid shader type specified");
+            MOON_CORE_ASSERT_MSG(shader_type_from_string(type), "Invalid shader type specified");
 
             size_t next_line_begin = source.find_first_not_of('\n', eol);
             pos = source.find(type_token, next_line_begin);
@@ -125,7 +125,7 @@ namespace moon
         MOON_PROFILE_FUNCTION();
 
         GLuint program = glCreateProgram();
-        MOON_CORE_ASSERT(shader_sources.size() <= 2, "Only 2 shaders are supported!");
+        MOON_CORE_ASSERT_MSG(shader_sources.size() <= 2, "Only 2 shaders are supported!");
         std::array<GLuint, 2> gl_shader_ids {};
         int gl_shader_id_index = 0;
 
@@ -152,7 +152,7 @@ namespace moon
                     glDeleteShader(id);
 
                 MOON_CORE_ERROR("Compilation of shader type {0} failed: {1}", type, infoLog.data());
-                MOON_CORE_ASSERT(false, "Shader compilation failed!");
+                MOON_CORE_ASSERT_MSG(false, "Shader compilation failed!");
                 break;
             }
 
@@ -179,7 +179,7 @@ namespace moon
                 glDeleteShader(id);
 
             MOON_CORE_ERROR("Shader program link failed: {0}", infoLog.data());
-            MOON_CORE_ASSERT(false, "Shader program link failed!");
+            MOON_CORE_ASSERT_MSG(false, "Shader program link failed!");
             return;
         }
 

@@ -24,7 +24,7 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        MOON_CORE_ASSERT(!s_instance, "Application already exists!");
+        MOON_CORE_ASSERT_MSG(!s_instance, "Application already exists!");
         s_instance = this;
 
         window_ = std::unique_ptr<window>(window::create(window_props(name)));
@@ -73,8 +73,6 @@ namespace moon
             timestep ts = time - last_frame_time_;
             last_frame_time_ = time;
 
-            m_context->begin_frame();
-
             if (!minimized_)
             {
                 {
@@ -97,8 +95,6 @@ namespace moon
             }
 
             window_->on_update();
-
-            m_context->end_frame();
         }
     }
 

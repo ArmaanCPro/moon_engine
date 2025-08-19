@@ -69,7 +69,7 @@ namespace moon::vulkan
         vk_command_buffer() = default;
         explicit vk_command_buffer(vk_context* context);
         ~vk_command_buffer() override;
-        command_buffer& operator=(command_buffer&& other) = default;
+        //command_buffer& operator=(command_buffer&& other);
 
         vk::CommandBuffer get_vk_command_buffer() const { return m_wrapper ? m_wrapper->command_buffer : VK_NULL_HANDLE; }
         operator vk::CommandBuffer() const { return get_vk_command_buffer(); }

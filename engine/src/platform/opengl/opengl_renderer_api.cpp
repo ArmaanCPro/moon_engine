@@ -26,7 +26,7 @@ namespace moon
         case GL_DEBUG_SEVERITY_NOTIFICATION: MOON_CORE_TRACE(message); return;
         }
 
-        MOON_CORE_ASSERT(false, "Unknown severity level!");
+        MOON_CORE_ASSERT_MSG(false, "Unknown severity level!");
     }
 
     void opengl_renderer_api::init(graphics_context* context)

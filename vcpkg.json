@@ -24,7 +24,8 @@
     "entt",
     "vulkan-headers",
     "vulkan-memory-allocator",
-    "vk-bootstrap"
+    "vk-bootstrap",
+    "spirv-reflect"
   ],
   "builtin-baseline": "3bdaa9b42070c241c1bdb02b4cf01f90de579738"
 }

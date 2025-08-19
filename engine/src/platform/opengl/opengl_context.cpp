@@ -10,27 +10,7 @@ namespace moon
         :
         window_handle_(window_handle)
     {
-        MOON_CORE_ASSERT(window_handle, "Window handle is null!");
+        MOON_CORE_ASSERT_MSG(window_handle, "Window handle is null!");
     }
 
-    void opengl_context::init()
-    {
-        MOON_PROFILE_FUNCTION();
-
-        glfwMakeContextCurrent(window_handle_);
-        // setup glad
-        int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-        MOON_CORE_ASSERT(status, "Failed to initialize Glad");
-        MOON_CORE_INFO("OpenGL Info: ");
-        MOON_CORE_INFO("    Vendor:     {0}", (const char*)glGetString(GL_VENDOR));
-        MOON_CORE_INFO("    Renderer:   {0}", (const char*)glGetString(GL_RENDERER));
-        MOON_CORE_INFO("    Version:    {0}", (const char*)glGetString(GL_VERSION));
-    }
-
-    void opengl_context::swap_buffers()
-    {
-        MOON_PROFILE_FUNCTION();
-
-        glfwSwapBuffers(window_handle_);
-    }
 }

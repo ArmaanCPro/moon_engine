@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC
+#define VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC 1
+#endif
 #ifndef VULKAN_HPP_DISPATCH_LOADER_DYNAMIC
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #endif
@@ -7,15 +10,16 @@
 
 #include <vma/vk_mem_alloc.h>
 #include <VkBootstrap.h>
+#include <spirv_reflect.h>
+
 
 #define VK_CHECK(func)                                              \
     {                                                               \
-        const vk::Result r = func;                                  \
-        if (r != vk::Result::eSuccess)                              \
+        const vk::Result _r = func;                                  \
+        if (_r != vk::Result::eSuccess)                              \
         {                                                           \
-            MOON_CORE_ASSERT("Vulkan API call failed: {}\n {}\n",   \
-                #func,                                              \
-                vk::to_string(r));                                  \
+            MOON_CORE_ASSERT_MSG(false, "Vulkan API call failed: {}\n",   \
+                #func)                                              \
         }                                                           \
     }                                                               \
 

@@ -15,15 +15,17 @@ namespace moon::vulkan
         void buffer_subdata(vk_context& context, std::size_t offset, std::size_t size, const void* data);
         void get_buffer_subdata(vk_context& context, std::size_t offset, std::size_t size, void* data);
         // cpu -> gpu
-        void flush_mapped_memory(vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const;
+        void flush_mapped_memory(const vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const;
         // gpu -> cpu
-        void invalidate_mapped_memory(vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const;
+        void invalidate_mapped_memory(const vk_context& context, vk::DeviceSize offset, vk::DeviceSize size) const;
 
     public:
         vk::Buffer m_buffer = VK_NULL_HANDLE;
         VmaAllocation m_allocation = VK_NULL_HANDLE;
         vk::DeviceSize m_size = 0;
         vk::BufferUsageFlags m_usage_flags = {};
+        vk::MemoryPropertyFlags m_memory_flags = {};
+        vk::DeviceAddress m_device_address = 0;
         void* m_mapped_ptr = nullptr;
         bool m_is_coherent_memory = false;
     };
@@ -53,8 +55,7 @@ namespace moon::vulkan
         // framebuffers can render only into one level/layer
         [[nodiscard]] vk::ImageView get_or_create_image_view_for_framebuffer(vk_context& context, uint32_t level, uint32_t layer);
 
-        [[nodiscard]] static constexpr bool is_depth_format(vk::Format format);
-        [[nodiscard]] static constexpr bool is_stencil_format(vk::Format format);
+
 
     public:
         vk::Image m_image = VK_NULL_HANDLE;
@@ -64,7 +65,7 @@ namespace moon::vulkan
         vk::Format m_format = vk::Format::eUndefined;
         vk::Extent3D m_extent = {};
         vk::ImageType m_type = vk::ImageType::e2D;
-        vk::SampleCountFlagBits m_samples = vk::SampleCountFlagBits::e1;
+        vk::SampleCountFlags m_samples = vk::SampleCountFlagBits::e1;
         void* m_mapped_ptr = nullptr;
         bool m_is_swapchain_image = false;
         bool m_is_owning_vk_image = true;

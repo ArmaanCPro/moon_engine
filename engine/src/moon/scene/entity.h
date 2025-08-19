@@ -23,7 +23,7 @@ namespace moon
         template <typename T>
         T& get_component()
         {
-            MOON_CORE_ASSERT(has_component<T>(), "Entity does not have component!");
+            MOON_CORE_ASSERT_MSG(has_component<T>(), "Entity does not have component!");
 
             return m_scene_->m_registry_.get<T>(m_entity_handle_);
         }
@@ -31,7 +31,7 @@ namespace moon
         template <typename T, typename... Args>
         T& add_component(Args&&... args)
         {
-            MOON_CORE_ASSERT(!has_component<T>(), "Entity already has component!");
+            MOON_CORE_ASSERT_MSG(!has_component<T>(), "Entity already has component!");
 
             // could also use emplace_or_replace and skip the assertion
             return m_scene_->m_registry_.emplace<T>(m_entity_handle_, std::forward<Args>(args)...);
@@ -40,7 +40,7 @@ namespace moon
         template <typename T>
         void remove_component()
         {
-            MOON_CORE_ASSERT(has_component<T>(), "Entity does not have component!");
+            MOON_CORE_ASSERT_MSG(has_component<T>(), "Entity does not have component!");
 
             m_scene_->m_registry_.remove<T>(m_entity_handle_);
         }

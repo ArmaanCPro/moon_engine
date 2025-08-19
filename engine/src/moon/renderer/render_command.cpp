@@ -8,5 +8,5 @@
 
 namespace moon
 {
-    renderer_api* render_command::s_renderer_api_ = new vk_renderer_api();
+    renderer_api* render_command::s_renderer_api_ = new vulkan::vk_renderer_api();
 }

@@ -53,9 +53,6 @@ target_include_directories(${PROJECT_NAME}
 # pch
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/moonpch.h)
 
-# library defines
-#target_compile_definitions(${PROJECT_NAME} PUBLIC VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
-
 # libraries
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
@@ -67,9 +64,10 @@ find_package(EnTT CONFIG REQUIRED)
 find_package(VulkanHeaders CONFIG)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 find_package(vk-bootstrap CONFIG REQUIRED)
+find_package(unofficial-spirv-reflect CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog_header_only fmt::fmt-header-only imgui::imgui glm::glm-header-only EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glad::glad Vulkan::Headers GPUOpen::VulkanMemoryAllocator vk-bootstrap::vk-bootstrap unofficial::spirv-reflect)
 
 
 # stb (image)

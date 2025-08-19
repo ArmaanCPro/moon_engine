@@ -37,7 +37,7 @@ namespace moon
         {
             MOON_PROFILE_SCOPE("glfw init");
             int success = glfwInit();
-            MOON_CORE_ASSERT(success, "Could not initialize GLFW!");
+            MOON_CORE_ASSERT_MSG(success, "Could not initialize GLFW!");
             glfwSetErrorCallback(glfw_error_callback);
         }
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

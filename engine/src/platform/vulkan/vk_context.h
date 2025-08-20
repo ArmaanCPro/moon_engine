@@ -57,17 +57,17 @@ namespace moon::vulkan
         submit_handle submit(command_buffer& cmd, texture_handle present) override;
         void wait(submit_handle hdl) override;
 
-        std::expected<holder<buffer_handle>, result> create_buffer(const buffer_desc& desc, const char* debug_name) override;
+        std::expected<holder<buffer_handle>, result> create_buffer(const buffer_desc& desc, const char* debug_name = nullptr) override;
         std::expected<holder<sampler_handle>, result> create_sampler(const sampler_state_desc& desc) override;
-        std::expected<holder<texture_handle>, result> create_texture(const texture_desc& desc, const char* debug_name) override;
-        std::expected<holder<texture_handle>, result> create_texture_view(texture_handle hdl, const texture_view_desc& desc, const char* debug_name) override;
+        std::expected<holder<texture_handle>, result> create_texture(const texture_desc& desc, const char* debug_name = nullptr) override;
+        std::expected<holder<texture_handle>, result> create_texture_view(texture_handle hdl, const texture_view_desc& desc, const char* debug_name = nullptr) override;
 
         std::expected<holder<compute_pipeline_handle>, result> create_compute_pipeline(const compute_pipeline_desc& desc) override;
         std::expected<holder<render_pipeline_handle>, result> create_render_pipeline(const render_pipeline_desc& desc) override;
         std::expected<holder<raytracing_pipeline_handle>, result> create_raytracing_pipeline(const ray_tracing_pipeline_desc& desc) override;
         std::expected<holder<shader_module_handle>, result> create_shader_module(const shader_module_desc& desc) override;
 
-        std::expected<holder<query_pool_handle>, result> create_query_pool(uint32_t num_queries, const char* debug_name) override;
+        std::expected<holder<query_pool_handle>, result> create_query_pool(uint32_t num_queries, const char* debug_name = nullptr) override;
 
         std::expected<holder<accel_struct_handle>, result> create_accel_struct(const accel_struct_desc& desc) override;
 

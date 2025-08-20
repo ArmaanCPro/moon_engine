@@ -1,6 +1,6 @@
 #pragma once
 
-#include "moon/renderer/vertex_array.h"
+#include "renderer/vertex_array.h"
 
 namespace moon
 {

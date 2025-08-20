@@ -28,14 +28,7 @@ namespace moon
             static_assert(sizeof(void*) >= sizeof(uint64_t));
             return reinterpret_cast<void*>(static_cast<ptrdiff_t>(index) + (static_cast<ptrdiff_t>(gen) << 32));
         }
-        [[nodiscard]] bool operator==(const handle<ObjectType> other) const noexcept
-        {
-            return index_ == other.index_ && gen_ == other.gen_;
-        }
-        [[nodiscard]] bool operator!=(const handle<ObjectType> other) const noexcept
-        {
-            return index_ != other.index_ || gen_ != other.gen_;
-        }
+        [[nodiscard]] auto operator<=>(const handle<ObjectType>& other) const noexcept = default;
 
         [[nodiscard]] explicit operator bool() const noexcept { return gen_ != 0; }
 
@@ -143,6 +136,8 @@ namespace moon
             ctx_ = nullptr;
             return std::exchange(hdl_, HandleType{});
         }
+
+        [[nodiscard]] auto operator<=>(const holder<HandleType>& other) const noexcept = default;
 
         uint32_t gen() const noexcept { return hdl_.gen(); }
         uint32_t index() const noexcept { return hdl_.index(); }

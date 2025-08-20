@@ -364,7 +364,7 @@ namespace moon::vulkan
         // iterate and cache vertex input bindings and attributes
         const vertex_input& vstate = rps.desc.vertex_input;
 
-        std::array<bool, vertex_input::s_vertex_buffer_max> bound_buffers;
+        std::array<bool, vertex_input::s_vertex_buffer_max> bound_buffers = {};
         for (uint32_t i = 0; i < vstate.get_num_input_bindings(); ++i)
         {
             const vertex_input::vertex_attribute& attribute = vstate.attributes[i];

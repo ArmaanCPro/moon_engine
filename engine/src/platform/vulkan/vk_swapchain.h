@@ -16,7 +16,7 @@ namespace moon::vulkan
         vk_swapchain(vk_context& context, GLFWwindow* window, vk::SurfaceKHR surface, vk::Instance instance, vk::PhysicalDevice physical_device,
             vk::Device device, vk::PresentModeKHR present_mode = vk::PresentModeKHR::eFifo,
             std::optional<vk_swapchain> old_swapchain = {},
-            vk::Format format = vk::Format::eB8G8R8Unorm);
+            vk::Format format = vk::Format::eB8G8R8A8Srgb);
         ~vk_swapchain();
 
         // returns vk::Result and next image index

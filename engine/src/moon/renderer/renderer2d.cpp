@@ -1,10 +1,10 @@
 #include "moonpch.h"
 #include "renderer2d.h"
 
-#include "render_command.h"
+#include "core/application.h"
 #include "moon/renderer/shader.h"
 #include "moon/renderer/buffer.h"
-#include "moon/renderer/vertex_array.h"
+#include "vulkan/vk_context.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,10 +27,13 @@ namespace moon
         static constexpr uint32_t max_indices = max_quads * 6;
         static constexpr uint32_t max_texture_slots = 32; // TODO: Render Capabilities
 
-        ref<vertex_array> quad_vertex_array;
         ref<vertex_buffer> quad_vertex_buffer;
-        ref<shader> texture_shader;
+        ref<index_buffer> quad_index_buffer;
+        ref<shader> texture_shader_vertex;
+        ref<shader> texture_shader_fragment;
         ref<texture2d> white_texture;
+
+        holder<render_pipeline_handle> quad_pipeline;
 
         uint32_t quad_index_count = 0;
         quad_vertex* quad_vertex_buffer_base = nullptr;
@@ -42,6 +45,17 @@ namespace moon
         glm::vec4 quad_vertex_positions[4];
 
         renderer2d::statistics stats;
+
+        command_buffer* current_cmd;
+        graphics_context* current_ctx;
+
+        struct per_frame_data
+        {
+            uint32_t slot_to_desc[max_texture_slots]; // TODO remove the 32 limit altogether as we have bindless rendering
+        }; // this is the limit for PC data, consider using descriptors
+        per_frame_data frame_data;
+
+        buffer_handle viewproj_buffer;
     };
 
     static renderer2d_data s_data;
@@ -50,20 +64,22 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        render_command::init();
-
-        s_data.quad_vertex_array = vertex_array::create();
-
         // vertex buffer
         s_data.quad_vertex_buffer = vertex_buffer::create(s_data.max_vertices * sizeof(quad_vertex));
         s_data.quad_vertex_buffer->set_layout({
-            { ShaderDataType::Float3, "a_Position" },
-            { ShaderDataType::Float4, "a_Color" },
-            { ShaderDataType::Float2, "a_TexCoord" },
-            { ShaderDataType::Float, "a_TexIndex" },
-            { ShaderDataType::Float, "a_TilingFactor" }
+            .attributes = {
+                {
+                    { 0, 0, VertexFormat::Float3, 0 },
+                    { 1, 0, VertexFormat::Float4, sizeof(glm::vec3) },
+                    { 2, 0, VertexFormat::Float2, sizeof(glm::vec3) + sizeof(glm::vec4) },
+                    { 3, 0, VertexFormat::Float1, sizeof(glm::vec3) + sizeof(glm::vec4) + sizeof(glm::vec2) },
+                    { 4, 0, VertexFormat::Float1, sizeof(glm::vec3) + sizeof(glm::vec4) + sizeof(glm::vec2) + sizeof(float) }
+                }
+            },
+            .bindings = {
+                sizeof(quad_vertex)
+            }
         });
-        s_data.quad_vertex_array->add_vertex_buffer(s_data.quad_vertex_buffer);
 
         s_data.quad_vertex_buffer_base = new quad_vertex[s_data.max_vertices];
 
@@ -85,7 +101,6 @@ namespace moon
         }
 
         ref<index_buffer> quad_ib = index_buffer::create(quad_indices, s_data.max_indices);
-        s_data.quad_vertex_array->set_index_buffer(quad_ib);
         delete[] quad_indices;
 
         // create a white shader used as a default texture
@@ -100,9 +115,8 @@ namespace moon
         }
 
         // create our texture shader
-        s_data.texture_shader = shader::create("assets/shaders/texture.glsl");
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_int_array("u_Textures", samplers, s_data.max_texture_slots);
+        s_data.texture_shader_vertex = shader::create("assets/shaders/slang/texture.vert.spirv", ShaderStage::Vert);
+        s_data.texture_shader_fragment = shader::create("assets/shaders/slang/texture.frag.spirv", ShaderStage::Frag);
 
         // set index 0 to white texture
         s_data.texture_slots[0] = s_data.white_texture;
@@ -111,6 +125,22 @@ namespace moon
         s_data.quad_vertex_positions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
         s_data.quad_vertex_positions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
         s_data.quad_vertex_positions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+        s_data.current_ctx = &application::get().get_context();
+        s_data.quad_pipeline = s_data.current_ctx->create_render_pipeline({
+            .vertex_input = s_data.quad_vertex_buffer->get_layout(),
+            .sm_vert = s_data.texture_shader_vertex->get_handle(),
+            .sm_frag = s_data.texture_shader_fragment->get_handle(),
+            .color_attachments = { { s_data.current_ctx->get_swapchain_format() } },
+            .depth_format = Format::Z_F32,
+            .cull_mode = CullMode::Back
+        }).value();
+
+        s_data.viewproj_buffer = s_data.current_ctx->create_buffer({
+            .usage = static_cast<uint8_t>(BufferUsageBits::Uniform),
+            .storage_type = StorageType::Device,
+            .size = sizeof(glm::mat4)
+        }).value();
     }
 
     void renderer2d::shutdown()
@@ -124,10 +154,10 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        glm::mat4 view_proj = camera.get_projection() * glm::inverse(transform);
+        s_data.current_cmd = &s_data.current_ctx->acquire_command_buffer();
 
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_mat4("u_VP", view_proj);
+        glm::mat4 view_proj = camera.get_projection() * glm::inverse(transform);
+        s_data.current_cmd->cmd_update_buffer(s_data.viewproj_buffer, &view_proj, sizeof(glm::mat4));
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
@@ -139,8 +169,8 @@ namespace moon
     {
         MOON_PROFILE_FUNCTION();
 
-        s_data.texture_shader->bind();
-        s_data.texture_shader->set_mat4("u_VP", camera.get_view_projection_matrix());
+        s_data.current_cmd = &s_data.current_ctx->acquire_command_buffer();
+        s_data.current_ctx->upload_buffer(s_data.viewproj_buffer, &camera.get_view_projection_matrix(), sizeof(glm::mat4));
 
         s_data.quad_index_count = 0;
         s_data.quad_vertex_buffer_ptr = s_data.quad_vertex_buffer_base;
@@ -165,10 +195,26 @@ namespace moon
         // bind textures
         for (uint32_t i = 0; i < s_data.texture_slot_index; i++)
         {
-            s_data.texture_slots[i]->bind(i);
+            s_data.frame_data.slot_to_desc[i] = s_data.texture_slots[i]->get_handle().index();
         }
 
-        render_command::draw_indexed(s_data.quad_vertex_array, s_data.quad_index_count);
+        render_pass rp = {
+            .color = { { { .load_op = LoadOp::Clear, .clear_color = { 1.0f, 1.0f, 1.0f, 1.0f } } } },
+        };
+        framebuffer fb = {
+            { { s_data.current_ctx->get_current_swapchain_texture() }}
+        };
+
+        s_data.current_cmd->cmd_begin_rendering(
+            rp, fb
+        );
+        s_data.current_cmd->cmd_push_debug_group_label("Renderer2D::flush");
+        s_data.current_cmd->cmd_bind_render_pipeline(s_data.quad_pipeline);
+        s_data.current_cmd->cmd_push_constants(&s_data.frame_data);
+        s_data.current_cmd->cmd_draw_indexed(s_data.quad_index_count, 1, 0, 0, 0);
+        s_data.current_cmd->cmd_pop_debug_group_label();
+        s_data.current_cmd->cmd_end_rendering();
+
         s_data.stats.draw_calls++;
     }
 

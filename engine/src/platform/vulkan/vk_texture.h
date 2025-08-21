@@ -26,6 +26,8 @@ namespace moon::vulkan
 
         void set_data(void* data, [[maybe_unused]] uint32_t size) override;
 
+        texture_handle get_handle() override { return m_texture; }
+
         void bind(uint32_t slot) const override {}
 
         bool operator==(const texture& other) const override

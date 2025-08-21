@@ -22,9 +22,6 @@
 
 #include "moon/renderer/renderer.h"
 #include "moon/renderer/renderer2d.h"
-#include "moon/renderer/render_command.h"
-#include "moon/renderer/renderer_api.h"
-#include "moon/renderer/vertex_array.h"
 #include "moon/renderer/buffer.h"
 #include "moon/renderer/shader.h"
 #include "moon/renderer/camera.h"

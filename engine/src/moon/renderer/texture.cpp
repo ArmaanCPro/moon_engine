@@ -19,8 +19,8 @@ namespace moon
         case renderer_api::API::OpenGL:
             return create_ref<opengl_texture2d>(width, height);
         case renderer_api::API::Vulkan:
-            return create_ref<vulkan::vk_texture2d>(vk::Extent2D{width, height},
-                                                    static_cast<vulkan::vk_context&>(application::get().get_context()));
+            return create_ref<vulkan::vk_texture2d>(dimensions{width, height, 1},
+                                                    reinterpret_cast<vulkan::vk_context&>(application::get().get_context()));
         }
 
         MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");

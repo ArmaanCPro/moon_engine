@@ -16,12 +16,12 @@ namespace moon
 
         void set_data(const void* data, uint32_t size) override;
 
-        const buffer_layout& get_layout() const override { return layout_; }
-        void set_layout(const buffer_layout& layout) override { layout_ = layout; }
+        const vertex_input& get_layout() const override { return layout_; }
+        void set_layout(const vertex_input& layout) override { layout_ = layout; }
 
     private:
         uint32_t renderer_id_{0};
-        buffer_layout layout_;
+        vertex_input layout_;
     };
 
     class opengl_index_buffer : public index_buffer

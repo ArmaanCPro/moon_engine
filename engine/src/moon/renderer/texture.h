@@ -1,5 +1,6 @@
 #pragma once
 
+#include "handle.h"
 #include "moon/core/core.h"
 
 #include <cstdint>
@@ -19,6 +20,8 @@ namespace moon
         virtual void set_data(void* data, uint32_t size) = 0;
 
         virtual void bind(uint32_t slot = 0) const = 0;
+
+        virtual texture_handle get_handle() = 0;
 
         virtual bool operator==(const texture& other) const = 0;
     };

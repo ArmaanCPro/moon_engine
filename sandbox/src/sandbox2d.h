@@ -16,7 +16,8 @@ public:
 
 private:
     // temp
-    moon::ref<moon::vertex_array> square_va_;
+    moon::ref<moon::vertex_buffer> m_square_vb;
+    moon::ref<moon::index_buffer> m_square_ib;
     moon::ref<moon::shader> flat_color_shader_;
     moon::ref<moon::texture2d> checkerboard_texture_;
 

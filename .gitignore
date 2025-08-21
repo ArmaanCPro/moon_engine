@@ -13,3 +13,6 @@ vcpkg_installed
 
 imgui.ini
 MoonProfile-*.json
+
+**.spv
+**.spirv

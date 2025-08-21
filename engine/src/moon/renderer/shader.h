@@ -1,10 +1,13 @@
 #pragma once
 
+#include "handle.h"
 #include "moon/core/core.h"
 
 #include <string_view>
 #include <unordered_map>
 #include <glm/glm.hpp>
+
+#include "render_types.h"
 
 namespace moon
 {
@@ -17,7 +20,9 @@ namespace moon
         virtual void unbind() const = 0;
 
         virtual std::string_view get_name() = 0;
+        virtual shader_module_handle get_handle() = 0;
 
+        // TODO delete
         virtual void set_int(std::string_view name, int value) = 0;
         virtual void set_int_array(std::string_view name, int* values, uint32_t count) = 0;
         virtual void set_float(std::string_view name, float value) = 0;
@@ -26,8 +31,8 @@ namespace moon
         virtual void set_float4(std::string_view name, const glm::vec4& value) = 0;
         virtual void set_mat4(std::string_view name, const glm::mat4& value) = 0;
 
-        static ref<shader> create(std::string_view file_path);
-        static ref<shader> create(std::string_view name, std::string_view vertex_src, std::string_view fragment_src);
+        static scope<shader> create(std::string_view file_path, ShaderStage stage);
+        static scope<shader> create(std::string_view name, std::string_view src, ShaderStage shader_stage);
     };
 
     class MOON_API shader_library

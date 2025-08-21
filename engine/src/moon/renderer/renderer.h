@@ -1,13 +1,27 @@
 #pragma  once
 
-#include "renderer_api.h"
-
 #include <cstdint>
+
+#include <glm/glm.hpp>
 
 namespace moon
 {
     class ortho_camera;
     class shader;
+    class vertex_buffer;
+    class index_buffer;
+
+    struct renderer_api
+    {
+        enum class API
+        {
+            None = 0,
+            OpenGL = 1,
+            Vulkan = 2,
+        };
+
+        API api;
+    };
 
     class MOON_API renderer
     {
@@ -19,9 +33,10 @@ namespace moon
         static void begin_scene(const ortho_camera& cam);
         static void end_scene();
 
-        static void submit(const ref<shader>& shader, const ref<vertex_array>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+        static renderer_api::API get_api() { return s_api_.api; };
 
-        inline static renderer_api::API get_api() { return renderer_api::get_api(); }
+        static void submit(const ref<shader>& shader, const ref<vertex_buffer>& vertex_array, const ref<index_buffer>& index_buffer, const glm::mat4& transform = glm::mat4(1.0f));
+
         inline static const glm::mat4& get_view_projection_matrix() { return s_scene_data_->view_projection_matrix; }
 
     private:
@@ -31,5 +46,7 @@ namespace moon
         };
 
         static scene_data* s_scene_data_;
+
+        static renderer_api s_api_;
     };
 }

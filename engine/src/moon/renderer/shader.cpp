@@ -2,11 +2,14 @@
 #include "shader.h"
 
 #include "renderer.h"
+#include "core/application.h"
 #include "platform/opengl/opengl_shader.h"
+#include "vulkan/vk_context.h"
+#include "vulkan/vk_shader.h"
 
 namespace moon
 {
-    ref<shader> shader::create(std::string_view file_path)
+    scope<shader> shader::create(std::string_view file_path, ShaderStage stage)
     {
         switch (renderer::get_api())
         {
@@ -14,14 +17,16 @@ namespace moon
             MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return std::make_shared<opengl_shader>(file_path);
+            return create_scope<opengl_shader>(file_path);
+        case renderer_api::API::Vulkan:
+            return create_scope<vulkan::vk_shader>(file_path, static_cast<vulkan::vk_context&>(application::get().get_context()), stage);
         }
 
         MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    ref<shader> shader::create(std::string_view name, std::string_view vertex_src, std::string_view fragment_src)
+    scope<shader> shader::create(std::string_view name, std::string_view src, ShaderStage shader_stage)
     {
         switch (renderer::get_api())
         {
@@ -29,7 +34,9 @@ namespace moon
             MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
         case renderer_api::API::OpenGL:
-            return std::make_shared<opengl_shader>(name, vertex_src, fragment_src);
+            return create_scope<opengl_shader>(name, src, src);
+        case renderer_api::API::Vulkan:
+            return create_scope<vulkan::vk_shader>(src, static_cast<vulkan::vk_context&>(application::get().get_context()), shader_stage);
         }
 
         MOON_CORE_ASSERT_MSG(false, "Unknown RendererAPI!");
@@ -50,14 +57,14 @@ namespace moon
 
     ref<shader> shader_library::load(std::string_view file_path)
     {
-        auto shader = shader::create(file_path);
+        ref<shader> shader = ref{ shader::create(file_path, ShaderStage::Vert) };
         add(shader);
         return shader;
     }
 
     ref<shader> shader_library::load(std::string_view name, std::string_view filepath)
     {
-        auto shader = shader::create(filepath);
+        ref<shader> shader = ref{ shader::create(filepath, ShaderStage::Vert) };
         add(name, shader);
         return shader;
     }

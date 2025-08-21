@@ -15,8 +15,7 @@
 
 namespace moon
 {
-    // NOTE temporarily MOON_API; normally it isn't exported into DLL but since we have some jank code in sandbox it is necessary
-    class MOON_API opengl_shader : public shader
+    class opengl_shader : public shader
     {
     public:
         explicit opengl_shader(std::string_view filepath);
@@ -25,6 +24,8 @@ namespace moon
 
         void bind() const override;
         void unbind() const override;
+
+        shader_module_handle get_handle() override { return {}; }
 
         void set_int(std::string_view name, int value) override;
         void set_int_array(std::string_view name, int* values, uint32_t count) override;

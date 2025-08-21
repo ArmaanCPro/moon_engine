@@ -16,6 +16,7 @@ namespace moon
         uint32_t get_width() const override { return width_; }
         uint32_t get_height() const override { return height_; }
         uint32_t get_renderer_id() const override { return renderer_id_; }
+        texture_handle get_handle() override { return {}; }
 
         void set_data(void* data, uint32_t size) override;
 

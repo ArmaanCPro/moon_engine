@@ -6,8 +6,6 @@
 #include "moon/core/layer_stack.h"
 #include "moon/imgui/imgui_layer.h"
 
-#include "moon/renderer/vertex_array.h"
-
 namespace moon
 {
     class window_close_event;

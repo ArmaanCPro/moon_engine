@@ -3,7 +3,6 @@
 
 #include "renderer.h"
 #include "core/application.h"
-#include "platform/opengl/opengl_shader.h"
 #include "vulkan/vk_context.h"
 #include "vulkan/vk_shader.h"
 
@@ -16,8 +15,6 @@ namespace moon
         case renderer_api::API::None:
             MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
-        case renderer_api::API::OpenGL:
-            return create_scope<opengl_shader>(file_path);
         case renderer_api::API::Vulkan:
             return create_scope<vulkan::vk_shader>(file_path, static_cast<vulkan::vk_context&>(application::get().get_context()), stage);
         }
@@ -33,8 +30,6 @@ namespace moon
         case renderer_api::API::None:
             MOON_CORE_ASSERT_MSG(false, "RendererAPI::None is not supported");
             return nullptr;
-        case renderer_api::API::OpenGL:
-            return create_scope<opengl_shader>(name, src, src);
         case renderer_api::API::Vulkan:
             return create_scope<vulkan::vk_shader>(src, static_cast<vulkan::vk_context&>(application::get().get_context()), shader_stage);
         }

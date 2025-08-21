@@ -16,8 +16,7 @@ namespace moon
         enum class API
         {
             None = 0,
-            OpenGL = 1,
-            Vulkan = 2,
+            Vulkan = 1,
         };
 
         API api;

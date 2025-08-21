@@ -33,7 +33,7 @@ namespace moon::vulkan
     {
     public:
         vk_index_buffer(uint32_t count, vk_context& context);
-        vk_index_buffer(uint32_t* indices, uint32_t size, vk_context& context);
+        vk_index_buffer(const uint32_t* indices, uint32_t size, vk_context& context);
         ~vk_index_buffer() override = default;
 
         uint32_t get_count() const override { return m_count; }

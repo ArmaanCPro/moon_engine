@@ -33,6 +33,6 @@ namespace moon
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
-        static ref<index_buffer> create(const uint32_t* indices, uint32_t count);
+        static scope<index_buffer> create(const uint32_t* indices, uint32_t count);
     };
 }

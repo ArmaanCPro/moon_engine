@@ -47,7 +47,7 @@ namespace moon::vulkan
         , m_count(count)
     {}
 
-    vk_index_buffer::vk_index_buffer(uint32_t* indices, uint32_t size, vk_context& context)
+    vk_index_buffer::vk_index_buffer(const uint32_t* indices, uint32_t size, vk_context& context)
         :
         m_buffer(context.create_buffer({
             .usage = static_cast<uint8_t>(BufferUsageBits::Index),
